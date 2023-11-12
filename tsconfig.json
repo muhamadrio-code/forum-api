@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "ES2020",
+    "sourceMap": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+  },
+  "include": [
+    "./src/**/*",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}
