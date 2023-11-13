@@ -1,4 +1,5 @@
 import Hapi from '@hapi/hapi';
+import { request } from 'http';
 
 export default async function createServer() {
   const server = Hapi.server({
@@ -7,6 +8,5 @@ export default async function createServer() {
   });
 
   await server.start();
-
   return server
 }

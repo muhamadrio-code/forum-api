@@ -1,6 +1,5 @@
-import createServer from "./Infrastructures/http/createServer";
-
 require('dotenv').config();
+import createServer from "./Infrastructures/http/createServer";
 
 const startServer = async () => {
   const server = await createServer()
