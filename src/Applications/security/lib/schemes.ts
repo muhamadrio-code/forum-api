@@ -15,3 +15,5 @@ export const UserScheme = z.object({
     message: "Password cannot longer than 24 characters long"
   }),
 })
+
+export const PasswordScheme = UserScheme.pick({ password: true })

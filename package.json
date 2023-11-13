@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/hapi": "^18.0.13",
     "@types/jest": "^29.5.8",
     "@types/node": "^20.9.0",
