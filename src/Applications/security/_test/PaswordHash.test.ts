@@ -3,14 +3,12 @@ import PasswordHash from "../PasswordHash";
 describe('PasswordHash', () => {
   const passwordHash = new PasswordHash();
 
-  // Returns a string hash of the input password.
   it('should return a string hash of the input password', async () => {
     const password = 'password123';
     const result = await passwordHash.hash(password);
     expect(typeof result).toBe('string');
   });
 
-  // The generated hash is unique for each input password.
   it('should generate a unique hash for each input password', async () => {
     const password1 = 'password123';
     const password2 = 'password456';
@@ -19,7 +17,6 @@ describe('PasswordHash', () => {
     expect(hash1).not.toBe(hash2);
   });
 
-  // Should return true when comparing a plain password with its corresponding encrypted version
   it('should return true when comparing a plain password with its corresponding encrypted version', async () => {
     const password = 'password123';
     const hashedPassword = await passwordHash.hash(password);
@@ -27,7 +24,6 @@ describe('PasswordHash', () => {
     expect(result).toBe(true);
   });
 
-  // Should return false when comparing a plain password with a different encrypted version
   it('should return false when comparing a plain password with a different encrypted version', async () => {
     const password1 = 'password123';
     const password2 = 'password456';
