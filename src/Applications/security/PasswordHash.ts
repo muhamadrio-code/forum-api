@@ -1,6 +1,4 @@
 import bcrypt from 'bcrypt';
-import { PasswordScheme } from './lib/schemes'
-import { fromZodError } from 'zod-validation-error'
 
 export default class PasswordHash {
   async hash(password: string): Promise<string> {
