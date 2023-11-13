@@ -1,5 +1,3 @@
-import ValidationError from "../errors/ValidationError"
-
 export type UserPayload = {
   fullname: string,
   username: string,
