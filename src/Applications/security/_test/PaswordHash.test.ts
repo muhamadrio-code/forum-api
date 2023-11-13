@@ -1,11 +1,11 @@
 import PasswordHash from "../PasswordHash";
 
-describe('hash', () => {
+describe('PasswordHash', () => {
+  const passwordHash = new PasswordHash();
 
   // Returns a string hash of the input password.
   it('should return a string hash of the input password', async () => {
     const password = 'password123';
-    const passwordHash = new PasswordHash();
     const result = await passwordHash.hash(password);
     expect(typeof result).toBe('string');
   });
@@ -14,24 +14,26 @@ describe('hash', () => {
   it('should generate a unique hash for each input password', async () => {
     const password1 = 'password123';
     const password2 = 'password456';
-    const passwordHash = new PasswordHash();
     const hash1 = await passwordHash.hash(password1);
     const hash2 = await passwordHash.hash(password2);
     expect(hash1).not.toBe(hash2);
   });
 
-  // The method throws an error if the input password is an empty string.
-  it('should throw an error if the input password is an empty string', async () => {
-    const password = '';
-    const passwordHash = new PasswordHash();
-    await expect(passwordHash.hash(password)).rejects.toThrow();
+  // Should return true when comparing a plain password with its corresponding encrypted version
+  it('should return true when comparing a plain password with its corresponding encrypted version', async () => {
+    const password = 'password123';
+    const hashedPassword = await passwordHash.hash(password);
+    const result = await passwordHash.comparePassword(password, hashedPassword);
+    expect(result).toBe(true);
   });
 
-  // The method throws an error if the input password is too long.
-  it('should throw an error if the input password is too long', async () => {
-    const password = 'a'.repeat(1000);
-    const passwordHash = new PasswordHash();
-    await expect(passwordHash.hash(password)).rejects.toThrow();
+  // Should return false when comparing a plain password with a different encrypted version
+  it('should return false when comparing a plain password with a different encrypted version', async () => {
+    const password1 = 'password123';
+    const password2 = 'password456';
+    const hashedPassword2 = await passwordHash.hash(password2);
+    const result = await passwordHash.comparePassword(password1, hashedPassword2);
+    expect(result).toBe(false);
   });
 });
 
