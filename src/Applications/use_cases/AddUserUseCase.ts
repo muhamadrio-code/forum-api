@@ -1,9 +1,7 @@
 import UserRepository from "../../Domains/users/UserRepository";
 import PasswordHash from "../security/PasswordHash";
 import { UserPayload } from "../security/lib/definitions";
-import Validator from "../security/validator/Validator";
-import { User } from "../../Domains/entities/User";
-import ValidationError from "../../Common/errors/ValidationError";
+import Validator from "../security/Validator";
 import { randomUUID } from "crypto";
 
 export default class AddUserUseCase {
