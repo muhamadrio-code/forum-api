@@ -1,6 +1,6 @@
 import Validator from "./Validator";
 import { UserPayload, ValidationResult } from "../lib/definitions";
-import ValidationError from "../errors/ValidationError";
+import ValidationError from "../../../Common/Errors/ValidationError";
 import { UserScheme } from "../lib/schemes"
 import { fromZodError } from "zod-validation-error";
 
