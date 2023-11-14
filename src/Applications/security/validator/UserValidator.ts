@@ -4,8 +4,8 @@ import ValidationError from "../../../Common/Errors/ValidationError";
 import { UserScheme } from "../lib/schemes"
 import { fromZodError } from "zod-validation-error";
 
-export default class UserValidator extends Validator<UserPayload> {
-  validatePayload(payload: UserPayload): ValidationResult<UserPayload> {
+export default class UserValidator extends Validator {
+  validatePayload<UserPayload>(payload: UserPayload): ValidationResult<UserPayload> {
     const result = UserScheme.safeParse(payload)
 
     if (!result.success) {

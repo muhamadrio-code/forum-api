@@ -1,5 +1,5 @@
 import { ValidationResult } from "../lib/definitions";
 
-export default abstract class Validator<T> {
-  abstract validatePayload(payload: T): ValidationResult<T>
+export default abstract class Validator {
+  abstract validatePayload<T>(payload: T): ValidationResult<T>
 }
