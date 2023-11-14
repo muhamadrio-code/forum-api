@@ -5,12 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/app.ts",
-    "dev": "nodemon src/app.ts",
+    "dev": "set NODE_ENV=dev && nodemon src/app.ts",
     "build": "tsc",
-    "test": "jest --collect-coverage"
+    "test": "jest --collect-coverage",
+    "migrate": "node-pg-migrate",
+    "migrate:test": "node-pg-migrate -d DATABASE_URL_TEST",
+    "seed": "node ./script/seed.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "ISC", 
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/hapi": "^18.0.13",
