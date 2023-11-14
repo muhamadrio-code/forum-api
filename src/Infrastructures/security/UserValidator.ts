@@ -1,6 +1,6 @@
 import Validator from "../../Applications/security/Validator";
-import { ValidationResult, UserPayload } from "../../Applications/security/lib/definitions";
-import { UserScheme } from "../../Applications/security/lib/schemes"
+import { ValidationResult, UserPayload } from "../../Domains/entities/definitions";
+import { UserScheme } from "../../Domains/schemes/schemes"
 import { fromZodError } from "zod-validation-error";
 import ValidationError from "../../Common/Errors/ValidationError";
 

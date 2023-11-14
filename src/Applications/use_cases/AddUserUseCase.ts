@@ -1,6 +1,6 @@
 import UserRepository from "../../Domains/users/UserRepository";
 import PasswordHash from "../security/PasswordHash";
-import { UserPayload } from "../security/lib/definitions";
+import { UserPayload } from "../../Domains/entities/definitions";
 import Validator from "../security/Validator";
 import { randomUUID } from "crypto";
 

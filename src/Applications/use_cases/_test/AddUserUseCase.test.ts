@@ -1,5 +1,5 @@
 import AddUserUseCase from "../AddUserUseCase";
-import { UserPayload } from "../../security/lib/definitions";
+import { UserPayload } from "../../../Domains/entities/definitions";
 import UserValidator from "../../../Infrastructures/security/UserValidator";
 import ValidationError from "../../../Common/Errors/ValidationError";
 import UserRepository from "../../../Domains/users/UserRepository";
