@@ -1,4 +1,4 @@
-import ValidationError from "../../../../Common/Errors/ValidationError";
+import ValidationError from "../../../../Common/errors/ValidationError";
 import UserValidator from "../UserValidator";
 
 describe('UserValidator', () => {
