@@ -1,7 +1,12 @@
-import PasswordHash from "../PasswordHash";
+import BCryptPasswordHash from "../BCryptPasswordHash";
+import PasswordHash from "../../../Applications/security/PasswordHash";
 
 describe('PasswordHash', () => {
-  const passwordHash = new PasswordHash();
+  let passwordHash:PasswordHash;
+
+  beforeEach(() => {
+    passwordHash = new BCryptPasswordHash()
+  })
 
   it('should return a string hash of the input password', async () => {
     const password = 'password123';
