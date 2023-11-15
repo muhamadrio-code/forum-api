@@ -1,10 +1,11 @@
 /* istanbul ignore file */
+import { Pool } from "pg";
 
-import { QueryConfig, Pool } from "pg";
+type Table = 'users' | 'authentications'
 
 type Config = {
   pool: Pool, 
-  tables: 'users'[] | 'authentications'[]
+  tables: Table[]
 }
 export const PostgresTestHelper = {
   async truncate(config: Config) {
