@@ -5,3 +5,5 @@ export type UserPayload = {
 }
 
 export type ValidationResult<T> = Readonly<T>
+
+export type UserLoginPayload = Omit<UserPayload, 'fullname'>
