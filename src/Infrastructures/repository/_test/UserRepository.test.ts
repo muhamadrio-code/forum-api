@@ -3,17 +3,27 @@ import { RegisteredUser, User } from "../../../Domains/entities/User";
 import UserRepository from "../../../Domains/users/UserRepository";
 import { pool } from "../../database/postgres/Pool";
 import UserRepositoryPostgres from "../UserRepositoryPostgres";
-import { UsersTableTestHelper } from './helper/UserTableHelper'
+import { PostgresTestHelper } from "./helper/PostgresTestHelper";
 
 describe('UserRepository', () => {
   let userRepository: UserRepository;
+
+  beforeAll(async () => {
+    await PostgresTestHelper.truncate({
+      pool,
+      tables: ['users']
+    })
+  })
 
   beforeEach(() => {
     userRepository = new UserRepositoryPostgres(pool)
   })
 
   afterEach(async () => {
-    await UsersTableTestHelper.cleanTable(pool)
+    await PostgresTestHelper.truncate({
+      pool,
+      tables: ['users']
+    })
   })
 
   afterAll(async () => {
