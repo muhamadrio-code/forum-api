@@ -25,6 +25,10 @@ describe('PostgresAuthenticationRepository', () => {
     })
   })
 
+  afterAll(async () => {
+    await pool.end()
+  })
+
   it('should be instance of AuthenticationRepository', () => {
     expect(authRepository).toBeInstanceOf(AuthenticationRepository);
   });
