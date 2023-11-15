@@ -138,5 +138,37 @@ describe('UserRepository', () => {
     // Assert
     await expect(userRepository.getUserByUsername('username')).rejects.toThrow(NotFoundError)
   });
+
+  it('should return password when getUserPasswordByUsername is called with a valid username', async () => {
+    // Arange
+    const user: User = {
+      id: "a",
+      fullname: "rio permana",
+      username: "asdwad",
+      password: "123456"
+    }
+
+    // Action
+    await userRepository.addUser(user)
+
+    // Assert
+    await expect(userRepository.getUserPasswordByUsername('asdwad')).resolves.toBe("123456")
+  });
+
+  it('should throw NotFoundError when getUserPasswordByUsername is called with a ivalid username', async () => {
+    // Arange
+    const user: User = {
+      id: "a",
+      fullname: "rio permana",
+      username: "asdwad",
+      password: "123456"
+    }
+
+    // Action
+    await userRepository.addUser(user)
+
+    // Assert
+    await expect(userRepository.getUserPasswordByUsername('username')).rejects.toThrow(NotFoundError)
+  });
   
 });

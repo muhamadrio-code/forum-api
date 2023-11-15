@@ -45,4 +45,16 @@ export default class UserRepositoryPostgres extends UserRepository {
 
     return result.registered_user
   }
+
+  async getUserPasswordByUsername(username: string) {
+    const query: QueryConfig = {
+      text: "SELECT password FROM users WHERE username=$1",
+      values: [username]
+    }
+    const { rows:[result] } = await this.pool.query(query)
+
+    if(!result) throw new NotFoundError(`User not found`)
+
+    return result.password as string
+  }
 }
