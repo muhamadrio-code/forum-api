@@ -1,3 +1,4 @@
+import NotFoundError from "../../../Common/Errors/NotFoundError";
 import { RegisteredUser, User } from "../../../Domains/entities/User";
 import UserRepository from "../../../Domains/users/UserRepository";
 import { pool } from "../../database/postgres/Pool";
@@ -73,6 +74,23 @@ describe('UserRepository', () => {
     await expect(userRepository.getIdByUsername(username)).resolves.toBe("a")
   });
 
+  it('should throw NotFoundError when getIdByUsername is called with a unregistered username', async () => {
+    // Arange
+    const user: User = {
+      id: "a",
+      fullname: "rio permana",
+      username: "asdwad",
+      password: "123456"
+    }
+    const username = "asdwad"
+
+    // Action
+    await userRepository.addUser(user)
+
+    // Assert
+    await expect(userRepository.getIdByUsername('username')).rejects.toThrow(NotFoundError)
+  });
+
   it('should return RegisteredUser when getUserByUsername is called with a valid username', async () => {
     // Arange
     const user: User = {
@@ -93,6 +111,22 @@ describe('UserRepository', () => {
 
     // Assert
     await expect(userRepository.getUserByUsername(username)).resolves.toStrictEqual(registeredUser)
+  });
+
+  it('should throw NotFoundError when getUserByUsername is called with a unregistered username', async () => {
+    // Arange
+    const user: User = {
+      id: "a",
+      fullname: "rio permana",
+      username: "asdwad",
+      password: "123456"
+    }
+
+    // Action
+    await userRepository.addUser(user)
+
+    // Assert
+    await expect(userRepository.getUserByUsername('username')).rejects.toThrow(NotFoundError)
   });
   
 });
