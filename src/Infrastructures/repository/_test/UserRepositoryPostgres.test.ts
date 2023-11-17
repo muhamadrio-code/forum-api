@@ -8,13 +8,6 @@ import { PostgresTestHelper } from "./helper/PostgresTestHelper";
 describe('UserRepository', () => {
   let userRepository: UserRepository;
 
-  beforeAll(async () => {
-    await PostgresTestHelper.truncate({
-      pool,
-      tables: ['users']
-    })
-  })
-
   beforeEach(() => {
     userRepository = new UserRepositoryPostgres(pool)
   })
@@ -22,7 +15,7 @@ describe('UserRepository', () => {
   afterEach(async () => {
     await PostgresTestHelper.truncate({
       pool,
-      tables: ['users']
+      tableName: 'users'
     })
   })
 
@@ -35,20 +28,20 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
-    const userEntity = {
+    const registeredUser = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
     }
 
     // Action
     const result = await userRepository.addUser(user)
 
     // Assert
-    expect(result).toStrictEqual(userEntity)
+    expect(result).toStrictEqual(registeredUser)
   });
 
   it('should throw error when addUser is called with an existing username in the database', async () => {
@@ -56,7 +49,7 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
 
@@ -72,10 +65,10 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
-    const username = "asdwad"
+    const username = "riopermana"
 
     // Action
     await userRepository.addUser(user)
@@ -89,10 +82,10 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
-    const username = "asdwad"
+    const username = "riopermana"
 
     // Action
     await userRepository.addUser(user)
@@ -106,14 +99,14 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
-    const username = "asdwad"
+    const username = "riopermana"
     const registeredUser: RegisteredUser = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
     }
 
     // Action
@@ -128,7 +121,7 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
 
@@ -144,7 +137,7 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
 
@@ -152,7 +145,7 @@ describe('UserRepository', () => {
     await userRepository.addUser(user)
 
     // Assert
-    await expect(userRepository.getUserPasswordByUsername('asdwad')).resolves.toBe("123456")
+    await expect(userRepository.getUserPasswordByUsername('riopermana')).resolves.toBe("123456")
   });
 
   it('should throw NotFoundError when getUserPasswordByUsername is called with a ivalid username', async () => {
@@ -160,7 +153,7 @@ describe('UserRepository', () => {
     const user: User = {
       id: "a",
       fullname: "rio permana",
-      username: "asdwad",
+      username: "riopermana",
       password: "123456"
     }
 
