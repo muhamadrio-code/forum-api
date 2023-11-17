@@ -15,7 +15,8 @@ describe('AddUserUseCase', () => {
     userRepositoryMock = {
       addUser: jest.fn(),
       getIdByUsername: jest.fn(),
-      getUserByUsername: jest.fn()
+      getUserByUsername: jest.fn(),
+      getUserPasswordByUsername: jest.fn()
     };
 
     validatorMock = {
