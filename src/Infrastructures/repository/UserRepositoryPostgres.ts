@@ -1,6 +1,7 @@
 import { Pool, QueryConfig } from "pg";
 import { User,RegisteredUser } from "../../Domains/entities/User";
 import UserRepository from "../../Domains/users/UserRepository";
+import NotFoundError from "../../Common/Errors/NotFoundError";
 
 export default class UserRepositoryPostgres extends UserRepository {
   private readonly pool:Pool;
@@ -25,8 +26,11 @@ export default class UserRepositoryPostgres extends UserRepository {
       text: "SELECT id FROM users WHERE username=$1",
       values: [username]
     }
-    const { rows } = await this.pool.query(query)
-    const { id } = rows[0]
+    const { rows:[result] } = await this.pool.query(query)
+
+    if(!result) throw new NotFoundError(`User not found`)
+
+    const { id } = result
     return id as string
   }
 
@@ -37,6 +41,20 @@ export default class UserRepositoryPostgres extends UserRepository {
     }
     const { rows:[result] } = await this.pool.query(query)
 
+    if(!result) throw new NotFoundError(`User not found`)
+
     return result.registered_user
+  }
+
+  async getUserPasswordByUsername(username: string) {
+    const query: QueryConfig = {
+      text: "SELECT password FROM users WHERE username=$1",
+      values: [username]
+    }
+    const { rows:[result] } = await this.pool.query(query)
+
+    if(!result) throw new NotFoundError(`User not found`)
+
+    return result.password as string
   }
 }

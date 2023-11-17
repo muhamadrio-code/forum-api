@@ -1,7 +1,7 @@
 import AddUserUseCase from "../AddUserUseCase";
-import { UserPayload } from "../../security/lib/definitions";
-import UserValidator from "../../security/validator/UserValidator";
-import ValidationError from "../../../Common/errors/ValidationError";
+import { UserPayload } from "../../../Domains/entities/definitions";
+import UserValidator from "../../../Infrastructures/security/UserValidator";
+import ValidationError from "../../../Common/Errors/ValidationError";
 import UserRepository from "../../../Domains/users/UserRepository";
 import PasswordHash from "../../security/PasswordHash";
 
@@ -15,7 +15,8 @@ describe('AddUserUseCase', () => {
     userRepositoryMock = {
       addUser: jest.fn(),
       getIdByUsername: jest.fn(),
-      getUserByUsername: jest.fn()
+      getUserByUsername: jest.fn(),
+      getUserPasswordByUsername: jest.fn()
     };
 
     validatorMock = {
