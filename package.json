@@ -9,7 +9,7 @@
     "build": "tsc",
     "test": "jest --collect-coverage --setupFiles dotenv/config -i",
     "migrate": "node-pg-migrate",
-    "migrate:test": "node-pg-migrate -f config/database/test.json",
+    "migrate:test": "node-pg-migrate -f config/database/test.json"
   },
   "author": "",
   "license": "ISC", 
