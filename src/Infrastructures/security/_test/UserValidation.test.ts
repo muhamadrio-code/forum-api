@@ -1,10 +1,10 @@
 import ValidationError from "../../../Common/Errors/ValidationError";
-import UserValidator from "../UserValidator";
+import ZodUserValidator from "../ZodUserValidator";
 
 describe('UserValidator', () => {
 
   it('should successfully validate a valid user payload', () => {
-    const validator = new UserValidator();
+    const validator = new ZodUserValidator();
     const payload = {
       fullname: "John Doe",
       username: "johndoe",
@@ -15,7 +15,7 @@ describe('UserValidator', () => {
   });
 
   it('should return a readonly validated user payload', () => {
-    const validator = new UserValidator();
+    const validator = new ZodUserValidator();
     const payload = {
       fullname: "John Doe",
       username: "johndoe",
@@ -28,9 +28,9 @@ describe('UserValidator', () => {
   });
 
   it('should handle minimum length values for fullname, username, and password', () => {
-    const validator = new UserValidator();
+    const validator = new ZodUserValidator();
     const payload = {
-      fullname: "Jq",
+      fullname: "John",
       username: "john",
       password: "passwwor"
     };
@@ -39,7 +39,7 @@ describe('UserValidator', () => {
   });
 
   it('should throw a ValidationError for an invalid fullname', () => {
-    const validator = new UserValidator();
+    const validator = new ZodUserValidator();
     const payload = {
       fullname: "",
       username: "johndoe",
@@ -51,7 +51,7 @@ describe('UserValidator', () => {
   });
 
   it('should throw a ValidationError for an invalid username', () => {
-    const validator = new UserValidator();
+    const validator = new ZodUserValidator();
     const payload = {
       fullname: "John Doe",
       username: "j",
@@ -63,7 +63,7 @@ describe('UserValidator', () => {
   });
 
   it('should throw a ValidationError for an invalid password', () => {
-    const validator = new UserValidator();
+    const validator = new ZodUserValidator();
     const payload = {
       fullname: "John Doe",
       username: "johndoe",

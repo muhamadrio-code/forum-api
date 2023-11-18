@@ -7,7 +7,9 @@
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "strict": true,
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "./src/**/*",

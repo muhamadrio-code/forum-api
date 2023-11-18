@@ -16,6 +16,7 @@ describe('UserLoginUseCase', () => {
 
   beforeEach(() => {
     userRepository = {
+      verifyUsernameAvailability: jest.fn(),
       addUser: jest.fn(),
       getIdByUsername: jest.fn().mockResolvedValue('userId'),
       getUserByUsername: jest.fn(),
@@ -102,7 +103,8 @@ describe('UserLoginUseCase', () => {
       username: 'unregistereduser',
       password: '123456'
     }
-    const userRepository = {
+    const userRepository: jest.Mocked<UserRepository> = {
+      verifyUsernameAvailability: jest.fn(),
       addUser: jest.fn(),
       getIdByUsername: jest.fn().mockResolvedValue('userId'),
       getUserByUsername: jest.fn(),

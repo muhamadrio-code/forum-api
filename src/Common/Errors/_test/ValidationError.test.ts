@@ -6,7 +6,7 @@ describe('ValidationError', () => {
     const errorMessage = 'This is an error message';
     const validationError = new ValidationError(errorMessage);
     expect(validationError.message).toBe(errorMessage);
-    expect(validationError.code).toBe(500);
+    expect(validationError.statusCode).toBe(400);
   });
 
   it('should set the name property to \'ValidationError\' when creating a new instance', () => {
