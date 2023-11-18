@@ -1,19 +1,44 @@
 import { z } from 'zod'
 
 export const UserScheme = z.object({
-  fullname: z.string().min(2, {
-    message: "Fullname must be at least 2 characters long"
-  }),
-  username: z.string().min(4, {
-    message: "Username must be at least 4 characters long"
-  }).max(16, {
-    message: "Username cannot longer than 16 characters long"
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters long"
-  }).max(24, {
-    message: "Password cannot longer than 24 characters long"
-  }),
+  fullname: z
+    .string({
+      invalid_type_error: 'tidak dapat membuat user baru karena tipe data tidak sesuai',
+      required_error: 'tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'
+    })
+    .min(4, {
+      message: "tidak dapat membuat user baru karena karakter username kurang dari batas minimum 4 karakter"
+    })
+    .max(50, {
+      message: 'tidak dapat membuat user baru karena karakter username melebihi batas limit 50 karakter'
+    }),
+  username: z
+    .string({
+      invalid_type_error: 'tidak dapat membuat user baru karena tipe data tidak sesuai',
+      required_error: 'tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'
+    })
+    .min(4, {
+      message: "tidak dapat membuat user baru karena karakter username kurang dari batas minimum 4 karakter"
+    })
+    .max(50, {
+      message: 'tidak dapat membuat user baru karena karakter username melebihi batas limit 50 karakter'
+    })
+    .refine((username) => username.match(/^[\w]+$/), {
+      message: 'tidak dapat membuat user baru karena username mengandung karakter terlarang'
+    }),
+  password: z
+    .string({
+      invalid_type_error: 'tidak dapat membuat user baru karena tipe data tidak sesuai',
+      required_error: 'tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'
+    })
+    .min(6, {
+      message: "tidak dapat membuat user baru karena karakter password kurang dari batas minimum 6 karakter"
+    })
+    .max(24, {
+      message: "tidak dapat membuat user baru karena karakter username kurang dari batas limit 24 karakter"
+    }),
+}).strict({
+  message: 'tidak dapat membuat user baru karena properti tidak sesuai'
 })
 
 export const UserLoginScheme = UserScheme.pick({ username: true, password: true })

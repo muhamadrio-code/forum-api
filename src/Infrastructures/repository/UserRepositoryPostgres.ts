@@ -2,6 +2,7 @@ import { Pool, QueryConfig } from "pg";
 import { User,RegisteredUser } from "../../Domains/entities/User";
 import UserRepository from "../../Domains/users/UserRepository";
 import NotFoundError from "../../Common/Errors/NotFoundError";
+import InvariantError from "../../Common/Errors/InvariantError";
 
 export default class UserRepositoryPostgres extends UserRepository {
   private readonly pool:Pool;
@@ -9,6 +10,19 @@ export default class UserRepositoryPostgres extends UserRepository {
   constructor(pool: Pool) {
     super()
     this.pool = pool
+  }
+
+  async verifyUsernameAvailability(username: string) {
+    const query = {
+      text: 'SELECT username FROM users WHERE username = $1',
+      values: [username],
+    };
+
+    const result = await this.pool.query(query);
+
+    if (result.rowCount) {
+      throw new InvariantError('username tidak tersedia');
+    }
   }
 
   async addUser({id, fullname, username, password}: User) {

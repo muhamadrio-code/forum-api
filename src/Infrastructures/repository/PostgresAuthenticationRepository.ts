@@ -25,8 +25,8 @@ export default class PostgresAuthenticationRepository extends AuthenticationRepo
       values: [token]
     }
 
-    const { rowCount } = await this.pool.query(query)
-    return rowCount ?? 0
+    const result = await this.pool.query(query)
+    return result.rowCount || 0
   }
 
   async verifyToken(token: string) {
