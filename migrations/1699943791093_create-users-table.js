@@ -13,7 +13,7 @@ exports.up = (pgm) => {
       type: 'varchar(50)', notNull: true, unique: true
     },
     password: {
-      type: 'VARCHAR(24)', notNull: true
+      type: 'text', notNull: true
     }
   })
 };
