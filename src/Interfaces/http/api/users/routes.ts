@@ -5,7 +5,7 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Us
   return [
     {
       method: 'POST',
-      path: '/register',
+      path: '/users',
       handler: handler.postUserhandler
     }
   ]
