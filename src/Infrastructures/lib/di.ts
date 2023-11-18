@@ -1,14 +1,14 @@
 import { container, instanceCachingFactory } from "tsyringe"
 import UserRepositoryPostgres from "../repository/UserRepositoryPostgres"
 import { pool } from "../database/postgres/Pool"
-import UserValidator from "../security/UserValidator"
+import ZodUserValidator from "../security/ZodUserValidator"
 import BCryptPasswordHash from "../security/BCryptPasswordHash"
 
-export function createContainerRegistry() {
+export function registerDependenciesToContainer() {
   container.register(
-    "UserRepositoryPostgres",
+    "UserRepository",
     { useFactory: instanceCachingFactory(() => new UserRepositoryPostgres(pool)) }
   )
-  container.register("UserValidator", { useClass: UserValidator })
-  container.register("BCryptPasswordHash", { useClass: BCryptPasswordHash })
+  container.register("UserValidator", { useClass: ZodUserValidator })
+  container.register("PasswordHash", { useClass: BCryptPasswordHash })
 }

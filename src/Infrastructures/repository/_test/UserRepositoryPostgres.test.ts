@@ -22,6 +22,25 @@ describe('UserRepository', () => {
   afterAll(async () => {
     await pool.end();
   });
+  
+  it('should not throw error when verifyUsernameAvailability is called with unregistered username', async () => {
+    // Action & Assert
+    await expect(userRepository.verifyUsernameAvailability('mypopokoro')).resolves.not.toThrow()
+  });
+
+  it('should throw when verifyUsernameAvailability is called with registered username', async () => {
+    // Arange
+    const user: User = {
+      id: "a",
+      fullname: "rio permana",
+      username: "riopermana",
+      password: "123456"
+    }
+    await userRepository.addUser(user)
+
+    // Action & Assert
+    await expect(userRepository.verifyUsernameAvailability('riopermana')).rejects.toThrow('username tidak tersedia')
+  });
 
   it('should add a user to the database when addUser is called with complete user data and return RegisterdUser', async () => {
     // Arange

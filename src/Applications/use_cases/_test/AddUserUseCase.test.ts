@@ -1,18 +1,19 @@
 import AddUserUseCase from "../AddUserUseCase";
 import { UserPayload } from "../../../Domains/entities/definitions";
-import UserValidator from "../../../Infrastructures/security/UserValidator";
+import ZodUserValidator from "../../../Infrastructures/security/ZodUserValidator";
 import ValidationError from "../../../Common/Errors/ValidationError";
 import UserRepository from "../../../Domains/users/UserRepository";
 import PasswordHash from "../../security/PasswordHash";
 
 describe('AddUserUseCase', () => {
   let userRepositoryMock: jest.Mocked<UserRepository>
-  let validatorMock: jest.Mocked<UserValidator>
+  let validatorMock: jest.Mocked<ZodUserValidator>
   let passwordHashMock: jest.Mocked<PasswordHash>
   let addUserUseCase: AddUserUseCase
 
   beforeEach(() => {
     userRepositoryMock = {
+      verifyUsernameAvailability: jest.fn(),
       addUser: jest.fn(),
       getIdByUsername: jest.fn(),
       getUserByUsername: jest.fn(),
@@ -21,7 +22,7 @@ describe('AddUserUseCase', () => {
 
     validatorMock = {
       validatePayload: jest.fn().mockImplementation((arg: string) => {
-        return new UserValidator().validatePayload(arg)
+        return new ZodUserValidator().validatePayload(arg)
       }),
     };
   

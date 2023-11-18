@@ -18,7 +18,7 @@ export async function createServer(plugins?: Plugin<any>[]) {
     if(response instanceof Error) {
       if(response instanceof ClientError) {
         return h.response({
-          success: false,
+          status: 'fail',
           message: response.message
         }).code(response.statusCode)
       }

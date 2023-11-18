@@ -5,6 +5,7 @@ import Validator from "../security/Validator";
 import { randomUUID } from "crypto";
 import { inject, injectable } from "tsyringe";
 
+
 @injectable()
 export default class AddUserUseCase {
   private readonly userRepository: UserRepository
@@ -12,9 +13,9 @@ export default class AddUserUseCase {
   private readonly passwordHash: PasswordHash
 
   constructor(
-    @inject("UserRepositoryPostgres") userRepository: UserRepository,
+    @inject("UserRepository") userRepository: UserRepository,
     @inject("UserValidator") validator: Validator,
-    @inject("BCryptPasswordHash") passwordHash: PasswordHash
+    @inject("PasswordHash") passwordHash: PasswordHash
   ) {
     this.userRepository = userRepository
     this.validator = validator
@@ -23,6 +24,8 @@ export default class AddUserUseCase {
 
   async execute(payload: UserPayload) {
     const result = this.validator.validatePayload(payload)
+    await this.userRepository.verifyUsernameAvailability(result.username)
+    
     const id = randomUUID()
     const hashedPassword = await this.passwordHash.hash(result.password)
     return await this.userRepository.addUser({

@@ -12,9 +12,9 @@ export default class UserHandler {
     const { fullname, username, password } = req.payload as any
     const registeredUser = await this.addUserUseCase.execute({ fullname, username, password })
     return h.response({
-      success: true,
+      status: 'success',
       data: {
-        user: registeredUser
+        addedUser: registeredUser
       }
     }).code(201) 
   }
