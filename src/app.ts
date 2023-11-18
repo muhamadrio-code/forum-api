@@ -1,10 +1,15 @@
 require('dotenv').config();
-import createServer from "./Infrastructures/http/createServer";
+import "reflect-metadata";
+import { createServer } from "./Infrastructures/http/createServer";
+import { plugins } from "./Interfaces/http/api/plugins";
+import { createContainerRegistry } from "./Infrastructures/lib/di";
 
 const startServer = async () => {
-  const server = await createServer()
+  createContainerRegistry()
+  const server = await createServer(plugins)
   await server.start()
+  
   console.log('Server running on %s', server.info.uri);
-} 
+}
 
 startServer()
