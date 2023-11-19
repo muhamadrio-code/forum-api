@@ -2,7 +2,7 @@ require('dotenv').config()
 import { HapiJwt } from "@hapi/jwt";
 import AuthenticationTokenManager from "../../Applications/security/AuthenticationTokenManager";
 import InvariantError from "../../Common/Errors/InvariantError";
-import { AuthenticationPayload, UserLoginPayload } from "../../Domains/entities/definitions";
+import { AuthenticationPayload } from "../../Domains/entities/definitions";
 
 export default class HapiJwtTokenManager extends AuthenticationTokenManager {
   private readonly jwt: HapiJwt.Token
@@ -12,11 +12,11 @@ export default class HapiJwtTokenManager extends AuthenticationTokenManager {
     this.jwt = jwt
   }
 
- async createAccessToken(payload: AuthenticationPayload): Promise<string> {
+  async createAccessToken(payload: AuthenticationPayload): Promise<string> {
     return this.jwt.generate(payload, process.env.ACCESS_TOKEN_KEY!)
- }
+  }
 
-  async createRefreshToken(payload: AuthenticationPayload): Promise<string>  {
+  async createRefreshToken(payload: AuthenticationPayload): Promise<string> {
     return this.jwt.generate(payload, process.env.REFRESH_TOKEN_KEY!)
   }
 
@@ -29,7 +29,7 @@ export default class HapiJwtTokenManager extends AuthenticationTokenManager {
       const artifacts = this.jwt.decode(refreshToken)
       this.jwt.verify(artifacts, process.env.REFRESH_TOKEN_KEY!)
     } catch (error) {
-      if(error instanceof Error){
+      if (error instanceof Error) {
         throw new InvariantError(error.message)
       }
     }
