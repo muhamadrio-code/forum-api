@@ -73,4 +73,47 @@ describe('ZodUserValidator', () => {
       validator.validatePayload(payload);
     }).toThrow(ValidationError);
   });
+
+  it('should throw a ValidationError for an username contain restricted character(s)', () => {
+    const validator = new ZodUserValidator();
+    const payload = {
+      fullname: "John Doe",
+      username: "johndoe()",
+      password: "password"
+    };
+    expect(() => {
+      validator.validatePayload(payload);
+    }).toThrow('username mengandung karakter terlarang');
+  });
+
+  it('should handle empty payload', () => {
+    const validator = new ZodUserValidator();
+    const payload = {};
+    expect(() => {
+      validator.validatePayload(payload);
+    }).toThrow(ValidationError);
+  });
+
+  it('should handle payload with missing properties', () => {
+    const validator = new ZodUserValidator();
+    const payload = {
+      fullname: "John Doe"
+    };
+    expect(() => {
+      validator.validatePayload(payload);
+    }).toThrow("tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada;\ntidak dapat membuat user baru karena properti yang dibutuhkan tidak ada");
+  });
+
+  it('should handle payload with invalid data types', () => {
+    const validator = new ZodUserValidator();
+    const payload = {
+      fullname: "John Doe",
+      username: 123,
+      password: "password123"
+    };
+    expect(() => {
+      validator.validatePayload(payload);
+    }).toThrow(ValidationError);
+  });
+
 });

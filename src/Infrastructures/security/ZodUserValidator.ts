@@ -1,5 +1,5 @@
 import Validator from "../../Applications/security/Validator";
-import { ValidationResult, UserPayload } from "../../Domains/entities/definitions";
+import { ValidationResult } from "../../Domains/entities/definitions";
 import { UserScheme } from "../../Domains/schemes/schemes"
 import ValidationError from "../../Common/Errors/ValidationError";
 
