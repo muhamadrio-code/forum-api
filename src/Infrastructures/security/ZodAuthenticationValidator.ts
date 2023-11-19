@@ -7,14 +7,18 @@ export default class ZodAuthenticationValidator extends Validator {
     const scheme = z.string({
       invalid_type_error: 'refresh token harus string',
       required_error: 'harus mengirimkan token refresh',
-    })
+    }).min(1, {
+      message: 'refresh token tidak boleh string kosong'
+    }).trim()
+
     const result = scheme.safeParse(payload)
 
     if (!result.success) {
       const error = result.error.issues
         .map(({ message }) => message)
-        .reduce((prev, curr) => prev + ';\n' + curr)
-      throw new ValidationError(error)
+        
+      
+      throw new ValidationError(error[0])
     }
 
     return payload
