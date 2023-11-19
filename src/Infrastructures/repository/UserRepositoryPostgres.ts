@@ -21,7 +21,7 @@ export default class UserRepositoryPostgres extends UserRepository {
     const result = await this.pool.query(query);
 
     if (result.rowCount) {
-      throw new InvariantError('username tidak ditemukan');
+      throw new InvariantError('username tidak tersedia');
     }
   }
 
@@ -42,7 +42,7 @@ export default class UserRepositoryPostgres extends UserRepository {
     }
     const { rows:[result] } = await this.pool.query(query)
 
-    if(!result) throw new InvariantError('username tidak ditemukan')
+    if(!result) throw new InvariantError('username tidak tersedia')
 
     const { id } = result
     return id as string
@@ -55,7 +55,7 @@ export default class UserRepositoryPostgres extends UserRepository {
     }
     const { rows:[result] } = await this.pool.query(query)
 
-    if(!result) throw new InvariantError('username tidak ditemukan')
+    if(!result) throw new InvariantError('username tidak tersedia')
 
     return result.registered_user
   }
@@ -67,7 +67,7 @@ export default class UserRepositoryPostgres extends UserRepository {
     }
     const { rows:[result] } = await this.pool.query(query)
 
-    if(!result) throw new InvariantError('username tidak ditemukan')
+    if(!result) throw new InvariantError('username tidak tersedia')
 
     return result.password as string
   }
