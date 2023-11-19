@@ -249,4 +249,89 @@ describe('/authentications endpoint', () => {
       expect(responseJson.message).toEqual('refresh token tidak ditemukan di database');
     });
   });
+
+  describe('DELETE /authentications, Test logout user flow', () => {
+    let testInvalidRefreshToken: string;
+    beforeAll(async () => {
+      testInvalidRefreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!)
+    })
+
+    it('should response 200 if refresh token valid', async () => {
+      // Arrange
+      const server = await createServer([ authenticationsPlugin ]);
+      const refreshToken = 'refresh_token';
+      await PostgresTestHelper.addToken(pool, refreshToken);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/authentications',
+        payload: {
+          refreshToken,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+
+    it('should response 400 if refresh token not registered in database', async () => {
+      // Arrange
+      const server = await createServer([ authenticationsPlugin ]);
+      const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!)
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/authentications',
+        payload: {
+          refreshToken,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('refresh token tidak ditemukan di database');
+    });
+
+    it('should response 400 if payload not contain refresh token', async () => {
+      // Arrange
+      const server = await createServer([ authenticationsPlugin ]);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/authentications',
+        payload: {},
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('harus mengirimkan token refresh');
+    });
+
+    it('should response 400 if refresh token not string', async () => {
+      // Arrange
+      const server = await createServer([ authenticationsPlugin ]);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/authentications',
+        payload: {
+          refreshToken: 123,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('refresh token harus string');
+    });
+  });
 })

@@ -1,4 +1,5 @@
 import AuthenticationRepository from "../../../Domains/authentications/AuthenticationRepository";
+import ZodAuthenticationValidator from "../../../Infrastructures/security/ZodAuthenticationValidator";
 import LogoutUserUseCase from "../UserLogoutUseCase";
 
 describe('LogoutUserUseCase', () => {
@@ -11,7 +12,10 @@ describe('LogoutUserUseCase', () => {
       verifyToken: jest.fn(),
       addToken: jest.fn(),
     };
-    const logoutUserUseCase = new LogoutUserUseCase(authenticationRepository);
+    const validator = {
+      validatePayload: jest.fn()
+    } 
+    const logoutUserUseCase = new LogoutUserUseCase(authenticationRepository, validator);
     // Act
     await logoutUserUseCase.execute(refreshToken);
 
@@ -27,7 +31,10 @@ describe('LogoutUserUseCase', () => {
       verifyToken: jest.fn(),
       addToken: jest.fn(),
     };
-    const logoutUserUseCase = new LogoutUserUseCase(authenticationRepository);
+    const validator = {
+      validatePayload: jest.fn()
+    } 
+    const logoutUserUseCase = new LogoutUserUseCase(authenticationRepository, validator);
 
     // Act and Assert
     await expect(logoutUserUseCase.execute(refreshToken)).rejects.toThrow("Refresh token tidak valid");
