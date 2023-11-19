@@ -41,7 +41,7 @@ describe('UserLoginUseCase', () => {
       createAccessToken: jest.fn().mockResolvedValue('accessToken'),
       createRefreshToken: jest.fn().mockResolvedValue('refreshToken'),
       decodePayload: jest.fn(),
-      varifyRefreshToken: jest.fn()
+      verifyRefreshToken: jest.fn()
     };
   })
 

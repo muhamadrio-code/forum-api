@@ -52,7 +52,7 @@ describe('HapiJwtTokenManager', () => {
 
     const refreshToken = await hapiJwtTokenManager.createRefreshToken({ id: "test_id", username: "test" });
 
-    await expect(hapiJwtTokenManager.varifyRefreshToken(refreshToken)).resolves.not.toThrow()
+    await expect(hapiJwtTokenManager.verifyRefreshToken(refreshToken)).resolves.not.toThrow()
     expect(spyDecode).toHaveBeenCalledWith(refreshToken)
     expect(spyVerify).toHaveBeenCalled()
   });
@@ -61,7 +61,7 @@ describe('HapiJwtTokenManager', () => {
     const hapiJwtTokenManager = new HapiJwtTokenManager(token)
     const spyVerify = jest.spyOn(token, 'verify')
 
-    await expect(hapiJwtTokenManager.varifyRefreshToken("refreshToken")).rejects.toThrow()
+    await expect(hapiJwtTokenManager.verifyRefreshToken("refreshToken")).rejects.toThrow()
     expect(spyVerify).not.toHaveBeenCalled()
   });
 })

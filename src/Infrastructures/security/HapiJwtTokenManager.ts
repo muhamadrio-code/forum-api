@@ -24,7 +24,7 @@ export default class HapiJwtTokenManager extends AuthenticationTokenManager {
     return this.jwt.decode(token).decoded.payload
   }
 
-  async varifyRefreshToken(refreshToken: string) {
+  async verifyRefreshToken(refreshToken: string) {
     try {
       const artifacts = this.jwt.decode(refreshToken)
       this.jwt.verify(artifacts, process.env.REFRESH_TOKEN_KEY!)
