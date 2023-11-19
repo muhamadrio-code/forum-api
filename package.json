@@ -35,7 +35,6 @@
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "tsyringe": "^4.8.0",
-    "zod": "^3.22.2",
-    "zod-validation-error": "^2.1.0"
+    "zod": "^3.22.2"
   }
 }
