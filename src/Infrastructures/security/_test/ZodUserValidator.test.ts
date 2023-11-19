@@ -62,12 +62,12 @@ describe('ZodUserValidator', () => {
     }).toThrow(ValidationError);
   });
 
-  it('should throw a ValidationError for an invalid password', () => {
+  it('should throw a ValidationError if the payload contains a password with less than minimum characters', () => {
     const validator = new ZodUserValidator();
     const payload = {
       fullname: "John Doe",
       username: "johndoe",
-      password: "pass"
+      password: "p"
     };
     expect(() => {
       validator.validatePayload(payload);

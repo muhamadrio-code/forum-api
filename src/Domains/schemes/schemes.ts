@@ -31,8 +31,8 @@ export const UserScheme = z.object({
       invalid_type_error: 'tidak dapat membuat user baru karena tipe data tidak sesuai',
       required_error: 'tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'
     })
-    .min(6, {
-      message: "tidak dapat membuat user baru karena karakter password kurang dari batas minimum 6 karakter"
+    .min(3, {
+      message: "tidak dapat membuat user baru karena karakter password kurang dari batas minimum 3 karakter"
     })
     .max(24, {
       message: "tidak dapat membuat user baru karena karakter password melebihi batas limit 24 karakter"
@@ -61,8 +61,8 @@ export const UserLoginScheme = z.object({
       invalid_type_error: 'username dan password harus string',
       required_error: 'harus mengirimkan password'
     })
-    .min(6, {
-      message: "karakter password kurang dari batas minimum 6 karakter"
+    .min(3, {
+      message: "karakter password kurang dari batas minimum 3 karakter"
     })
     .max(24, {
       message: "karakter password melebihi batas limit 24 karakter"

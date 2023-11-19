@@ -171,7 +171,7 @@ describe('/users endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('username tidak ditemukan');
+      expect(responseJson.message).toEqual('username tidak tersedia');
     });
 
     it('should response 400 when password is no longer enough', async () => {
@@ -179,7 +179,7 @@ describe('/users endpoint', () => {
       const requestPayload = {
         username: 'dicoding',
         fullname: 'Dicoding Indonesia',
-        password: 'sup',
+        password: 's',
       };
 
       const sut = usersPlugin
@@ -196,7 +196,7 @@ describe('/users endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('tidak dapat membuat user baru karena karakter password kurang dari batas minimum 6 karakter');
+      expect(responseJson.message).toEqual('tidak dapat membuat user baru karena karakter password kurang dari batas minimum 3 karakter');
     });
 
     it('should response 400 when fullname is empty', async () => {

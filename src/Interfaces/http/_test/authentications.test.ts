@@ -92,7 +92,7 @@ describe('/authentications endpoint', () => {
       expect(response.statusCode).toEqual(401);
     });
 
-    it('should throw error "username tidak ditemukan" if user not found', async () => {
+    it('should throw error "username tidak tersedia" if user not found', async () => {
       // Arrange
       const requestPayload = {
         username: 'aquama',
@@ -109,7 +109,7 @@ describe('/authentications endpoint', () => {
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('username tidak ditemukan');
+      expect(responseJson.message).toEqual('username tidak tersedia');
       expect(response.statusCode).toEqual(400);
     });
 

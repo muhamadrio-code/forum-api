@@ -39,7 +39,7 @@ describe('UserRepositoryPostgres', () => {
     await userRepository.addUser(user)
 
     // Action & Assert
-    await expect(userRepository.verifyUsernameAvailability('riopermana')).rejects.toThrow('username tidak ditemukan')
+    await expect(userRepository.verifyUsernameAvailability('riopermana')).rejects.toThrow('username tidak tersedia')
   });
 
   it('should add a user to the database when addUser is called with complete user data and return RegisterdUser', async () => {

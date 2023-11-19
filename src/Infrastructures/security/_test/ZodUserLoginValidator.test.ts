@@ -1,4 +1,3 @@
-import ValidationError from '../../../Common/Errors/ValidationError';
 import ZodUserLoginValidator from  '../ZodUserLoginValidator'
 
 describe('ZodUserLoginValidator', () => {
@@ -27,7 +26,7 @@ describe('ZodUserLoginValidator', () => {
     const validator = new ZodUserLoginValidator();
     const payload = {
       username: "j".repeat(4),
-      password: "p".repeat(6)
+      password: "p".repeat(3)
     };
     const result = validator.validatePayload(payload);
     expect(result).toEqual(payload);
@@ -68,7 +67,7 @@ describe('ZodUserLoginValidator', () => {
   it('should throw a ValidationError if the payload contains a username with less than 4 characters', () => {
     const validator = new ZodUserLoginValidator();
     const payload = {
-      username: "abc",
+      username: "a",
       password: "validPassword"
     };
     expect(() => {
@@ -76,15 +75,15 @@ describe('ZodUserLoginValidator', () => {
     }).toThrow('karakter username kurang dari batas minimum 4 karakter');
   });
 
-  it('should throw a ValidationError if the payload contains a password with less than 6 characters', () => {
+  it('should throw a ValidationError if the payload contains a password with less than 3 characters', () => {
     const validator = new ZodUserLoginValidator();
     const payload = {
       username: "validUsername",
-      password: "abc"
+      password: "a"
     };
     expect(() => {
       validator.validatePayload(payload);
-    }).toThrow('karakter password kurang dari batas minimum 6 karakter');
+    }).toThrow('karakter password kurang dari batas minimum 3 karakter');
   });
 
   it('should throw a ValidationError if payload is missing property', () => {
