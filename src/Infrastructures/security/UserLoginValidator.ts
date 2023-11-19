@@ -3,7 +3,7 @@ import { ValidationResult } from "../../Domains/entities/definitions";
 import { UserLoginScheme } from "../../Domains/schemes/schemes"
 import ValidationError from "../../Common/Errors/ValidationError";
 
-export default class UserValidator extends Validator {
+export default class ZodUserLoginValidator extends Validator {
   validatePayload<UserLoginPayload>(payload: UserLoginPayload): ValidationResult<UserLoginPayload> {
     const result = UserLoginScheme.safeParse(payload)
 
