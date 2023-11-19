@@ -45,7 +45,7 @@ export const UserLoginScheme = z.object({
   username: z
     .string({
       invalid_type_error: 'username dan password harus string',
-      required_error: 'harus mengirimkan username dan password'
+      required_error: 'harus mengirimkan username'
     })
     .min(4, {
       message: "karakter username kurang dari batas minimum 4 karakter"
@@ -59,7 +59,7 @@ export const UserLoginScheme = z.object({
   password: z
     .string({
       invalid_type_error: 'username dan password harus string',
-      required_error: 'harus mengirimkan username dan password'
+      required_error: 'harus mengirimkan password'
     })
     .min(6, {
       message: "karakter password kurang dari batas minimum 6 karakter"
@@ -67,6 +67,9 @@ export const UserLoginScheme = z.object({
     .max(24, {
       message: "karakter password melebihi batas limit 24 karakter"
     }),
+}, {
+  invalid_type_error: "Invalid payload type",
+  required_error: "harus mengirimkan username dan password"
 }).strict({
   message: 'tidak dapat login karena properti tidak sesuai'
 })
