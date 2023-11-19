@@ -2,7 +2,7 @@ import Validator from "../../Applications/security/Validator";
 import { z } from 'zod'
 import ValidationError from "../../Common/Errors/ValidationError";
 
-export default class AuthenticationValidator extends Validator {
+export default class ZodAuthenticationValidator extends Validator {
   validatePayload<String>(payload: String): Readonly<String> {
     const scheme = z.string({
       invalid_type_error: 'refresh token harus string',

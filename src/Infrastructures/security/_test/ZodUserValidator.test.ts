@@ -1,7 +1,7 @@
 import ValidationError from "../../../Common/Errors/ValidationError";
 import ZodUserValidator from "../ZodUserValidator";
 
-describe('UserValidator', () => {
+describe('ZodUserValidator', () => {
 
   it('should successfully validate a valid user payload', () => {
     const validator = new ZodUserValidator();

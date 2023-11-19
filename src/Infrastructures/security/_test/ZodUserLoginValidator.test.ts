@@ -1,9 +1,9 @@
 import ValidationError from '../../../Common/Errors/ValidationError';
-import UserLoginValidator from  '../UserLoginValidator'
+import ZodUserLoginValidator from  '../ZodUserLoginValidator'
 
-describe('UserLoginValidator', () => {
+describe('ZodUserLoginValidator', () => {
   it('should successfully validate a valid payload', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "johndoe",
       password: "password123"
@@ -13,7 +13,7 @@ describe('UserLoginValidator', () => {
   });
 
   it('should return a readonly validated payload', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "johndoe",
       password: "password123"
@@ -24,7 +24,7 @@ describe('UserLoginValidator', () => {
   });
 
   it('should handle minimum length values for username, and password', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "john",
       password: "passwwor"
@@ -34,7 +34,7 @@ describe('UserLoginValidator', () => {
   });
 
   it('should throw a ValidationError for an invalid username', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "j",
       password: "password123"
@@ -45,7 +45,7 @@ describe('UserLoginValidator', () => {
   });
 
   it('should throw a ValidationError for a very long username', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "j".repeat(1000),
       password: "password123"
@@ -56,7 +56,7 @@ describe('UserLoginValidator', () => {
   });
 
   it('should throw a ValidationError for an invalid password', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "johndoe",
       password: "pass"
@@ -67,7 +67,7 @@ describe('UserLoginValidator', () => {
   });
 
   it('should throw a ValidationError for a very long password', () => {
-    const validator = new UserLoginValidator();
+    const validator = new ZodUserLoginValidator();
     const payload = {
       username: "johndoe",
       password: "a".repeat(1000)
