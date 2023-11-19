@@ -37,7 +37,7 @@ export default class PostgresAuthenticationRepository extends AuthenticationRepo
 
     const { rowCount } = await this.pool.query(query)
     if (rowCount === 0) {
-      throw new InvariantError('refresh token tidak ditemukan');
+      throw new InvariantError('refresh token tidak ditemukan di database');
     }
   }
 }

@@ -30,7 +30,7 @@ export default class HapiJwtTokenManager extends AuthenticationTokenManager {
       this.jwt.verify(artifacts, process.env.REFRESH_TOKEN_KEY!)
     } catch (error) {
       if (error instanceof Error) {
-        throw new InvariantError(error.message)
+        throw new InvariantError('refresh token tidak valid')
       }
     }
   }

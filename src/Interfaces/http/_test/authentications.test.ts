@@ -6,10 +6,12 @@ import { authenticationsPlugin } from "../api/authentications";
 import { createServer } from "../../../Infrastructures/http/createServer";
 import { usersPlugin } from "../api/users";
 import Hapi from "@hapi/hapi";
+import { token } from "@hapi/jwt";
+import { randomUUID } from "crypto";
 
 describe('/authentications endpoint', () => {
-  describe('POST /authentications, Test user login flow', () => {
-    let server: Hapi.Server
+
+  let server: Hapi.Server
 
     beforeAll(async () => {
       registerDependenciesToContainer()
@@ -46,6 +48,7 @@ describe('/authentications endpoint', () => {
       });
     });
 
+  describe('POST /authentications, Test user login flow', () => {
     it('should successfully authenticate user and return access and refresh tokens', async () => {
       // Arrange
       const requestPayload = {
@@ -150,6 +153,100 @@ describe('/authentications endpoint', () => {
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('username dan password harus string');
     });
+  });
 
+  describe('PUT /authentications, Refresh authentication token flow', () => {
+    it('should return 200 and new access token', async () => {
+      // login user
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'aquamarine',
+          password: 'secret',
+        },
+      });
+      const { data: { refreshToken } } = JSON.parse(loginResponse.payload);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/authentications',
+        payload: {
+          refreshToken,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.accessToken).toBeDefined();
+    });
+
+    it('should return 400 payload not contain refresh token', async () => {
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/authentications',
+        payload: {},
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('harus mengirimkan token refresh');
+    });
+
+    it('should return 400 if refresh token not string', async () => {
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/authentications',
+        payload: {
+          refreshToken: 123,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('refresh token harus string');
+    });
+
+    it('should return 400 if refresh token not valid', async () => {
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/authentications',
+        payload: {
+          refreshToken: 'invalid_refresh_token',
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('refresh token tidak valid');
+    });
+
+    it('should return 400 if refresh token not registered in database', async () => {
+      const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!)
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/authentications',
+        payload: {
+          refreshToken,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('refresh token tidak ditemukan di database');
+    });
   });
 })
