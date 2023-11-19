@@ -5,7 +5,7 @@ import { container } from 'tsyringe'
 import AddUserUseCase from '../../../../Applications/use_cases/AddUserUseCase'
 import { routes } from './routes'
 
-export const registerPlugin: Hapi.Plugin<any> = {
+export const usersPlugin: Hapi.Plugin<any> = {
   name: "users",
   register: async (server) => {
     const handler = new UserHandler(container.resolve(AddUserUseCase))
