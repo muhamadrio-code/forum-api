@@ -126,7 +126,7 @@ describe('/authentications endpoint', () => {
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toEqual('harus mengirimkan username dan password');
+      expect(responseJson.message).toEqual('harus mengirimkan password');
       expect(response.statusCode).toEqual(400);
     });
 
