@@ -1,11 +1,11 @@
-import NotFoundError from "../../../Common/Errors/NotFoundError";
+import InvariantError from "../../../Common/Errors/InvariantError";
 import { RegisteredUser, User } from "../../../Domains/entities/User";
 import UserRepository from "../../../Domains/users/UserRepository";
 import { pool } from "../../database/postgres/Pool";
 import UserRepositoryPostgres from "../UserRepositoryPostgres";
 import { PostgresTestHelper } from "./helper/PostgresTestHelper";
 
-describe('UserRepository', () => {
+describe('UserRepositoryPostgres', () => {
   let userRepository: UserRepository;
 
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe('UserRepository', () => {
     await userRepository.addUser(user)
 
     // Action & Assert
-    await expect(userRepository.verifyUsernameAvailability('riopermana')).rejects.toThrow('username tidak tersedia')
+    await expect(userRepository.verifyUsernameAvailability('riopermana')).rejects.toThrow('username tidak ditemukan')
   });
 
   it('should add a user to the database when addUser is called with complete user data and return RegisterdUser', async () => {
@@ -110,7 +110,7 @@ describe('UserRepository', () => {
     await userRepository.addUser(user)
 
     // Assert
-    await expect(userRepository.getIdByUsername('username')).rejects.toThrow(NotFoundError)
+    await expect(userRepository.getIdByUsername('username')).rejects.toThrow(InvariantError)
   });
 
   it('should return RegisteredUser when getUserByUsername is called with a valid username', async () => {
@@ -135,7 +135,7 @@ describe('UserRepository', () => {
     await expect(userRepository.getUserByUsername(username)).resolves.toStrictEqual(registeredUser)
   });
 
-  it('should throw NotFoundError when getUserByUsername is called with a unregistered username', async () => {
+  it('should throw InvariantError when getUserByUsername is called with a unregistered username', async () => {
     // Arange
     const user: User = {
       id: "a",
@@ -148,7 +148,7 @@ describe('UserRepository', () => {
     await userRepository.addUser(user)
 
     // Assert
-    await expect(userRepository.getUserByUsername('username')).rejects.toThrow(NotFoundError)
+    await expect(userRepository.getUserByUsername('username')).rejects.toThrow(InvariantError)
   });
 
   it('should return password when getUserPasswordByUsername is called with a valid username', async () => {
@@ -167,7 +167,7 @@ describe('UserRepository', () => {
     await expect(userRepository.getUserPasswordByUsername('riopermana')).resolves.toBe("123456")
   });
 
-  it('should throw NotFoundError when getUserPasswordByUsername is called with a ivalid username', async () => {
+  it('should throw InvariantError when getUserPasswordByUsername is called with a ivalid username', async () => {
     // Arange
     const user: User = {
       id: "a",
@@ -180,7 +180,7 @@ describe('UserRepository', () => {
     await userRepository.addUser(user)
 
     // Assert
-    await expect(userRepository.getUserPasswordByUsername('username')).rejects.toThrow(NotFoundError)
+    await expect(userRepository.getUserPasswordByUsername('username')).rejects.toThrow(InvariantError)
   });
   
 });
