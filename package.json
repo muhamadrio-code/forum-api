@@ -11,7 +11,8 @@
     "test:clearCache": "jest --clearCache",
     "migrate": "node-pg-migrate",
     "migrate:test": "node-pg-migrate -f config/database/test.json",
-    "lint": "eslint . --ext .ts,.js --fix"
+    "lint": "eslint . --ext .ts,.js --fix",
+    "check": "npm run test && npm run lint"
   },
   "author": "",
   "license": "ISC",
