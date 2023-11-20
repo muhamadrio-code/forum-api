@@ -14,7 +14,7 @@ export default class DeleteAuthenticationUseCase {
   }
 
   async execute(refreshToken: string) {
-    this.validator.validatePayload(refreshToken)
+    this.validator.validatePayload(refreshToken);
     await this.authenticationRepository.verifyToken(refreshToken);
     await this.authenticationRepository.deleteToken(refreshToken);
   }

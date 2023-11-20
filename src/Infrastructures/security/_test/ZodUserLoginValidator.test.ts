@@ -1,4 +1,4 @@
-import ZodUserLoginValidator from  '../ZodUserLoginValidator'
+import ZodUserLoginValidator from  '../ZodUserLoginValidator';
 
 describe('ZodUserLoginValidator', () => {
   it('should successfully validate a valid payload', () => {

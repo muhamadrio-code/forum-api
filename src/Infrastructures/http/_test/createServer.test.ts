@@ -12,17 +12,17 @@ describe('HTTP server', () => {
         server.route({
           method: 'GET',
           path: '/path-test',
-          handler: (req, h) => {
+          handler: (_, h) => {
             return h.response({
               success: true,
-            }).code(200)
+            }).code(200);
           }
-        })
+        });
       },
-    }
+    };
 
     const server = await createServer([plugin]);
-    
+
     // Action
     const response = await server.inject({
       method: 'GET',
@@ -38,7 +38,7 @@ describe('HTTP server', () => {
   it('should response 404 when request unregistered route', async () => {
     // Arrange
     const server = await createServer();
-    
+
     // Action
     const response = await server.inject({
       method: 'GET',
@@ -57,15 +57,15 @@ describe('HTTP server', () => {
         server.route({
           method: 'POST',
           path: '/test-path',
-          handler: (req, h) => {
-            throw new Error()
+          handler: () => {
+            throw new Error();
           }
-        })
+        });
       },
-    }
+    };
 
     const server = await createServer([plugin]);
-    
+
     // Action
     const response = await server.inject({
       method: 'POST',
@@ -87,15 +87,15 @@ describe('HTTP server', () => {
         server.route({
           method: 'POST',
           path: '/test-path',
-          handler: (req, h) => {
-            throw new ClientError("Message from client error")
+          handler: () => {
+            throw new ClientError("Message from client error");
           }
-        })
+        });
       },
-    }
+    };
 
     const server = await createServer([plugin]);
-    
+
     // Action
     const response = await server.inject({
       method: 'POST',

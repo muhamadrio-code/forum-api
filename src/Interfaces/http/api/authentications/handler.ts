@@ -8,18 +8,18 @@ import { injectable, inject } from "tsyringe";
 
 @injectable()
 export default class AuthenticationHandler {
-  private readonly userLoginUseCase: UserLoginUseCase
-  private readonly userLogoutUseCase: UserLogoutUseCase
-  private readonly refreshAuthenticationUseCase: RefreshAuthenticationUseCase
+  private readonly userLoginUseCase: UserLoginUseCase;
+  private readonly userLogoutUseCase: UserLogoutUseCase;
+  private readonly refreshAuthenticationUseCase: RefreshAuthenticationUseCase;
 
   constructor(
     @inject("UserLoginUseCase") userLoginUseCase: UserLoginUseCase,
     @inject("UserLogoutUseCase") userLogoutUseCase: UserLogoutUseCase,
     @inject("RefreshAuthenticationUseCase") refreshAuthenticationUseCase: RefreshAuthenticationUseCase
   ) {
-    this.userLoginUseCase = userLoginUseCase
-    this.refreshAuthenticationUseCase = refreshAuthenticationUseCase
-    this.userLogoutUseCase = userLogoutUseCase
+    this.userLoginUseCase = userLoginUseCase;
+    this.refreshAuthenticationUseCase = refreshAuthenticationUseCase;
+    this.userLogoutUseCase = userLogoutUseCase;
   }
 
   postAuthenticationHandler = async (req: Request, h: ResponseToolkit) => {
@@ -33,7 +33,7 @@ export default class AuthenticationHandler {
     });
     response.code(201);
     return response;
-  }
+  };
 
   putAuthenticationHandler = async (req: Request) => {
     const { refreshToken } = req.payload as any;
@@ -45,7 +45,7 @@ export default class AuthenticationHandler {
         accessToken,
       },
     };
-  }
+  };
 
   deleteAuthenticationHandler = async (req: Request) => {
     const { refreshToken } = req.payload as any;
@@ -53,5 +53,5 @@ export default class AuthenticationHandler {
     return {
       status: 'success',
     };
-  }
+  };
 }

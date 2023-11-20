@@ -5,8 +5,8 @@ describe('PasswordHash', () => {
   let passwordHash:PasswordHash;
 
   beforeEach(() => {
-    passwordHash = new BCryptPasswordHash()
-  })
+    passwordHash = new BCryptPasswordHash();
+  });
 
   it('should return a string hash of the input password', async () => {
     const password = 'password123';

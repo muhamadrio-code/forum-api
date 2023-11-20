@@ -1,5 +1,4 @@
 import AuthenticationRepository from "../../../Domains/authentications/AuthenticationRepository";
-import ZodAuthenticationValidator from "../../../Infrastructures/security/ZodAuthenticationValidator";
 import LogoutUserUseCase from "../UserLogoutUseCase";
 
 describe('LogoutUserUseCase', () => {
@@ -14,7 +13,7 @@ describe('LogoutUserUseCase', () => {
     };
     const validator = {
       validatePayload: jest.fn()
-    } 
+    };
     const logoutUserUseCase = new LogoutUserUseCase(authenticationRepository, validator);
     // Act
     await logoutUserUseCase.execute(refreshToken);
@@ -33,7 +32,7 @@ describe('LogoutUserUseCase', () => {
     };
     const validator = {
       validatePayload: jest.fn()
-    } 
+    };
     const logoutUserUseCase = new LogoutUserUseCase(authenticationRepository, validator);
 
     // Act and Assert

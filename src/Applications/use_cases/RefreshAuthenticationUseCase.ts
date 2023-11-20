@@ -5,9 +5,9 @@ import Validator from "../security/Validator";
 
 @injectable()
 export default class RefreshAuthenticationUseCase {
-  private readonly authenticationRepository: AuthenticationRepository
-  private readonly authenticationTokenManager: AuthenticationTokenManager
-  private readonly validator: Validator
+  private readonly authenticationRepository: AuthenticationRepository;
+  private readonly authenticationTokenManager: AuthenticationTokenManager;
+  private readonly validator: Validator;
 
   constructor(
     @inject("AuthenticationRepository") authenticationRepository: AuthenticationRepository,
@@ -20,7 +20,7 @@ export default class RefreshAuthenticationUseCase {
   }
 
   async execute(refreshToken: string) {
-    this.validator.validatePayload(refreshToken)
+    this.validator.validatePayload(refreshToken);
 
     await this.authenticationTokenManager.verifyRefreshToken(refreshToken);
     await this.authenticationRepository.verifyToken(refreshToken);

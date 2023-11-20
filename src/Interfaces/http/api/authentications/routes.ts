@@ -1,6 +1,6 @@
-import Hapi from '@hapi/hapi'
-import UserHandler from './handler'
-import AuthenticationHandler from './handler'
+import Hapi from '@hapi/hapi';
+import UserHandler from './handler';
+import AuthenticationHandler from './handler';
 
 export const routes: (handler: AuthenticationHandler) => Hapi.ServerRoute[] = (handler: UserHandler) => {
   return [
@@ -19,5 +19,5 @@ export const routes: (handler: AuthenticationHandler) => Hapi.ServerRoute[] = (h
       path: '/authentications',
       handler: handler.deleteAuthenticationHandler,
     },
-  ]
-}
+  ];
+};

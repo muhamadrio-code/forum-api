@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import InvariantError from '../../Common/Errors/InvariantError';
-import AuthenticationRepository from '../../Domains/authentications/AuthenticationRepository'
+import AuthenticationRepository from '../../Domains/authentications/AuthenticationRepository';
 import Validator from '../security/Validator';
 
 @injectable()

@@ -8,12 +8,12 @@ import { registerDependenciesToContainer } from "../../../Infrastructures/lib/di
 describe('/users endpoint', () => {
   describe('POST /users, Test user registration flow', () => {
     beforeAll(() => {
-      registerDependenciesToContainer()
-    })
-    
+      registerDependenciesToContainer();
+    });
+
     afterAll(async () => {
       await pool.end();
-      container.dispose()
+      container.dispose();
     });
 
     beforeEach(async () => {
@@ -30,7 +30,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: 'Lunatic Indonesia',
       };
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -54,7 +54,7 @@ describe('/users endpoint', () => {
         password: 'secret',
       };
 
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -78,7 +78,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: ['Dicoding Indonesia'],
       };
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -102,7 +102,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: 'Dicoding Indonesia',
       };
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -127,7 +127,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: 'Dicoding Indonesia',
       };
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -154,9 +154,9 @@ describe('/users endpoint', () => {
       await PostgresTestHelper.addUser(pool, {
         id: "user-1231",
         ...requestPayload
-      })
+      });
 
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -182,7 +182,7 @@ describe('/users endpoint', () => {
         password: 's',
       };
 
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -207,7 +207,7 @@ describe('/users endpoint', () => {
         password: 'super_secret',
       };
 
-      const sut = usersPlugin
+      const sut = usersPlugin;
       const server = await createServer([sut]);
 
       // Action
@@ -224,4 +224,4 @@ describe('/users endpoint', () => {
       expect(responseJson.message).toEqual('tidak dapat membuat user baru karena karakter username kurang dari batas minimum 4 karakter');
     });
   });
-})
+});

@@ -20,7 +20,7 @@ describe('RefreshAuthenticationUseCase', () => {
       createRefreshToken: jest.fn(),
       decodePayload: jest.fn().mockResolvedValue({ username: 'test_user', id: '123' }),
       createAccessToken: jest.fn().mockResolvedValue(accessToken),
-    }
+    };
 
     const validatorMock = {
       validatePayload: jest.fn(),
@@ -38,7 +38,7 @@ describe('RefreshAuthenticationUseCase', () => {
 
       // Assert
       expect(validatorMock.validatePayload).toHaveBeenCalledWith(refreshToken);
-    })
+    });
 
     it('should verify the refreshToken format', async () => {
       // Act
@@ -46,7 +46,7 @@ describe('RefreshAuthenticationUseCase', () => {
 
       // Assert
       expect(authenticationTokenManagerMock.verifyRefreshToken).toHaveBeenCalledWith(refreshToken);
-    })
+    });
 
     it('should verify that refresh token is exist in the database', async () => {
       // Act
@@ -54,7 +54,7 @@ describe('RefreshAuthenticationUseCase', () => {
 
       // Assert
       expect(authenticationRepositoryMock.verifyToken).toHaveBeenCalledWith(refreshToken);
-    })
+    });
 
     it('should successfully return new access token', async () => {
       // Act
@@ -67,6 +67,6 @@ describe('RefreshAuthenticationUseCase', () => {
         id: '123',
       });
       expect(result).toBe(accessToken);
-    })
+    });
   });
 });

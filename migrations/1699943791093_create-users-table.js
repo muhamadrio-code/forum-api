@@ -15,9 +15,9 @@ exports.up = (pgm) => {
     password: {
       type: 'text', notNull: true
     }
-  })
+  });
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('users')
+  pgm.dropTable('users');
 };

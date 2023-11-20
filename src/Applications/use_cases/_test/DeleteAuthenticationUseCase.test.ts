@@ -28,7 +28,7 @@ describe('DeleteAuthenticationUseCase', () => {
 
       // Assert
       expect(validatorMock.validatePayload).toHaveBeenCalledWith(refreshToken);
-    })
+    });
 
     it('should verify that refresh token is exist in the database', async () => {
       // Act
@@ -36,11 +36,11 @@ describe('DeleteAuthenticationUseCase', () => {
 
       // Assert
       expect(authenticationRepositoryMock.verifyToken).toHaveBeenCalledWith(refreshToken);
-    })
-    
+    });
+
     it('should successfully delete refresh token', async () => {
       // Act & Assert
       await expect(useCase.execute(refreshToken)).resolves.not.toThrow();
-    })
+    });
   });
 });

@@ -11,13 +11,13 @@ import { randomUUID } from "crypto";
 
 describe('/authentications endpoint', () => {
 
-  let server: Hapi.Server
+  let server: Hapi.Server;
 
     beforeAll(async () => {
-      registerDependenciesToContainer()
+      registerDependenciesToContainer();
 
       server = await createServer([usersPlugin, authenticationsPlugin]);
-      await server.start()
+      await server.start();
 
       // Register new user
       await server.inject({
@@ -29,7 +29,7 @@ describe('/authentications endpoint', () => {
           fullname: 'Aquamarine Ink',
         },
       });
-    })
+    });
 
     afterAll(async () => {
       await PostgresTestHelper.truncate({
@@ -37,11 +37,11 @@ describe('/authentications endpoint', () => {
         tableName: 'users'
       });
       await pool.end();
-      await server.stop()
+      await server.stop();
     });
 
     beforeEach(async () => {
-      container.clearInstances()
+      container.clearInstances();
       await PostgresTestHelper.truncate({
         pool,
         tableName: 'authentications'
@@ -231,7 +231,7 @@ describe('/authentications endpoint', () => {
     });
 
     it('should return 400 if refresh token not registered in database', async () => {
-      const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!)
+      const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!);
 
       // Action
       const response = await server.inject({
@@ -251,11 +251,6 @@ describe('/authentications endpoint', () => {
   });
 
   describe('DELETE /authentications, Test logout user flow', () => {
-    let testInvalidRefreshToken: string;
-    beforeAll(async () => {
-      testInvalidRefreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!)
-    })
-
     it('should response 200 if refresh token valid', async () => {
       // Arrange
       const server = await createServer([ authenticationsPlugin ]);
@@ -280,7 +275,7 @@ describe('/authentications endpoint', () => {
     it('should response 400 if refresh token not registered in database', async () => {
       // Arrange
       const server = await createServer([ authenticationsPlugin ]);
-      const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!)
+      const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!);
 
       // Action
       const response = await server.inject({
@@ -334,4 +329,4 @@ describe('/authentications endpoint', () => {
       expect(responseJson.message).toEqual('refresh token harus string');
     });
   });
-})
+});

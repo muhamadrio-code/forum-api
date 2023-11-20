@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const UserScheme = z.object({
   fullname: z
@@ -39,7 +39,7 @@ export const UserScheme = z.object({
     }),
 }).strict({
   message: 'tidak dapat membuat user baru karena properti tidak sesuai'
-})
+});
 
 export const UserLoginScheme = z.object({
   username: z
@@ -72,4 +72,4 @@ export const UserLoginScheme = z.object({
   required_error: "harus mengirimkan username dan password"
 }).strict({
   message: 'tidak dapat login karena properti tidak sesuai'
-})
+});

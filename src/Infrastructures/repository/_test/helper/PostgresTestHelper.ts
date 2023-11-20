@@ -13,9 +13,9 @@ export const PostgresTestHelper = {
     const query = {
       text: "INSERT INTO authentications VALUES($1)",
       values: [token]
-    }
+    };
 
-    await pool.query(query)
+    await pool.query(query);
   },
   async addUser(
     pool: Pool,
@@ -34,7 +34,7 @@ export const PostgresTestHelper = {
     await pool.query(query);
   },
   async truncate(config: Config) {
-    const { pool, tableName } = config
+    const { pool, tableName } = config;
     await pool.query(`TRUNCATE ${tableName}`);
   },
 };
