@@ -294,9 +294,6 @@ describe('/authentications endpoint', () => {
     });
 
     it('should response 400 if payload not contain refresh token', async () => {
-      // Arrange
-      const server = await createServer([ authenticationsPlugin ]);
-
       // Action
       const response = await server.inject({
         method: 'DELETE',
@@ -311,9 +308,6 @@ describe('/authentications endpoint', () => {
     });
 
     it('should response 400 if refresh token not string', async () => {
-      // Arrange
-      const server = await createServer([ authenticationsPlugin ]);
-
       // Action
       const response = await server.inject({
         method: 'DELETE',

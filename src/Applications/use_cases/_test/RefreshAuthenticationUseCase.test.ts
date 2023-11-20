@@ -1,72 +1,89 @@
 import AuthenticationRepository from "../../../Domains/authentications/AuthenticationRepository";
 import AuthenticationTokenManager from "../../security/AuthenticationTokenManager";
+import Validator from "../../security/Validator";
 import RefreshAuthenticationUseCase from "../RefreshAuthenticationUseCase";
 
 describe('RefreshAuthenticationUseCase', () => {
 
-  describe('should successfully refresh authentication token with valid refresh token', () => {
-    // Arrange
-    const refreshToken = 'valid_refresh_token';
-    const accessToken = 'new_access_token';
+  // Arrange
+  const payload = 'valid_refresh_token';
+  const accessToken = 'new_access_token';
 
-    const authenticationRepositoryMock: jest.Mocked<AuthenticationRepository> = {
+  let authenticationRepositoryMock: jest.Mocked<AuthenticationRepository>;
+  let authenticationTokenManagerMock: jest.Mocked<AuthenticationTokenManager>;
+  let validatorMock: jest.Mocked<Validator>;
+  let useCase: RefreshAuthenticationUseCase;
+
+  beforeEach(async () => {
+    authenticationRepositoryMock = {
       verifyToken: jest.fn(),
       addToken: jest.fn(),
       deleteToken: jest.fn(),
     };
 
-    const authenticationTokenManagerMock: jest.Mocked<AuthenticationTokenManager> = {
+    authenticationTokenManagerMock = {
       verifyRefreshToken: jest.fn(),
       createRefreshToken: jest.fn(),
       decodePayload: jest.fn().mockResolvedValue({ username: 'test_user', id: '123' }),
       createAccessToken: jest.fn().mockResolvedValue(accessToken),
     };
 
-    const validatorMock = {
+    validatorMock = {
       validatePayload: jest.fn(),
     };
 
-    const useCase = new RefreshAuthenticationUseCase(
+    useCase = new RefreshAuthenticationUseCase(
       authenticationRepositoryMock,
       authenticationTokenManagerMock,
       validatorMock
     );
+  });
 
-    it('should validate the payload schema before proceeding', async () => {
-      // Act
-      await useCase.execute(refreshToken);
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-      // Assert
-      expect(validatorMock.validatePayload).toHaveBeenCalledWith(refreshToken);
+  it('should validate the payload schema before proceeding', async () => {
+    // Act
+    await useCase.execute(payload);
+
+    // Assert
+    expect(validatorMock.validatePayload).toHaveBeenCalledWith(payload);
+  });
+
+  it('should verify the token format', async () => {
+    // Act
+    await useCase.execute(payload);
+
+    // Assert
+    expect(authenticationTokenManagerMock.verifyRefreshToken).toHaveBeenCalledWith(payload);
+  });
+
+  it('should verify that refresh token is exist in the database', async () => {
+    // Act
+    await useCase.execute(payload);
+
+    // Assert
+    expect(authenticationRepositoryMock.verifyToken).toHaveBeenCalledWith(payload);
+  });
+
+  it('should successfully decode the payload before proceeding', async () => {
+    // Act
+    await useCase.execute(payload);
+
+    // Assert
+    expect(authenticationTokenManagerMock.decodePayload).toHaveBeenCalledWith(payload);
+  });
+
+  it('should successfully return new access token', async () => {
+    // Act
+    const result = await useCase.execute(payload);
+
+    // Assert
+    expect(authenticationTokenManagerMock.createAccessToken).toHaveBeenCalledWith({
+      username: 'test_user',
+      id: '123',
     });
-
-    it('should verify the refreshToken format', async () => {
-      // Act
-      await useCase.execute(refreshToken);
-
-      // Assert
-      expect(authenticationTokenManagerMock.verifyRefreshToken).toHaveBeenCalledWith(refreshToken);
-    });
-
-    it('should verify that refresh token is exist in the database', async () => {
-      // Act
-      await useCase.execute(refreshToken);
-
-      // Assert
-      expect(authenticationRepositoryMock.verifyToken).toHaveBeenCalledWith(refreshToken);
-    });
-
-    it('should successfully return new access token', async () => {
-      // Act
-      const result = await useCase.execute(refreshToken);
-
-      // Assert
-      expect(authenticationTokenManagerMock.decodePayload).toHaveBeenCalledWith(refreshToken);
-      expect(authenticationTokenManagerMock.createAccessToken).toHaveBeenCalledWith({
-        username: 'test_user',
-        id: '123',
-      });
-      expect(result).toBe(accessToken);
-    });
+    expect(result).toBe(accessToken);
   });
 });

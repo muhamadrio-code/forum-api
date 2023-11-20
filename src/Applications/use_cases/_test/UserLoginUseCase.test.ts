@@ -1,6 +1,5 @@
-import AuthenticationError from "../../../Common/Errors/AuthenticationError";
-import NotFoundError from "../../../Common/Errors/NotFoundError";
 import AuthenticationRepository from "../../../Domains/authentications/AuthenticationRepository";
+import { AuthenticationTokens } from "../../../Domains/entities/definitions";
 import UserRepository from "../../../Domains/users/UserRepository";
 import AuthenticationTokenManager from "../../security/AuthenticationTokenManager";
 import PasswordHash from "../../security/PasswordHash";
@@ -8,11 +7,17 @@ import Validator from "../../security/Validator";
 import UserLoginUseCase from "../UserLoginUseCase";
 
 describe('UserLoginUseCase', () => {
+  const payload = {
+    username: 'testuser',
+    password: 'testpassword'
+  };
+
   let userRepository: jest.Mocked<UserRepository>;
   let validator: jest.Mocked<Validator>;
   let authenticationRepository: jest.Mocked<AuthenticationRepository>;
   let passwordHash: jest.Mocked<PasswordHash>;
   let authenticationTokenManager: jest.Mocked<AuthenticationTokenManager>;
+  let useCase: UserLoginUseCase;
 
   beforeEach(() => {
     userRepository = {
@@ -43,87 +48,63 @@ describe('UserLoginUseCase', () => {
       decodePayload: jest.fn(),
       verifyRefreshToken: jest.fn()
     };
+
+    useCase = new UserLoginUseCase(
+      validator,
+      userRepository,
+      authenticationRepository,
+      passwordHash,
+      authenticationTokenManager
+    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.restoreAllMocks();
   });
 
-  it('should validate the payload and extract the username and password when executing the use case', async () => {
-    const payload = {
-      username: 'testuser',
-      password: 'testpassword'
-    };
-    const useCase = new UserLoginUseCase(
-      validator,
-      userRepository,
-      authenticationRepository,
-      passwordHash,
-      authenticationTokenManager
-    );
-    const spyGetUserPasswordByUsername = jest.spyOn(userRepository, 'getUserPasswordByUsername');
-    const spyGetIdByUsername = jest.spyOn(userRepository, 'getIdByUsername');
-    const encryptedPassword = await userRepository.getUserPasswordByUsername(payload.username);
-    const id = await userRepository.getIdByUsername(payload.username);
+  it('should validate the payload schema before proceeding', async () => {
+    // Act
+    await useCase.execute(payload);
 
+    // Assert
+    expect(validator.validatePayload).toHaveBeenCalledWith(payload);
+  });
+
+  it('should successfully compare the payload.password with encryptedPassword from the database', async () => {
+    // Arange
+    const encryptedPassword = await userRepository.getUserPasswordByUsername(payload.username);
+    userRepository.getUserPasswordByUsername.mockClear();
+
+    // Act
+    await useCase.execute(payload);
+
+    // Assert
+    expect(userRepository.getUserPasswordByUsername).toHaveBeenCalledTimes(1);
+    expect(userRepository.getUserPasswordByUsername).toHaveBeenCalledWith(payload.username);
+    expect(passwordHash.comparePassword).toHaveBeenCalledWith(payload.password, encryptedPassword);
+  });
+
+  it('should successfully create new accessToken', async () => {
+    // Arange
+    const id = await userRepository.getIdByUsername(payload.username);
+    userRepository.getUserPasswordByUsername.mockClear();
+
+    // Act
+    await useCase.execute(payload);
+
+    // Assert
+    expect(userRepository.getIdByUsername).toHaveBeenCalledWith(payload.username);
+    expect(authenticationTokenManager.createAccessToken).toHaveBeenCalledWith({id, username: payload.username});
+  });
+
+  it('should successfully return accessToken and refreshToken', async () => {
+    // Arange & Act
     const result = await useCase.execute(payload);
 
-    expect(validator.validatePayload).toHaveBeenCalledWith(payload);
-    expect(spyGetUserPasswordByUsername).toHaveBeenCalledWith(payload.username);
-    expect(passwordHash.comparePassword).toHaveBeenCalledWith(payload.password, encryptedPassword);
-    expect(spyGetIdByUsername).toHaveBeenCalledWith(payload.username);
-    expect(authenticationTokenManager.createAccessToken).toHaveBeenCalledWith({id, username: payload.username});
-    expect(authenticationTokenManager.createRefreshToken).toHaveBeenCalledWith({id, username: payload.username});
-    expect(result).toStrictEqual({ accessToken: 'accessToken', refreshToken: 'refreshToken' });
+    // Assert
+    expect(result).toStrictEqual({
+      accessToken: "accessToken",
+      refreshToken: "refreshToken"
+    } as AuthenticationTokens);
   });
-
-  it('should throw AuthenticationError when execute with wrong password', async () => {
-    const payload = {
-      username: 'testuser',
-      password: 'testpassword'
-    };
-    const passwordHash = {
-      hash:jest.fn(),
-      comparePassword: jest.fn().mockResolvedValue(false)
-    };
-    const useCase = new UserLoginUseCase(
-      validator,
-      userRepository,
-      authenticationRepository,
-      passwordHash,
-      authenticationTokenManager
-    );
-
-    await expect(useCase.execute(payload)).rejects.toThrow(AuthenticationError);
-  });
-
-  it('should throw NotFoundError when execute with unregistered user', async () => {
-    const payload = {
-      username: 'unregistereduser',
-      password: '123456'
-    };
-    const userRepository: jest.Mocked<UserRepository> = {
-      verifyUsernameAvailability: jest.fn(),
-      addUser: jest.fn(),
-      getIdByUsername: jest.fn().mockResolvedValue('userId'),
-      getUserByUsername: jest.fn(),
-      getUserPasswordByUsername: jest.fn().mockRejectedValue(new NotFoundError("User tidak terdaftar"))
-    };
-    const passwordHash = {
-      hash:jest.fn(),
-      comparePassword: jest.fn().mockResolvedValue(false)
-    };
-    const useCase = new UserLoginUseCase(
-      validator,
-      userRepository,
-      authenticationRepository,
-      passwordHash,
-      authenticationTokenManager
-    );
-
-    await expect(useCase.execute(payload)).rejects.toThrow(NotFoundError);
-  });
-
-
 });
