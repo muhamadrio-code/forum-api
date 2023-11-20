@@ -1,5 +1,5 @@
-import Hapi from '@hapi/hapi'
-import UserHandler from './handler'
+import Hapi from '@hapi/hapi';
+import UserHandler from './handler';
 
 export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: UserHandler) => {
   return [
@@ -8,5 +8,5 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Us
       path: '/users',
       handler: handler.postUserhandler
     }
-  ]
-}
+  ];
+};

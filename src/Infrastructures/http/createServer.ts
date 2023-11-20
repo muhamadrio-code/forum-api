@@ -9,18 +9,18 @@ export async function createServer(plugins?: Plugin<any>[]) {
   });
 
   if(plugins) {
-    await server.register(plugins)
+    await server.register(plugins);
   }
 
   server.ext('onPreResponse', (req, h) => {
-    const { response } = req
+    const { response } = req;
 
     if(response instanceof Error) {
       if(response instanceof ClientError) {
         return h.response({
           status: 'fail',
           message: response.message
-        }).code(response.statusCode)
+        }).code(response.statusCode);
       }
 
       if (!response.isServer) {
@@ -35,9 +35,9 @@ export async function createServer(plugins?: Plugin<any>[]) {
       return newResponse;
     }
 
-    return h.continue
-  })
+    return h.continue;
+  });
 
-  return server
+  return server;
 }
 

@@ -1,11 +1,11 @@
 import Validator from "../../Applications/security/Validator";
 import { ValidationResult } from "../../Domains/entities/definitions";
-import { UserScheme } from "../../Domains/schemes/schemes";
+import { UserLoginScheme } from "../../Domains/schemes/schemes";
 import ValidationError from "../../Common/Errors/ValidationError";
 
-export default class ZodUserValidator extends Validator {
-  validatePayload<UserPayload>(payload: UserPayload): ValidationResult<UserPayload> {
-    const result = UserScheme.safeParse(payload);
+export default class ZodUserLoginValidator extends Validator {
+  validatePayload<UserLoginPayload>(payload: UserLoginPayload): ValidationResult<UserLoginPayload> {
+    const result = UserLoginScheme.safeParse(payload);
 
     if (!result.success) {
       const error = result.error.issues

@@ -6,10 +6,10 @@ import UserRepository from "../../../Domains/users/UserRepository";
 import PasswordHash from "../../security/PasswordHash";
 
 describe('AddUserUseCase', () => {
-  let userRepositoryMock: jest.Mocked<UserRepository>
-  let validatorMock: jest.Mocked<ZodUserValidator>
-  let passwordHashMock: jest.Mocked<PasswordHash>
-  let addUserUseCase: AddUserUseCase
+  let userRepositoryMock: jest.Mocked<UserRepository>;
+  let validatorMock: jest.Mocked<ZodUserValidator>;
+  let passwordHashMock: jest.Mocked<PasswordHash>;
+  let addUserUseCase: AddUserUseCase;
 
   beforeEach(() => {
     userRepositoryMock = {
@@ -22,23 +22,23 @@ describe('AddUserUseCase', () => {
 
     validatorMock = {
       validatePayload: jest.fn().mockImplementation((arg: string) => {
-        return new ZodUserValidator().validatePayload(arg)
+        return new ZodUserValidator().validatePayload(arg);
       }),
     };
-  
+
     passwordHashMock = {
-      hash: jest.fn().mockImplementation((arg: string) => {
-        return 'hashedpassword'
+      hash: jest.fn().mockImplementation(() => {
+        return 'hashedpassword';
       }),
       comparePassword: jest.fn(),
     };
 
-    addUserUseCase = new AddUserUseCase(userRepositoryMock, validatorMock, passwordHashMock)
-  })
+    addUserUseCase = new AddUserUseCase(userRepositoryMock, validatorMock, passwordHashMock);
+  });
 
   it('should validate the payload and return a registered user when the payload is valid', async () => {
     // Arrange
-    const payload: UserPayload = { fullname: 'John Doe', username: 'johndoe', password: 'password' }
+    const payload: UserPayload = { fullname: 'John Doe', username: 'johndoe', password: 'password' };
 
     // Act
     await addUserUseCase.execute(payload);
@@ -47,16 +47,16 @@ describe('AddUserUseCase', () => {
     expect(validatorMock.validatePayload)
       .toHaveBeenCalledWith({ fullname: 'John Doe', username: 'johndoe', password: 'password' });
     expect(passwordHashMock.hash).toHaveBeenCalledWith('password');
-    expect(userRepositoryMock.addUser).toHaveBeenCalledTimes(1)
+    expect(userRepositoryMock.addUser).toHaveBeenCalledTimes(1);
     expect(userRepositoryMock.addUser)
-    .toHaveBeenCalledWith({ id: expect.any(String), fullname: 'John Doe', username: 'johndoe', password: 'hashedpassword' })
+    .toHaveBeenCalledWith({ id: expect.any(String), fullname: 'John Doe', username: 'johndoe', password: 'hashedpassword' });
   });
 
   it('should throw a ValidationError when the payload is not valid', async () => {
     // Arrange
-    const payload: UserPayload = { fullname: 'John Doe', username: '', password: '' }
+    const payload: UserPayload = { fullname: 'John Doe', username: '', password: '' };
 
     //Act & Assert
-    await expect(addUserUseCase.execute(payload)).rejects.toThrow(ValidationError)
+    await expect(addUserUseCase.execute(payload)).rejects.toThrow(ValidationError);
   });
 });

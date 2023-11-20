@@ -8,30 +8,30 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export default class AddUserUseCase {
-  private readonly userRepository: UserRepository
-  private readonly validator: Validator
-  private readonly passwordHash: PasswordHash
+  private readonly userRepository: UserRepository;
+  private readonly validator: Validator;
+  private readonly passwordHash: PasswordHash;
 
   constructor(
     @inject("UserRepository") userRepository: UserRepository,
     @inject("UserValidator") validator: Validator,
     @inject("PasswordHash") passwordHash: PasswordHash
   ) {
-    this.userRepository = userRepository
-    this.validator = validator
-    this.passwordHash = passwordHash
+    this.userRepository = userRepository;
+    this.validator = validator;
+    this.passwordHash = passwordHash;
   }
 
   async execute(payload: UserPayload) {
-    const result = this.validator.validatePayload(payload)
-    await this.userRepository.verifyUsernameAvailability(result.username)
-    
-    const id = randomUUID()
-    const hashedPassword = await this.passwordHash.hash(result.password)
+    const result = this.validator.validatePayload(payload);
+    await this.userRepository.verifyUsernameAvailability(result.username);
+
+    const id = randomUUID();
+    const hashedPassword = await this.passwordHash.hash(result.password);
     return await this.userRepository.addUser({
       id,
       ...result,
       password: hashedPassword,
-    })
+    });
   }
 }

@@ -1,4 +1,4 @@
-import AuthenticationError from '../AuthenticationError'
+import AuthenticationError from '../AuthenticationError';
 import ClientError from '../ClientError';
 
 describe('AuthenticationError', () => {

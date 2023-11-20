@@ -1,36 +1,35 @@
-require('dotenv').config()
 import { HapiJwt } from "@hapi/jwt";
 import AuthenticationTokenManager from "../../Applications/security/AuthenticationTokenManager";
 import InvariantError from "../../Common/Errors/InvariantError";
-import { AuthenticationPayload, UserLoginPayload } from "../../Domains/entities/definitions";
+import { AuthenticationPayload } from "../../Domains/entities/definitions";
 
 export default class HapiJwtTokenManager extends AuthenticationTokenManager {
-  private readonly jwt: HapiJwt.Token
+  private readonly jwt: HapiJwt.Token;
 
   constructor(jwt: HapiJwt.Token) {
-    super()
-    this.jwt = jwt
+    super();
+    this.jwt = jwt;
   }
 
- async createAccessToken(payload: AuthenticationPayload): Promise<string> {
-    return this.jwt.generate(payload, process.env.ACCESS_TOKEN_KEY!)
- }
+  async createAccessToken(payload: AuthenticationPayload): Promise<string> {
+    return this.jwt.generate(payload, process.env.ACCESS_TOKEN_KEY!);
+  }
 
-  async createRefreshToken(payload: AuthenticationPayload): Promise<string>  {
-    return this.jwt.generate(payload, process.env.REFRESH_TOKEN_KEY!)
+  async createRefreshToken(payload: AuthenticationPayload): Promise<string> {
+    return this.jwt.generate(payload, process.env.REFRESH_TOKEN_KEY!);
   }
 
   async decodePayload(token: string): Promise<AuthenticationPayload> {
-    return this.jwt.decode(token).decoded.payload
+    return this.jwt.decode(token).decoded.payload;
   }
 
-  async varifyRefreshToken(refreshToken: string) {
+  async verifyRefreshToken(refreshToken: string) {
     try {
-      const artifacts = this.jwt.decode(refreshToken)
-      this.jwt.verify(artifacts, process.env.REFRESH_TOKEN_KEY!)
+      const artifacts = this.jwt.decode(refreshToken);
+      this.jwt.verify(artifacts, process.env.REFRESH_TOKEN_KEY!);
     } catch (error) {
-      if(error instanceof Error){
-        throw new InvariantError(error.message)
+      if (error instanceof Error) {
+        throw new InvariantError('refresh token tidak valid');
       }
     }
   }
