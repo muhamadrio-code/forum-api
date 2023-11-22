@@ -1,6 +1,6 @@
 import Validator from "../../Applications/security/Validator";
 import { ValidationResult } from "../../Domains/entities/definitions";
-import { UserScheme } from "../../Domains/schemes/schemes";
+import { UserScheme } from "../../Domains/users/schemes";
 import ValidationError from "../../Common/Errors/ValidationError";
 
 export default class ZodUserValidator extends Validator {

@@ -8,6 +8,8 @@ import { token } from "@hapi/jwt";
 import PostgresAuthenticationRepository from "../repository/PostgresAuthenticationRepository";
 import ZodAuthenticationValidator from "../security/ZodAuthenticationValidator";
 import ZodUserLoginValidator from "../security/ZodUserLoginValidator";
+import ZodThreadValidator from "../security/ZodThreadValidator";
+import ThreadRepositoryPostgres from "../repository/ThreadRepositoryPostgres";
 
 export function registerDependenciesToContainer() {
   // Repository
@@ -19,11 +21,16 @@ export function registerDependenciesToContainer() {
     "AuthenticationRepository",
     { useFactory: instanceCachingFactory(() => new PostgresAuthenticationRepository(pool)) }
   );
+  container.register(
+    "ThreadRepository",
+    { useFactory: instanceCachingFactory(() => new ThreadRepositoryPostgres(pool)) }
+  );
 
   // Validator
   container.register("UserValidator", { useClass: ZodUserValidator });
   container.register("UserLoginValidator", { useClass: ZodUserLoginValidator });
   container.register("AuthenticationValidator", { useClass: ZodAuthenticationValidator });
+  container.register("ThreadValidator", { useClass: ZodThreadValidator });
 
   // PasswordHash
   container.register("PasswordHash", { useClass: BCryptPasswordHash });

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { Pool } from "pg";
 
-type TableName = 'users' | 'authentications'
+type TableName = 'users' | 'authentications' | 'threads'
 
 type Config = {
   pool: Pool,

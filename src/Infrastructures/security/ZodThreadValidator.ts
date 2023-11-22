@@ -1,11 +1,11 @@
 import Validator from "../../Applications/security/Validator";
 import { ValidationResult } from "../../Domains/entities/definitions";
-import { UserLoginScheme } from "../../Domains/users/schemes";
 import ValidationError from "../../Common/Errors/ValidationError";
+import { ThreadScheme } from "../../Domains/threads/schemes";
 
-export default class ZodUserLoginValidator extends Validator {
-  validatePayload<UserLoginPayload>(payload: UserLoginPayload): ValidationResult<UserLoginPayload> {
-    const result = UserLoginScheme.safeParse(payload);
+export default class ZodThreadValidator extends Validator {
+  validatePayload<TPayload>(payload: TPayload): ValidationResult<TPayload> {
+    const result = ThreadScheme.safeParse(payload);
 
     if (!result.success) {
       const error = result.error.issues
