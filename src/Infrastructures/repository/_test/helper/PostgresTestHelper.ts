@@ -1,11 +1,12 @@
 /* istanbul ignore file */
-import { Pool } from "pg";
+import { Pool, QueryResult } from "pg";
+import { CommentEntity } from "../../../../Domains/entities/Comment";
 
-type TableName = 'users' | 'authentications' | 'threads'
+type TableName = string | 'users' | 'authentications' | 'threads' | 'thread_comments'
 
 type Config = {
   pool: Pool,
-  tableName: TableName
+  tableName: TableName,
 }
 
 export const PostgresTestHelper = {
@@ -33,8 +34,17 @@ export const PostgresTestHelper = {
 
     await pool.query(query);
   },
+  async getCommentById(pool: Pool, id:string) {
+    const query = {
+      text: "SELECT * FROM thread_comments WHERE id=$1",
+      values: [id]
+    };
+
+    const { rows }: QueryResult<CommentEntity> = await pool.query(query);
+    return rows[0];
+  },
   async truncate(config: Config) {
     const { pool, tableName } = config;
-    await pool.query(`TRUNCATE ${tableName}`);
+    await pool.query(`TRUNCATE ${tableName} CASCADE`);
   },
 };

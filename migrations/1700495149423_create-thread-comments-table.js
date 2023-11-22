@@ -9,7 +9,7 @@ exports.up = (pgm) => {
       notNull: true,
       primaryKey: true
     },
-    username: {
+    thread_id: {
       type: 'TEXT',
       notNull: true,
     },
@@ -17,12 +17,26 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
+    username: {
+      type: 'TEXT',
+      notNull: true,
+    },
+    is_delete: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false
+    },
     date: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
   });
+  pgm.addConstraint(
+    'thread_comments',
+    'fk_thread_comments.id_constraint',
+    'FOREIGN KEY(thread_id) REFERENCES threads(id) ON DELETE CASCADE'
+  );
 };
 
 exports.down = (pgm) => {
