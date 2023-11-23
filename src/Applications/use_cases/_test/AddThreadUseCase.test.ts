@@ -11,7 +11,8 @@ describe('AddThreadUseCase', () => {
     // Arrange
     threadRepositoryMock = {
       addThread: jest.fn(),
-      getThreadById: jest.fn()
+      getThreadById: jest.fn(),
+      verifyThreadAvaibility: jest.fn()
     };
 
     validatorMock = {

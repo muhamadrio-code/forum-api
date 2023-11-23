@@ -10,6 +10,8 @@ import ZodAuthenticationValidator from "../security/ZodAuthenticationValidator";
 import ZodUserLoginValidator from "../security/ZodUserLoginValidator";
 import ZodThreadValidator from "../security/ZodThreadValidator";
 import ThreadRepositoryPostgres from "../repository/ThreadRepositoryPostgres";
+import ZodThreadCommentValidator from "../security/ZodThreadCommentValidator";
+import ThreadCommentRepositoryPostgres from "../repository/ThreadCommentRepositoryPostgres";
 
 export function registerDependenciesToContainer() {
   // Repository
@@ -25,12 +27,17 @@ export function registerDependenciesToContainer() {
     "ThreadRepository",
     { useFactory: instanceCachingFactory(() => new ThreadRepositoryPostgres(pool)) }
   );
+  container.register(
+    "ThreadCommentsRepository",
+    { useFactory: instanceCachingFactory(() => new ThreadCommentRepositoryPostgres(pool)) }
+  );
 
   // Validator
   container.register("UserValidator", { useClass: ZodUserValidator });
   container.register("UserLoginValidator", { useClass: ZodUserLoginValidator });
   container.register("AuthenticationValidator", { useClass: ZodAuthenticationValidator });
   container.register("ThreadValidator", { useClass: ZodThreadValidator });
+  container.register("CommentValidator", { useClass: ZodThreadCommentValidator });
 
   // PasswordHash
   container.register("PasswordHash", { useClass: BCryptPasswordHash });

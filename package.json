@@ -12,7 +12,7 @@
     "migrate": "node-pg-migrate",
     "migrate:test": "node-pg-migrate -f config/database/test.json",
     "lint": "eslint . --ext .ts,.js --fix",
-    "check": "npm run test && npm run lint"
+    "check": "npm run lint && npm run test"
   },
   "author": "",
   "license": "ISC",

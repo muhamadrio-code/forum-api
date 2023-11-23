@@ -14,7 +14,7 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
   async addThread(thread: Thread) {
     const { id, title, body, username } = thread;
     const query: QueryConfig = {
-      text: "INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, username",
+      text: "INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, username as owner",
       values: [id, title, body, username]
     };
 

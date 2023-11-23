@@ -19,7 +19,7 @@ export default class ThreadHandler {
   postThreadhandler = async (req: Request, h: ResponseToolkit) => {
     const { username } = req.auth.credentials;
     const { title, body }: ThreadPayload = req.payload as any;
-    const { id, title: threadTitle, username: owner } = await this.addThreadUseCase.execute({
+    const { id, title: threadTitle, owner } = await this.addThreadUseCase.execute({
       title, body, username: username as string,
     });
     return h.response({

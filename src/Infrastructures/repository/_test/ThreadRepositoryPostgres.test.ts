@@ -15,7 +15,7 @@ describe("ThreadRepositoryPostgres", () => {
     });
   });
 
-  it('should return ThreadSimple object after calling addThread', async () => {
+  it('should return AddedThread object after calling addThread', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
@@ -34,7 +34,7 @@ describe("ThreadRepositoryPostgres", () => {
     expect(result).toStrictEqual({
       id: '1',
       title: 'Test Thread',
-      username: 'testuser'
+      owner: 'testuser'
     });
   });
 

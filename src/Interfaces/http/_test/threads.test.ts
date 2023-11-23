@@ -3,7 +3,7 @@ import { createServer } from '../../../Infrastructures/http/createServer';
 import { threadsPlugin } from '../api/threads';
 import { registerDependenciesToContainer } from '../../../Infrastructures/lib/di';
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
-import { ThreadSimple } from '../../../Domains/entities/Thread';
+import { AddedThread } from '../../../Domains/entities/Thread';
 import { authenticationsPlugin } from '../api/authentications';
 import { Server } from '@hapi/hapi';
 
@@ -50,7 +50,7 @@ describe("Threads", () => {
       const responseJSON: {
         status: string,
         data: {
-          addedThread: ThreadSimple
+          addedThread: AddedThread
         }
       } = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(201);

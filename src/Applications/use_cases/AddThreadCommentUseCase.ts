@@ -16,12 +16,12 @@ export default class AddThreadCommentUseCase {
 
   constructor(
     @inject("ThreadCommentsRepository") threadCommentsRepository: ThreadCommentsRepository,
-    @inject("UsersRepository") usersRepository: UserRepository,
+    @inject("UserRepository") userRepository: UserRepository,
     @inject("ThreadRepository") threadRepository: ThreadRepository,
-    @inject("ThreadValidator") validator: Validator
+    @inject("CommentValidator") validator: Validator
   ){
     this.threadCommentsRepository = threadCommentsRepository;
-    this.usersRepository = usersRepository;
+    this.usersRepository = userRepository;
     this.threadRepository = threadRepository;
     this.validator = validator;
   }
