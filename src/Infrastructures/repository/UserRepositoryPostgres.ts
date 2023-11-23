@@ -1,4 +1,4 @@
-import { Pool, QueryConfig } from "pg";
+import { Pool, QueryConfig, QueryResult } from "pg";
 import { User,RegisteredUser } from "../../Domains/entities/User";
 import UserRepository from "../../Domains/users/UserRepository";
 import InvariantError from "../../Common/Errors/InvariantError";
@@ -29,9 +29,9 @@ export default class UserRepositoryPostgres extends UserRepository {
       text: "INSERT INTO users VALUES($1, $2, $3, $4) RETURNING id, fullname, username",
       values: [id, fullname, username, password]
     };
-    const { rows } = await this.pool.query(query);
+    const { rows:[result] }: QueryResult<RegisteredUser> = await this.pool.query(query);
 
-    return { ...rows[0] } as RegisteredUser;
+    return result;
   }
 
   async getIdByUsername(username: string) {
@@ -39,12 +39,11 @@ export default class UserRepositoryPostgres extends UserRepository {
       text: "SELECT id FROM users WHERE username=$1",
       values: [username]
     };
-    const { rows:[result] } = await this.pool.query(query);
+    const { rows:[result] }: QueryResult<{id: string}> = await this.pool.query(query);
 
     if(!result) throw new InvariantError('username tidak tersedia');
 
-    const { id } = result;
-    return id as string;
+    return result.id;
   }
 
   async getUserByUsername(username: string) {
@@ -52,7 +51,7 @@ export default class UserRepositoryPostgres extends UserRepository {
       text: "SELECT to_json(users.*)::jsonb - 'password' AS registered_user FROM users WHERE username=$1",
       values: [username]
     };
-    const { rows:[result] } = await this.pool.query(query);
+    const { rows:[result] }: QueryResult<{ registered_user: RegisteredUser }> = await this.pool.query(query);
 
     if(!result) throw new InvariantError('username tidak tersedia');
 
@@ -64,10 +63,10 @@ export default class UserRepositoryPostgres extends UserRepository {
       text: "SELECT password FROM users WHERE username=$1",
       values: [username]
     };
-    const { rows:[result] } = await this.pool.query(query);
+    const { rows:[result] }: QueryResult<{password: string}> = await this.pool.query(query);
 
     if(!result) throw new InvariantError('username tidak tersedia');
 
-    return result.password as string;
+    return result.password;
   }
 }
