@@ -7,9 +7,8 @@ export default class ZodThreadCommentValidator extends Validator {
 
     if (!result.success) {
       const error = result.error.issues
-        .map(({ message }) => message)
-        .reduce((prev, curr) => prev + ';\n' + curr);
-      throw new ValidationError(error);
+        .map(({ message }) => message);
+      throw new ValidationError(error[0]);
     }
 
     return payload;
