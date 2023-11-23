@@ -1,7 +1,7 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
 import { Thread, ThreadEntity, AddedThread } from "../../Domains/entities/Thread";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
-import InvariantError from "../../Common/Errors/InvariantError";
+import NotFoundError from "../../Common/Errors/NotFoundError";
 
 export default class ThreadRepositoryPostgres extends ThreadRepository {
   private readonly pool: Pool;
@@ -41,7 +41,7 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
     const { rowCount } = await this.pool.query(query);
 
     if (!rowCount) {
-      throw new InvariantError('thread tidak ditemukan');
+      throw new NotFoundError('thread tidak ditemukan');
     }
   }
 }
