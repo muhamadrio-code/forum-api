@@ -1,6 +1,7 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
-import { Thread, ThreadEntity, ThreadSimple } from "../../Domains/entities/Thread";
+import { Thread, ThreadEntity, AddedThread } from "../../Domains/entities/Thread";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
+import InvariantError from "../../Common/Errors/InvariantError";
 
 export default class ThreadRepositoryPostgres extends ThreadRepository {
   private readonly pool: Pool;
@@ -17,7 +18,7 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
       values: [id, title, body, username]
     };
 
-    const { rows }: QueryResult<ThreadSimple> = await this.pool.query(query);
+    const { rows }: QueryResult<AddedThread> = await this.pool.query(query);
     return rows[0];
   }
 
@@ -29,5 +30,18 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
 
     const { rows }: QueryResult<ThreadEntity> = await this.pool.query(query);
     return rows[0];
+  }
+
+  async verifyThreadAvaibility(id: string) {
+    const query = {
+      text: 'SELECT * FROM threads WHERE id = $1',
+      values: [id],
+    };
+
+    const { rowCount } = await this.pool.query(query);
+
+    if (!rowCount) {
+      throw new InvariantError('thread tidak ditemukan');
+    }
   }
 }

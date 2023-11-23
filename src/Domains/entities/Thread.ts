@@ -6,7 +6,7 @@ export type Thread = {
 }
 
 export type ThreadEntity = Thread & { readonly date: string }
-
+export type AddedThread = Omit<Thread, 'username' | 'body'> & { owner: string }
 export type ThreadDetails = {
   readonly id: string,
   readonly title: string,
@@ -16,7 +16,6 @@ export type ThreadDetails = {
   readonly comments: ThreadComment[]
 }
 
-export type ThreadSimple = Pick<Thread, 'id' | 'title' | 'username'>
 export type ThreadPayload = Pick<Thread, 'title' | 'body'>
 export type AddThreadPayload = ThreadPayload & Pick<Thread, 'username'>
 export type ThreadComment = {
