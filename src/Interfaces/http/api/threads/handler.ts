@@ -3,6 +3,7 @@ import AddThreadUseCase from "../../../../Applications/use_cases/AddThreadUseCas
 import { ThreadPayload } from "../../../../Domains/entities/Thread";
 import AddThreadCommentUseCase from "../../../../Applications/use_cases/AddThreadCommentUseCase";
 import { AddedComment, CommentPayload } from "../../../../Domains/entities/Comment";
+import InvariantError from "../../../../Common/Errors/InvariantError";
 
 export default class ThreadHandler {
   private readonly addThreadUseCase: AddThreadUseCase;
@@ -18,10 +19,13 @@ export default class ThreadHandler {
 
   postThreadhandler = async (req: Request, h: ResponseToolkit) => {
     const { username } = req.auth.credentials;
+    if(req.payload === null) throw new InvariantError("Bad Request");
+
     const { title, body }: ThreadPayload = req.payload as any;
     const { id, title: threadTitle, owner } = await this.addThreadUseCase.execute({
       title, body, username: username as string,
     });
+
     return h.response({
       status: 'success',
       data: {

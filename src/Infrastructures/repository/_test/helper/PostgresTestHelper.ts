@@ -6,7 +6,7 @@ type TableName = string & ('users' | 'authentications' | 'threads' | 'thread_com
 
 type Config = {
   pool: Pool,
-  tableName: TableName,
+  tableName: TableName | TableName[],
 }
 
 export const PostgresTestHelper = {
@@ -45,6 +45,11 @@ export const PostgresTestHelper = {
   },
   async truncate(config: Config) {
     const { pool, tableName } = config;
-    await pool.query(`TRUNCATE ${tableName} CASCADE`);
+    if(Array.isArray(tableName)) {
+      const tables = tableName.join();
+      await pool.query(`TRUNCATE ${tables} CASCADE`);
+    } else {
+      await pool.query(`TRUNCATE ${tableName} CASCADE`);
+    }
   },
 };

@@ -1,11 +1,10 @@
-import { token } from '@hapi/jwt';
 import { createServer } from '../../../Infrastructures/http/createServer';
-import { threadsPlugin } from '../api/threads';
 import { registerDependenciesToContainer } from '../../../Infrastructures/lib/di';
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
 import { AddedThread } from '../../../Domains/entities/Thread';
-import { authenticationsPlugin } from '../api/authentications';
 import { Server } from '@hapi/hapi';
+import { plugins } from '../api/plugins';
+import { PostgresTestHelper } from '../../../Infrastructures/repository/_test/helper/PostgresTestHelper';
 
 describe("Threads", () => {
 
@@ -14,17 +13,39 @@ describe("Threads", () => {
 
   beforeAll(async () => {
     registerDependenciesToContainer();
-    server = await createServer([threadsPlugin, authenticationsPlugin]);
+    server = await createServer(plugins);
 
-    authorization = 'Bearer ' + token.generate({
-      username: 'riopermana',
-      password: 'secret',
-    },
-      process.env.ACCESS_TOKEN_KEY!
-    );
+    // user sign up
+    await server.inject({
+      method: 'POST',
+      url: '/users',
+      payload: {
+        fullname: 'my fullname',
+        username: 'riopermana',
+        password: 'secret',
+      }
+    });
+
+    // user login
+    const loginResponse = await server.inject({
+      method: 'POST',
+      url: '/authentications',
+      payload: {
+        username: 'riopermana',
+        password: 'secret',
+      }
+    });
+
+    const response = JSON.parse(loginResponse.payload);
+    authorization = 'Bearer ' + response.data.accessToken;
   });
 
   afterAll(async () => {
+    await PostgresTestHelper.truncate({
+      pool,
+      tableName: ['authentications', 'users', 'threads']
+    });
+
     await pool.end();
   });
 
@@ -53,6 +74,7 @@ describe("Threads", () => {
           addedThread: AddedThread
         }
       } = JSON.parse(response.payload);
+
       expect(response.statusCode).toEqual(201);
       expect(responseJSON.status).toEqual('success');
       expect(responseJSON.data).toBeDefined();
@@ -97,6 +119,9 @@ describe("Threads", () => {
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
+        headers: {
+          authorization
+        },
         payload
       });
       const responseJSON: {
@@ -118,6 +143,9 @@ describe("Threads", () => {
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
+        headers: {
+          authorization
+        },
         payload
       });
       const responseJSON: {
@@ -136,6 +164,9 @@ describe("Threads", () => {
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
+        headers: {
+          authorization
+        },
       });
       const responseJSON: {
         status: string,
@@ -159,6 +190,9 @@ describe("Threads", () => {
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
+        headers: {
+          authorization
+        },
         payload
       });
       const responseJSON: {
@@ -172,4 +206,47 @@ describe("Threads", () => {
       expect(responseJSON.message).toBeDefined();
     });
   });
+
+  // describe("POST /threads/{threadId}/comments, test user add comment(s) to a thread flow", () => {
+  //   beforeAll(async () => {
+  //     // User login
+
+  //     // Add thread
+  //     await server.inject({
+  //       method: 'POST',
+  //       url: '/threads',
+  //       headers: {
+  //         authorization
+  //       },
+  //       payload: {
+  //         title: "this is title",
+  //         body: "this is body",
+  //       }
+  //     });
+  //   });
+
+  //   it('should response with status code 201 and return the added thread', async () => {
+  //     // Arrange
+
+
+  //     // Action
+
+  //     // Assert
+  //     const responseJSON: {
+  //       status: string,
+  //       data: {
+  //         addedThread: AddedThread
+  //       }
+  //     } = JSON.parse(response.payload);
+  //     expect(response.statusCode).toEqual(201);
+  //     expect(responseJSON.status).toEqual('success');
+  //     expect(responseJSON.data).toBeDefined();
+  //     expect(responseJSON.data.addedThread).toStrictEqual({
+  //       id: expect.any(String),
+  //       title: "this is title",
+  //       owner: "riopermana",
+  //     });
+  //   });
+
+  // });
 });
