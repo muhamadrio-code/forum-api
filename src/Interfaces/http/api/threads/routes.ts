@@ -11,6 +11,15 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Th
         auth: "forumapi_jwt"
       },
       handler: handler.postThreadhandler
-    }
+    },
+    {
+      method: 'POST',
+      path: '/threads/{threadId}/comments',
+      options: {
+        auth: "forumapi_jwt"
+      },
+      handler: handler.postThreadCommenthandler
+    },
+
   ];
 };
