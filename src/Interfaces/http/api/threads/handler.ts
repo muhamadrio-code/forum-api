@@ -38,10 +38,13 @@ export default class ThreadHandler {
 
   postThreadCommenthandler = async (req: Request, h: ResponseToolkit) => {
     const { username } = req.auth.credentials;
+    if(req.payload === null) throw new InvariantError("Bad Request");
+
     const { content }: CommentPayload = req.payload as any;
     const { threadId } = req.params;
     const { content: addedContent, id, owner }: AddedComment =
       await this.addThreadCommentUseCase.execute({ content, username: username as string, thread_id: threadId });
+
     return h.response({
       status: "success",
       data: {
@@ -51,6 +54,6 @@ export default class ThreadHandler {
           owner
         }
       }
-    });
+    }).code(201);
   };
 }
