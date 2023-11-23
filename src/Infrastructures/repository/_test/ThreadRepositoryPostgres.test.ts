@@ -8,7 +8,7 @@ describe("ThreadRepositoryPostgres", () => {
     await pool.end();
   });
 
-  afterEach(async () => {
+  beforeEach(async () => {
     await PostgresTestHelper.truncate({
       pool,
       tableName: 'threads'
