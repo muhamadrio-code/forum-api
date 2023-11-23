@@ -2,7 +2,7 @@
 import { Pool, QueryResult } from "pg";
 import { CommentEntity } from "../../../../Domains/entities/Comment";
 
-type TableName = string | 'users' | 'authentications' | 'threads' | 'thread_comments'
+type TableName = string & ('users' | 'authentications' | 'threads' | 'thread_comments')
 
 type Config = {
   pool: Pool,
