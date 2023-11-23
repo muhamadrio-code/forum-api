@@ -40,10 +40,17 @@ describe("Threads", () => {
     authorization = 'Bearer ' + response.data.accessToken;
   });
 
+  beforeEach(async () => {
+    await PostgresTestHelper.truncate({
+      pool,
+      tableName: ['threads']
+    });
+  });
+
   afterAll(async () => {
     await PostgresTestHelper.truncate({
       pool,
-      tableName: ['authentications', 'users', 'threads']
+      tableName: ['authentications', 'users']
     });
 
     await pool.end();
@@ -206,47 +213,4 @@ describe("Threads", () => {
       expect(responseJSON.message).toBeDefined();
     });
   });
-
-  // describe("POST /threads/{threadId}/comments, test user add comment(s) to a thread flow", () => {
-  //   beforeAll(async () => {
-  //     // User login
-
-  //     // Add thread
-  //     await server.inject({
-  //       method: 'POST',
-  //       url: '/threads',
-  //       headers: {
-  //         authorization
-  //       },
-  //       payload: {
-  //         title: "this is title",
-  //         body: "this is body",
-  //       }
-  //     });
-  //   });
-
-  //   it('should response with status code 201 and return the added thread', async () => {
-  //     // Arrange
-
-
-  //     // Action
-
-  //     // Assert
-  //     const responseJSON: {
-  //       status: string,
-  //       data: {
-  //         addedThread: AddedThread
-  //       }
-  //     } = JSON.parse(response.payload);
-  //     expect(response.statusCode).toEqual(201);
-  //     expect(responseJSON.status).toEqual('success');
-  //     expect(responseJSON.data).toBeDefined();
-  //     expect(responseJSON.data.addedThread).toStrictEqual({
-  //       id: expect.any(String),
-  //       title: "this is title",
-  //       owner: "riopermana",
-  //     });
-  //   });
-
-  // });
 });
