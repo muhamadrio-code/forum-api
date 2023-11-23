@@ -83,4 +83,33 @@ describe("ThreadRepositoryPostgres", () => {
       date: expect.any(Date)
     });
   });
+
+  it('should not throw error when call verifyThreadAvaibility if thread is exist', async () => {
+    // Arrange
+    const threadRepository = new ThreadRepositoryPostgres(pool);
+    const querySpy = jest.spyOn(pool, 'query');
+    const thread = {
+      id: '1',
+      title: 'Test Thread',
+      body: 'This is a test thread',
+      username: 'testuser'
+    };
+
+    // Act
+    await threadRepository.addThread(thread);
+
+    // Assert
+    await expect(threadRepository.verifyThreadAvaibility(thread.id)).resolves.not.toThrow();
+    expect(querySpy).toHaveBeenCalled();
+  });
+
+  it('should throw error when call verifyThreadAvaibility if thread is not exist', async () => {
+    // Arrange
+    const threadRepository = new ThreadRepositoryPostgres(pool);
+    const querySpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadRepository.verifyThreadAvaibility('999')).rejects.toThrow();
+    expect(querySpy).toHaveBeenCalled();
+  });
 });
