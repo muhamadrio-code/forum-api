@@ -20,6 +20,13 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Th
       },
       handler: handler.postThreadCommenthandler
     },
-
+    {
+      method: 'DELETE',
+      path: '/threads/{threadId}/comments/{commentId}',
+      options: {
+        auth: "forumapi_jwt"
+      },
+      handler: handler.deleteThreadCommenthandler
+    },
   ];
 };

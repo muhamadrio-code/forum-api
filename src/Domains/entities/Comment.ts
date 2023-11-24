@@ -14,5 +14,6 @@ export type CommentEntity = {
 }
 
 export type AddedComment = Omit<Comment, 'username' | 'thread_id'> & { owner: string }
+export type DeletedComment = Pick<Comment, 'content'>
 export type CommentPayload = Pick<Comment, 'content'>
 export type CommentUseCasePayload = Omit<Comment, 'id'>

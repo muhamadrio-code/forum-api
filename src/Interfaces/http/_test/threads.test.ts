@@ -13,6 +13,11 @@ describe("Threads", () => {
   let authorization: string;
 
   beforeAll(async () => {
+    await PostgresTestHelper.truncate({
+      pool,
+      tableName: ['authentications', 'users']
+    });
+
     registerDependenciesToContainer();
     server = await createServer(plugins);
 
@@ -41,23 +46,46 @@ describe("Threads", () => {
     authorization = 'Bearer ' + response.data.accessToken;
   });
 
-  beforeEach(async () => {
-    await PostgresTestHelper.truncate({
-      pool,
-      tableName: ['threads']
-    });
-  });
-
   afterAll(async () => {
-    await PostgresTestHelper.truncate({
-      pool,
-      tableName: ['authentications', 'users']
-    });
-
     await pool.end();
   });
 
   describe("POST /threads, test user add thread flow", () => {
+    beforeEach(async () => {
+      await PostgresTestHelper.truncate({
+        pool,
+        tableName: ['threads']
+      });
+    });
+
+    it('should persist the thread', async () => {
+      // Arrange
+      const payload = {
+        title: "this is title",
+        body: "this is body",
+      };
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        headers: {
+          authorization
+        },
+        payload
+      });
+
+      // Assert
+      const responseJSON: {
+        status: string,
+        data: {
+          addedThread: AddedThread
+        }
+      } = JSON.parse(response.payload);
+      const { id } = responseJSON.data.addedThread;
+      await expect(PostgresTestHelper.getThreadById(pool, id)).resolves.toHaveProperty("id", expect.any(String));
+    });
+
     it('should response with status code 201 and return the added thread', async () => {
       // Arrange
       const payload = {
@@ -215,13 +243,20 @@ describe("Threads", () => {
     });
   });
 
-  describe("POST /threads/{threadId}/comments, test user add comment(s) to a thread flow", () => {
+  describe("POST /threads/{threadId}/comments, test user add comment to a thread flow", () => {
+    beforeEach(async () => {
+      await PostgresTestHelper.truncate({
+        pool,
+        tableName: ['threads']
+      });
+    });
+
     afterAll(async () => {
       // Cleanup
       await PostgresTestHelper.truncate({
-          pool,
-          tableName: 'thread_comments'
-        });
+        pool,
+        tableName: 'thread_comments'
+      });
     });
 
     it('should response with status code 201 and return the AddedComment object', async () => {
@@ -400,6 +435,158 @@ describe("Threads", () => {
         message: string
       } = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(404);
+      expect(responseJSON.status).toEqual('fail');
+      expect(responseJSON.message).toBeDefined();
+    });
+  });
+
+  describe("POST /threads/{threadId}/comments/{commentId}, test user delete comment from a thread", () => {
+    let threadId: string;
+
+    beforeAll(async () => {
+      // Cleanup
+      await PostgresTestHelper.truncate({
+        pool,
+        tableName: ['thread_comments', 'threads']
+      });
+
+      // create thread
+      const addThreadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        headers: {
+          authorization
+        },
+        payload: {
+          title: "this is title",
+          body: "this is body",
+        }
+      });
+
+      const { data } = JSON.parse(addThreadResponse.payload);
+      threadId = data.addedThread.id;
+    });
+
+    it('should successfully soft-delete comment and response with status code 200 and return the content', async () => {
+      // Arange
+      // add comment
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        headers: {
+          authorization
+        },
+        payload: {
+          content: "this is comment content",
+        }
+      });
+
+      const result: {
+        success: string,
+        data: {
+          addedComment: {
+            id: string, content: string, owner: string
+          }
+        }
+      } = JSON.parse(addCommentResponse.payload);
+      const commentId = result.data.addedComment.id;
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          authorization
+        },
+      });
+
+      // Assert
+      const responseJSON: { content: string } = JSON.parse(response.payload);
+
+      expect(response.statusCode).toEqual(200);
+      expect(responseJSON.content).toBeDefined();
+    });
+
+    it('should response with status code 404 when try to delete non-existed comment', async () => {
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/invalid_id`,
+        headers: {
+          authorization
+        },
+      });
+
+      // Assert
+      const responseJSON: { status: string, message: string } = JSON.parse(response.payload);
+
+      expect(response.statusCode).toEqual(404);
+      expect(responseJSON.status).toEqual('fail');
+      expect(responseJSON.message).toBeDefined();
+    });
+
+    it('should response with status code 403 when not the owner try to delete a comment', async () => {
+      // Arange
+      // sign up new user
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          fullname: 'lumi',
+          username: 'lumilumi',
+          password: 'secret',
+        }
+      });
+
+      // user login
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'lumilumi',
+          password: 'secret',
+        }
+      });
+
+      const lumiLoginJSON = JSON.parse(loginResponse.payload);
+      const lumiAuth = 'Bearer ' + lumiLoginJSON.data.accessToken;
+
+      // Add comment as riopermana
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        headers: {
+          authorization // authorized as riopermana
+        },
+        payload: {
+          content: "this is comment content",
+        }
+      });
+
+      const result: {
+        success: string,
+        data: {
+          addedComment: {
+            id: string, content: string, owner: string
+          }
+        }
+      } = JSON.parse(addCommentResponse.payload);
+      const commentId = result.data.addedComment.id;
+
+      // Action
+      // lumi try to delete comment that owned by riopermana
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          authorization: lumiAuth // authorized as lumi
+        },
+      });
+
+      // Assert
+      const responseJSON: { status: string, message: string } = JSON.parse(response.payload);
+
+      expect(response.statusCode).toEqual(403);
       expect(responseJSON.status).toEqual('fail');
       expect(responseJSON.message).toBeDefined();
     });

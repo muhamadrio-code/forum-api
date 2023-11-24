@@ -1,6 +1,8 @@
 /* istanbul ignore file */
+
 import { Pool, QueryResult } from "pg";
 import { CommentEntity } from "../../../../Domains/entities/Comment";
+import { ThreadEntity } from "../../../../Domains/entities/Thread";
 
 type TableName = string & ('users' | 'authentications' | 'threads' | 'thread_comments')
 
@@ -18,6 +20,7 @@ export const PostgresTestHelper = {
 
     await pool.query(query);
   },
+
   async addUser(
     pool: Pool,
     user: {
@@ -43,6 +46,17 @@ export const PostgresTestHelper = {
     const { rows }: QueryResult<CommentEntity> = await pool.query(query);
     return rows[0];
   },
+
+  async getThreadById(pool: Pool, id:string) {
+    const query = {
+      text: "SELECT * FROM threads WHERE id=$1",
+      values: [id]
+    };
+
+    const { rows }: QueryResult<ThreadEntity> = await pool.query(query);
+    return rows[0];
+  },
+
   async truncate(config: Config) {
     const { pool, tableName } = config;
     if(Array.isArray(tableName)) {

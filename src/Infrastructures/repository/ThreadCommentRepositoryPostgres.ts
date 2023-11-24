@@ -1,8 +1,9 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
-import ThreadCommentsRepository from "../../Domains/comments/ThreadCommentsRepository";
-import { AddedComment, Comment } from "../../Domains/entities/Comment";
+import ThreadCommentRepository from "../../Domains/comments/ThreadCommentsRepository";
+import { AddedComment, Comment, DeletedComment } from "../../Domains/entities/Comment";
+import NotFoundError from "../../Common/Errors/NotFoundError";
 
-export default class ThreadCommentRepositoryPostgres extends ThreadCommentsRepository {
+export default class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
   private readonly pool;
 
   constructor(pool: Pool) {
@@ -18,6 +19,19 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentsRepos
     };
 
     const { rows }: QueryResult<AddedComment> = await this.pool.query(query);
+    return rows[0];
+  }
+
+  async deleteComment(commentId: string) {
+    const query: QueryConfig = {
+      text: "UPDATE thread_comments SET is_delete=$2 WHERE id=$1 RETURNING content",
+      values: [commentId, true]
+    };
+
+    const { rows }: QueryResult<DeletedComment> = await this.pool.query(query);
+
+    if(!rows[0]) throw new NotFoundError("comment tidak ditemukan");
+
     return rows[0];
   }
 }

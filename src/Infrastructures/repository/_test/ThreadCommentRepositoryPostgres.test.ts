@@ -1,3 +1,4 @@
+import NotFoundError from "../../../Common/Errors/NotFoundError";
 import { pool } from "../../database/postgres/Pool";
 import ThreadCommentRepositoryPostgres from "../ThreadCommentRepositoryPostgres";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres";
@@ -13,7 +14,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
   afterEach(async () => {
     await PostgresTestHelper.truncate({
       pool,
-      tableName: 'thread_comments'
+      tableName: ['threads' ,'thread_comments']
     });
   });
 
@@ -34,5 +35,33 @@ describe('ThreadCommentRepositoryPostgres', () => {
     expect(poolSpy).toHaveBeenCalled();
 
     await expect(PostgresTestHelper.getCommentById(pool, '1')).resolves.toBeDefined();
+  });
+
+  it('should soft-delete comment and return the DeletedComment object', async () => {
+    // Arrange
+    const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+    const comment = { id: '1', thread_id: '1', content: 'Test Comment', username: 'Test User' };
+    await threadCommentRepository.addComment(comment);
+
+    // Act & Assert
+    await expect(threadCommentRepository.deleteComment('1')).resolves.toStrictEqual({
+      content: "Test Comment"
+    });
+
+    expect(poolSpy).toHaveBeenCalled();
+    await expect(PostgresTestHelper.getCommentById(pool, '1')).resolves.toHaveProperty('is_delete', true);
+  });
+
+  it('should throw NotFoundError when try to delete non-existed comment', async () => {
+    // Arrange
+    const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+    const comment = { id: '1', thread_id: '1', content: 'Test Comment', username: 'Test User' };
+    await threadCommentRepository.addComment(comment);
+
+    // Act & Assert
+    await expect(threadCommentRepository.deleteComment('99128')).rejects.toThrow(NotFoundError);
+    expect(poolSpy).toHaveBeenCalled();
   });
 });
