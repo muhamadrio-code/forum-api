@@ -17,7 +17,6 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
       text: "INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, username as owner",
       values: [id, title, body, username]
     };
-
     const { rows }: QueryResult<AddedThread> = await this.pool.query(query);
     return rows[0];
   }
@@ -29,19 +28,15 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
     };
 
     const { rows }: QueryResult<ThreadEntity> = await this.pool.query(query);
+
+    if (!rows.length) {
+      throw new NotFoundError('thread tidak ditemukan');
+    }
+
     return rows[0];
   }
 
   async verifyThreadAvaibility(id: string) {
-    const query = {
-      text: 'SELECT * FROM threads WHERE id = $1',
-      values: [id],
-    };
-
-    const { rowCount } = await this.pool.query(query);
-
-    if (!rowCount) {
-      throw new NotFoundError('thread tidak ditemukan');
-    }
+    await this.getThreadById(id);
   }
 }

@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import ThreadCommentsRepository from "../../Domains/comments/ThreadCommentsRepository";
+import ThreadCommentRepository from "../../Domains/comments/ThreadCommentsRepository";
 import Validator from "../security/Validator";
 import { Comment, CommentUseCasePayload } from "../../Domains/entities/Comment";
 import { nanoid } from "nanoid";
@@ -9,13 +9,13 @@ import UserRepository from "../../Domains/users/UserRepository";
 
 @injectable()
 export default class AddThreadCommentUseCase {
-  private readonly threadCommentsRepository: ThreadCommentsRepository;
+  private readonly threadCommentsRepository: ThreadCommentRepository;
   private readonly validator: Validator;
   private readonly usersRepository: UserRepository;
   private readonly threadRepository: ThreadRepository;
 
   constructor(
-    @inject("ThreadCommentsRepository") threadCommentsRepository: ThreadCommentsRepository,
+    @inject("ThreadCommentsRepository") threadCommentsRepository: ThreadCommentRepository,
     @inject("UserRepository") userRepository: UserRepository,
     @inject("ThreadRepository") threadRepository: ThreadRepository,
     @inject("CommentValidator") validator: Validator
