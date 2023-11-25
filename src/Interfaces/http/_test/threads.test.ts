@@ -597,7 +597,7 @@ describe("Threads", () => {
   describe("GET /threads/{threadId}, test get thread details", () => {
     let threadId: string;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       await PostgresTestHelper.truncate({
         pool,
         tableName: ['thread_comments', 'threads']
@@ -688,6 +688,52 @@ describe("Threads", () => {
           })
         ])
       );
+    });
+
+    it("should show **komentar telah dihapus** when is_delete comment is true", async () => {
+      // add comment
+      const commentResponse = await server.inject({
+        method: 'POST',
+        headers: {
+          authorization
+        },
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: "test comment"
+        }
+      });
+
+      const {data: { addedComment }} = JSON.parse(commentResponse.payload);
+
+      // delete comment
+      const deleteResponse = await server.inject({
+        method: 'DELETE',
+        headers: {
+          authorization
+        },
+        url: `/threads/${threadId}/comments/${addedComment.id}`,
+      });
+      const deletedComment = JSON.parse(deleteResponse.payload);
+      expect(deletedComment.status).toBe('success');
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`
+      });
+
+      const { status, data: { thread } }: {
+        status: string,
+        data: {
+          thread: ThreadDetails
+        }
+      } = JSON.parse(response.payload);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+      expect(status).toBe('success');
+      expect(thread).toBeDefined();
+      expect(thread.comments[0].content).toEqual('**komentar telah dihapus**');
     });
 
     it("should throw 404 when try to get ThreadDetails with invalid id", async () => {

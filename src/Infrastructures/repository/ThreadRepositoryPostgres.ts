@@ -42,12 +42,25 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
 
   async getThreadDetails(id: string) {
     const query: QueryConfig = {
-      text: `SELECT threads.*, COALESCE(
-        JSONB_AGG(TO_JSONB(tc.*) - '["thread_id", "is_delete"]') 
+      text: `
+      SELECT threads.*, COALESCE(
+        JSONB_AGG(TO_JSONB(tc.*) - 'thread_id') 
         FILTER (WHERE tc.* IS NOT NULL), '[]'
       ) AS comments
       FROM threads 
-      LEFT JOIN thread_comments AS tc
+      LEFT JOIN (
+        SELECT c.id, c.thread_id, c.username, c.date, c.content
+        FROM (
+          SELECT id, username, date, thread_id,
+			      CASE 
+				      WHEN is_delete 
+                THEN REPLACE(content, content, '**komentar telah dihapus**')
+				      ELSE content
+				    END content
+			    FROM thread_comments
+        ) AS c
+        ORDER BY c.date ASC
+      ) AS tc
       ON tc.thread_id = threads.id
       WHERE threads.id = $1
       GROUP BY threads.id
