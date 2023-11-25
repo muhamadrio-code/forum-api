@@ -2,7 +2,7 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import AddThreadUseCase from "../../../../Applications/use_cases/AddThreadUseCase";
 import { ThreadPayload } from "../../../../Domains/entities/Thread";
 import AddThreadCommentUseCase from "../../../../Applications/use_cases/AddThreadCommentUseCase";
-import { AddedComment, CommentPayload } from "../../../../Domains/entities/Comment";
+import { AddedComment, CommentPayload, DeletedComment } from "../../../../Domains/entities/Comment";
 import InvariantError from "../../../../Common/Errors/InvariantError";
 import DeleteThreadCommentUseCase from "../../../../Applications/use_cases/DeleteThreadCommentUseCase";
 import GetThreadDetailsUseCase from "../../../../Applications/use_cases/GetThreadDetailsUseCase";
@@ -68,9 +68,12 @@ export default class ThreadHandler {
   deleteThreadCommenthandler = async (req:Request, h: ResponseToolkit) => {
     const { username } = req.auth.credentials;
     const { threadId, commentId }: Record<string, string> = req.params;
-    const deletedComment = await this.deleteThreadCommentUseCase.execute({ threadId, commentId, username: username as string });
+    const { content }: DeletedComment = await this.deleteThreadCommentUseCase.execute({ threadId, commentId, username: username as string });
 
-    return h.response(deletedComment).code(200);
+    return h.response({
+      status: 'success',
+      content
+    }).code(200);
   };
 
   getThreadDetailsHandler = async (req:Request, h: ResponseToolkit) => {

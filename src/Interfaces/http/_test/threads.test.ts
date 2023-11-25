@@ -123,7 +123,7 @@ describe("Threads", () => {
       });
     });
 
-    it('should response with status code 400 when no authorization provided', async () => {
+    it('should response with status code 401 when no authorization provided', async () => {
       // Arrange
       const payload = {
         title: "this is title",
@@ -142,7 +142,7 @@ describe("Threads", () => {
       } = JSON.parse(response.payload);
 
       // Assert
-      expect(response.statusCode).toEqual(400);
+      expect(response.statusCode).toEqual(401);
       expect(responseJSON.status).toEqual('fail');
       expect(responseJSON.message).toBeDefined();
     });
@@ -344,7 +344,7 @@ describe("Threads", () => {
       expect(responseJSON.message).toBeDefined();
     });
 
-    it('should response with status code 400 if user not authorized', async () => {
+    it('should response with status code 401 if user not authorized', async () => {
       // Arrange
       const addThreadResponse = await server.inject({
         method: 'POST',
@@ -376,7 +376,7 @@ describe("Threads", () => {
         message: string
       } = JSON.parse(response.payload);
 
-      expect(response.statusCode).toEqual(400);
+      expect(response.statusCode).toEqual(401);
       expect(responseJSON.status).toEqual('fail');
       expect(responseJSON.message).toBeDefined();
     });

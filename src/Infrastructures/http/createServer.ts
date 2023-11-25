@@ -39,7 +39,7 @@ export async function createServer(plugins?: Plugin<any>[]) {
         return h.response({
           status: 'fail',
           message: response.message
-        }).code(400);
+        }).code(401);
       }
 
       if (response instanceof ClientError) {
