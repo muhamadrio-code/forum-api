@@ -5,20 +5,24 @@ import AddThreadCommentUseCase from "../../../../Applications/use_cases/AddThrea
 import { AddedComment, CommentPayload } from "../../../../Domains/entities/Comment";
 import InvariantError from "../../../../Common/Errors/InvariantError";
 import DeleteThreadCommentUseCase from "../../../../Applications/use_cases/DeleteThreadCommentUseCase";
+import GetThreadDetailsUseCase from "../../../../Applications/use_cases/GetThreadDetailsUseCase";
 
 export default class ThreadHandler {
   private readonly addThreadUseCase: AddThreadUseCase;
   private readonly addThreadCommentUseCase: AddThreadCommentUseCase;
   private readonly deleteThreadCommentUseCase: DeleteThreadCommentUseCase;
+  private readonly getThreadDetailsUseCase: GetThreadDetailsUseCase;
 
   constructor(
     addUserUseCase: AddThreadUseCase,
     addThreadCommentUseCase: AddThreadCommentUseCase,
-    deleteThreadCommentUseCase: DeleteThreadCommentUseCase
+    deleteThreadCommentUseCase: DeleteThreadCommentUseCase,
+    getThreadDetailsUseCase: GetThreadDetailsUseCase
   ) {
     this.addThreadUseCase = addUserUseCase;
     this.addThreadCommentUseCase = addThreadCommentUseCase;
     this.deleteThreadCommentUseCase = deleteThreadCommentUseCase;
+    this.getThreadDetailsUseCase = getThreadDetailsUseCase;
   }
 
   postThreadhandler = async (req: Request, h: ResponseToolkit) => {
@@ -67,5 +71,17 @@ export default class ThreadHandler {
     const deletedComment = await this.deleteThreadCommentUseCase.execute({ threadId, commentId, username: username as string });
 
     return h.response(deletedComment).code(200);
+  };
+
+  getThreadDetailsHandler = async (req:Request, h: ResponseToolkit) => {
+    const { threadId }: Record<string, string> = req.params;
+    const threadDetails = await this.getThreadDetailsUseCase.execute(threadId);
+
+    return h.response({
+      status: 'success',
+      data: {
+        thread: threadDetails
+      }
+    });
   };
 }

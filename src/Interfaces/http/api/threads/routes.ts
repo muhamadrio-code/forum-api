@@ -28,5 +28,10 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Th
       },
       handler: handler.deleteThreadCommenthandler
     },
+    {
+      method: 'GET',
+      path: '/threads/{threadId}',
+      handler: handler.getThreadDetailsHandler
+    },
   ];
 };

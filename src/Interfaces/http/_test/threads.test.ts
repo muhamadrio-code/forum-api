@@ -1,10 +1,11 @@
 import { createServer } from '../../../Infrastructures/http/createServer';
 import { registerDependenciesToContainer } from '../../../Infrastructures/lib/di';
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
-import { AddedThread } from '../../../Domains/entities/Thread';
+import { AddedThread, ThreadDetails } from '../../../Domains/entities/Thread';
 import { Server } from '@hapi/hapi';
 import { plugins } from '../api/plugins';
 import { PostgresTestHelper } from '../../../Infrastructures/repository/_test/helper/PostgresTestHelper';
+import { container } from 'tsyringe';
 import { AddedComment } from '../../../Domains/entities/Comment';
 
 describe("Threads", () => {
@@ -48,6 +49,7 @@ describe("Threads", () => {
 
   afterAll(async () => {
     await pool.end();
+    container.clearInstances();
   });
 
   describe("POST /threads, test user add thread flow", () => {
@@ -589,6 +591,122 @@ describe("Threads", () => {
       expect(response.statusCode).toEqual(403);
       expect(responseJSON.status).toEqual('fail');
       expect(responseJSON.message).toBeDefined();
+    });
+  });
+
+  describe("GET /threads/{threadId}, test get thread details", () => {
+    let threadId: string;
+
+    beforeAll(async () => {
+      await PostgresTestHelper.truncate({
+        pool,
+        tableName: ['thread_comments', 'threads']
+      });
+
+      // create thread
+      const addThreadResponse = await server.inject({
+        method: 'POST',
+        url: `/threads`,
+        headers: {
+          authorization
+        },
+        payload: {
+          title: "this is title",
+          body: "this is body",
+        }
+      });
+
+      const { data } = JSON.parse(addThreadResponse.payload);
+      threadId = data.addedThread.id;
+    });
+
+    it("should response 200 and return ThreadDetails object", async () => {
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`
+      });
+
+      const responseJSON: {
+        status: string,
+        data: {
+          thread: ThreadDetails
+        }
+      } = JSON.parse(response.payload);
+
+      expect(response.statusCode).toBe(200);
+      expect(responseJSON.status).toBe('success');
+      expect(responseJSON.data.thread).toStrictEqual({
+        id: expect.any(String),
+        title: expect.any(String),
+        body: expect.any(String),
+        date: expect.any(String),
+        username: expect.any(String),
+        comments: expect.any(Array),
+      });
+      expect(responseJSON.data.thread.comments).toBeDefined();
+    });
+
+    it("should verify comments structure", async () => {
+      // add comment
+      await server.inject({
+        method: 'POST',
+        headers: {
+          authorization
+        },
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: "test comment"
+        }
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`
+      });
+
+      const { status, data: { thread } }: {
+        status: string,
+        data: {
+          thread: ThreadDetails
+        }
+      } = JSON.parse(response.payload);
+
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+      expect(status).toBe('success');
+      expect(thread).toBeDefined();
+      expect(thread.comments).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            content: expect.any(String),
+            date: expect.any(String),
+            username: expect.any(String),
+          })
+        ])
+      );
+    });
+
+    it("should throw 404 when try to get ThreadDetails with invalid id", async () => {
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/invalid_id`
+      });
+
+      const { status, message }: {
+        status: string,
+        message: string
+      } = JSON.parse(response.payload);
+
+
+      // Assert
+      expect(response.statusCode).toBe(404);
+      expect(status).toBe('fail');
+      expect(message).toBeDefined();
     });
   });
 });
