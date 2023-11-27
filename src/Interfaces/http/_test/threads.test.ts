@@ -1,7 +1,7 @@
 import { createServer } from '../../../Infrastructures/http/createServer';
 import { registerDependenciesToContainer } from '../../../Infrastructures/lib/di';
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
-import { AddedThread, ThreadDetails } from '../../../Domains/entities/Thread';
+import { AddedThread, ThreadDetailsEntity } from '../../../Domains/entities/Thread';
 import { Server } from '@hapi/hapi';
 import { plugins } from '../api/plugins';
 import { PostgresTestHelper } from '../../../Infrastructures/repository/_test/helper/PostgresTestHelper';
@@ -620,7 +620,7 @@ describe("Threads", () => {
       threadId = data.addedThread.id;
     });
 
-    it("should response 200 and return ThreadDetails object", async () => {
+    it("should response 200 and return thread with null comments", async () => {
       // Action
       const response = await server.inject({
         method: 'GET',
@@ -630,7 +630,7 @@ describe("Threads", () => {
       const responseJSON: {
         status: string,
         data: {
-          thread: ThreadDetails
+          thread: ThreadDetailsEntity
         }
       } = JSON.parse(response.payload);
 
@@ -642,7 +642,7 @@ describe("Threads", () => {
         body: expect.any(String),
         date: expect.any(String),
         username: expect.any(String),
-        comments: expect.any(Array),
+        comments: null
       });
       expect(responseJSON.data.thread.comments).toBeDefined();
     });
@@ -669,7 +669,7 @@ describe("Threads", () => {
       const { status, data: { thread } }: {
         status: string,
         data: {
-          thread: ThreadDetails
+          thread: ThreadDetailsEntity
         }
       } = JSON.parse(response.payload);
 
@@ -685,6 +685,7 @@ describe("Threads", () => {
             content: expect.any(String),
             date: expect.any(String),
             username: expect.any(String),
+            replies: expect.any(Array)
           })
         ])
       );
@@ -725,7 +726,7 @@ describe("Threads", () => {
       const { status, data: { thread } }: {
         status: string,
         data: {
-          thread: ThreadDetails
+          thread: ThreadDetailsEntity
         }
       } = JSON.parse(response.payload);
 
@@ -733,7 +734,7 @@ describe("Threads", () => {
       expect(response.statusCode).toBe(200);
       expect(status).toBe('success');
       expect(thread).toBeDefined();
-      expect(thread.comments[0].content).toEqual('**komentar telah dihapus**');
+      expect(thread.comments?.[0].content).toEqual('**komentar telah dihapus**');
     });
 
     it("should throw 404 when try to get ThreadDetails with invalid id", async () => {

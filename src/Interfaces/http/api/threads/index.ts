@@ -7,6 +7,8 @@ import ThreadHandler from './handler';
 import AddThreadCommentUseCase from '../../../../Applications/use_cases/AddThreadCommentUseCase';
 import DeleteThreadCommentUseCase from '../../../../Applications/use_cases/DeleteThreadCommentUseCase';
 import GetThreadDetailsUseCase from '../../../../Applications/use_cases/GetThreadDetailsUseCase';
+import AddCommentReplyuseCase from '../../../../Applications/use_cases/AddCommentReplyUseCase';
+import DeleteThreadCommentReplyUseCase from '../../../../Applications/use_cases/DeleteCommentReplyUseCase';
 
 export const threadsPlugin: Hapi.Plugin<any> = {
   name: "threads",
@@ -16,6 +18,8 @@ export const threadsPlugin: Hapi.Plugin<any> = {
       container.resolve(AddThreadCommentUseCase),
       container.resolve(DeleteThreadCommentUseCase),
       container.resolve(GetThreadDetailsUseCase),
+      container.resolve(AddCommentReplyuseCase),
+      container.resolve(DeleteThreadCommentReplyUseCase),
     );
     server.route(routes(handler));
   },

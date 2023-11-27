@@ -1,8 +1,6 @@
-import Hapi from '@hapi/hapi';
-import UserHandler from './handler';
 import ThreadHandler from './handler';
 
-export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: ThreadHandler) => {
+export const routes = (handler: ThreadHandler) => {
   return [
     {
       method: 'POST',
@@ -32,6 +30,22 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Th
       method: 'GET',
       path: '/threads/{threadId}',
       handler: handler.getThreadDetailsHandler
+    },
+    {
+      method: 'POST',
+      path: '/threads/{threadId}/comments/{commentId}/replies',
+      options: {
+        auth: "forumapi_jwt"
+      },
+      handler: handler.postCommentReplyHandler
+    },
+    {
+      method: 'DELETE',
+      path: '/threads/{threadId}/comments/{commentId}/replies/{replyId}',
+      options: {
+        auth: "forumapi_jwt"
+      },
+      handler: handler.deleteCommentReplyHandler
     },
   ];
 };

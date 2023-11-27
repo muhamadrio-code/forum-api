@@ -1,5 +1,5 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
-import { Thread, ThreadEntity, AddedThread, ThreadDetails } from "../../Domains/entities/Thread";
+import { Thread, ThreadEntity, AddedThread, ThreadDetailsEntity } from "../../Domains/entities/Thread";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import NotFoundError from "../../Common/Errors/NotFoundError";
 
@@ -43,36 +43,63 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
   async getThreadDetails(id: string) {
     const query: QueryConfig = {
       text: `
-      SELECT threads.*, COALESCE(
-        JSONB_AGG(TO_JSONB(tc.*) - 'thread_id') 
-        FILTER (WHERE tc.* IS NOT NULL), '[]'
-      ) AS comments
-      FROM threads 
-      LEFT JOIN (
-        SELECT c.id, c.thread_id, c.username, c.date, c.content
-        FROM (
-          SELECT id, username, date, thread_id,
-			      CASE 
-				      WHEN is_delete 
-                THEN REPLACE(content, content, '**komentar telah dihapus**')
-				      ELSE content
-				    END content
-			    FROM thread_comments
-        ) AS c
-        ORDER BY c.date ASC
-      ) AS tc
-      ON tc.thread_id = threads.id
-      WHERE threads.id = $1
-      GROUP BY threads.id
+      SELECT
+        threads.*,
+        COALESCE(JSONB_AGG(TO_JSONB (d.*) - 'thread_id') FILTER (WHERE d.id IS NOT NULL), 'null') AS comments
+      FROM
+        threads
+        LEFT JOIN (
+          SELECT
+            a.id,
+            a.username,
+            a.date,
+            a.thread_id,
+            COALESCE(JSONB_AGG(TO_JSONB (b.*) - '{"reply_to", "is_delete"}'::text[]) FILTER (WHERE b.id IS NOT NULL), '[]') AS replies,
+            CASE WHEN a.is_delete THEN
+              REPLACE(a.content, a.content, '**komentar telah dihapus**')
+            ELSE
+              a.content
+            END content
+          FROM
+            thread_comments a
+            LEFT JOIN (
+              SELECT
+                id,
+                reply_to,
+                is_delete,
+                date,
+                username,
+                CASE WHEN c.is_delete THEN
+                  REPLACE(c.content, c.content, '**balasan telah dihapus**')
+                ELSE
+                  c.content
+                END content
+              FROM
+                thread_comments AS c
+              WHERE
+                reply_to IS NOT NULL
+              ORDER BY
+                date ASC) b
+            ON a.id = b.reply_to
+            WHERE
+              a.reply_to IS NULL
+            GROUP BY
+              a.id,
+              b.reply_to
+            ORDER BY
+              date ASC) AS d ON d.thread_id = threads.id
+      WHERE
+        threads.id = $1
+      GROUP BY
+        threads.id
       `,
       values: [id]
     };
-    const { rows }: QueryResult<ThreadDetails> = await this.pool.query(query);
 
+    const { rows }: QueryResult<ThreadDetailsEntity> = await this.pool.query(query);
     if (!rows.length) {
       throw new NotFoundError('thread tidak ditemukan');
     }
-
     return rows[0];
   }
 }
