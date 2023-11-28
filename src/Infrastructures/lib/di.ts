@@ -5,7 +5,7 @@ import ZodUserValidator from "../security/ZodUserValidator";
 import BCryptPasswordHash from "../security/BCryptPasswordHash";
 import HapiJwtTokenManager from "../security/HapiJwtTokenManager";
 import { token } from "@hapi/jwt";
-import PostgresAuthenticationRepository from "../repository/PostgresAuthenticationRepository";
+import AuthenticationRepositoryPostgres from "../repository/AuthenticationRepositoryPostgres";
 import ZodAuthenticationValidator from "../security/ZodAuthenticationValidator";
 import ZodUserLoginValidator from "../security/ZodUserLoginValidator";
 import ZodThreadValidator from "../security/ZodThreadValidator";
@@ -21,7 +21,7 @@ export function registerDependenciesToContainer() {
   );
   container.register(
     "AuthenticationRepository",
-    { useFactory: instanceCachingFactory(() => new PostgresAuthenticationRepository(pool)) }
+    { useFactory: instanceCachingFactory(() => new AuthenticationRepositoryPostgres(pool)) }
   );
   container.register(
     "ThreadRepository",

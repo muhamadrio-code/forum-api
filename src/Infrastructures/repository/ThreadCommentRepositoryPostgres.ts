@@ -48,37 +48,36 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
 
   async addCommentReply(comment: Comment) {
     const { id, threadId, replyTo, content, username } = comment;
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
+    const query : QueryConfig = {
+      text: `
+      WITH comments AS(
+        SELECT 
+          tc.id AS reply_to,
+          f.id, 
+          f.thread_id, 
+          f.content, 
+          f.username
+        FROM 
+          thread_comments tc (id), 
+          (VALUES($1, $2, $3, $4, $5)) 
+        AS f (id, thread_id, content, username, reply_id)
+        WHERE tc.id=f.reply_id
+      )
+      INSERT INTO 
+        thread_comments(reply_to, id, thread_id, content, username)
+      SELECT * FROM 
+        comments
+      RETURNING 
+        id, content, username AS owner
+      `,
+      values: [id, threadId, content, username, replyTo]
+    };
 
-      const { rowCount } = await client.query(
-        'SELECT * FROM thread_comments WHERE id = $1',
-        [replyTo]
-      );
+    const { rows }: QueryResult<AddedComment> = await this.pool.query(query);
 
-      if (!rowCount) {
-        await client.query('ROLLBACK');
-        throw new NotFoundError('komentar tidak ditemukan');
-      }
+    if(!rows[0]) throw new NotFoundError("comment tidak ditemukan");
 
-      const { rows }: QueryResult<AddedComment>  = await client.query(
-        `INSERT INTO thread_comments(id, thread_id, reply_to, content, username) 
-        VALUES($1, $2, $3, $4, $5)
-        RETURNING id, content, username AS owner
-        `,
-        [id, threadId, replyTo, content, username]
-      );
-
-      await client.query('COMMIT');
-      return rows[0];
-
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    return rows[0];
   }
 
   async deleteComment(commentId: string) {

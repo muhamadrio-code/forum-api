@@ -1,7 +1,7 @@
 import InvariantError from "../../../Common/Errors/InvariantError";
 import AuthenticationRepository from "../../../Domains/authentications/AuthenticationRepository";
 import { pool } from "../../database/postgres/Pool";
-import PostgresAuthenticationRepository from "../PostgresAuthenticationRepository";
+import AuthenticationRepositoryPostgres from "../AuthenticationRepositoryPostgres";
 import { PostgresTestHelper } from "./helper/PostgresTestHelper";
 
 describe('PostgresAuthenticationRepository', () => {
@@ -15,7 +15,7 @@ describe('PostgresAuthenticationRepository', () => {
   });
 
   beforeEach(() => {
-    authRepository = new PostgresAuthenticationRepository(pool);
+    authRepository = new AuthenticationRepositoryPostgres(pool);
   });
 
   afterEach(async () => {
