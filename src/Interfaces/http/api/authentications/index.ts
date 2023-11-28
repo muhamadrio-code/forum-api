@@ -7,7 +7,7 @@ import RefreshAuthenticationUseCase from "../../../../Applications/use_cases/Ref
 import { routes } from './routes';
 import AuthenticationHandler from './handler';
 
-export const authenticationsPlugin: Hapi.Plugin<any> = {
+export const authentications: Hapi.Plugin<any> = {
   name: "authentications",
   register: async (server) => {
     const handler = new AuthenticationHandler(

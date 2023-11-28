@@ -6,9 +6,8 @@ import { nanoid } from "nanoid";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import UserRepository from "../../Domains/users/UserRepository";
 
-
 @injectable()
-export default class AddThreadCommentUseCase {
+export default class AddCommentReplyuseCase {
   private readonly threadCommentsRepository: ThreadCommentRepository;
   private readonly validator: Validator;
   private readonly usersRepository: UserRepository;
@@ -19,14 +18,14 @@ export default class AddThreadCommentUseCase {
     @inject("UserRepository") userRepository: UserRepository,
     @inject("ThreadRepository") threadRepository: ThreadRepository,
     @inject("CommentValidator") validator: Validator
-  ){
+  ) {
     this.threadCommentsRepository = threadCommentsRepository;
     this.usersRepository = userRepository;
     this.threadRepository = threadRepository;
     this.validator = validator;
   }
 
-  async execute({ content, username, threadId }: CommentUseCasePayload) {
+  async execute({ content, username, threadId, replyTo }: CommentUseCasePayload) {
     await Promise.all([
       Promise.resolve(this.validator.validatePayload({ content })),
       this.usersRepository.getUserByUsername(username),
@@ -37,8 +36,9 @@ export default class AddThreadCommentUseCase {
       id: nanoid(16),
       threadId: threadId,
       content,
-      username
+      username,
+      replyTo
     };
-    return await this.threadCommentsRepository.addComment(newComment);
+    return await this.threadCommentsRepository.addCommentReply(newComment);
   }
 }

@@ -1,11 +1,11 @@
 import { createServer } from '../../../Infrastructures/http/createServer';
 import { registerDependenciesToContainer } from '../../../Infrastructures/lib/di';
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
-import { AddedThread } from '../../../Domains/entities/Thread';
+import { AddedThread, ThreadDetailsEntity } from '../../../Domains/entities/Thread';
 import { Server } from '@hapi/hapi';
-import { plugins } from '../api/plugins';
+import { plugins } from '../api';
 import { PostgresTestHelper } from '../../../Infrastructures/repository/_test/helper/PostgresTestHelper';
-import { AddedComment } from '../../../Domains/entities/Comment';
+import { container } from 'tsyringe';
 
 describe("Threads", () => {
 
@@ -13,6 +13,11 @@ describe("Threads", () => {
   let authorization: string;
 
   beforeAll(async () => {
+    await PostgresTestHelper.truncate({
+      pool,
+      tableName: ['authentications', 'users']
+    });
+
     registerDependenciesToContainer();
     server = await createServer(plugins);
 
@@ -41,23 +46,47 @@ describe("Threads", () => {
     authorization = 'Bearer ' + response.data.accessToken;
   });
 
-  beforeEach(async () => {
-    await PostgresTestHelper.truncate({
-      pool,
-      tableName: ['threads']
-    });
-  });
-
   afterAll(async () => {
-    await PostgresTestHelper.truncate({
-      pool,
-      tableName: ['authentications', 'users']
-    });
-
     await pool.end();
+    container.clearInstances();
   });
 
   describe("POST /threads, test user add thread flow", () => {
+    beforeEach(async () => {
+      await PostgresTestHelper.truncate({
+        pool,
+        tableName: ['threads']
+      });
+    });
+
+    it('should persist the thread', async () => {
+      // Arrange
+      const payload = {
+        title: "this is title",
+        body: "this is body",
+      };
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        headers: {
+          authorization
+        },
+        payload
+      });
+
+      // Assert
+      const responseJSON: {
+        status: string,
+        data: {
+          addedThread: AddedThread
+        }
+      } = JSON.parse(response.payload);
+      const { id } = responseJSON.data.addedThread;
+      await expect(PostgresTestHelper.getThreadById(pool, id)).resolves.toHaveProperty("id", expect.any(String));
+    });
+
     it('should response with status code 201 and return the added thread', async () => {
       // Arrange
       const payload = {
@@ -93,7 +122,7 @@ describe("Threads", () => {
       });
     });
 
-    it('should response with status code 400 when no authorization provided', async () => {
+    it('should response with status code 401 when no authorization provided', async () => {
       // Arrange
       const payload = {
         title: "this is title",
@@ -112,7 +141,7 @@ describe("Threads", () => {
       } = JSON.parse(response.payload);
 
       // Assert
-      expect(response.statusCode).toEqual(400);
+      expect(response.statusCode).toEqual(401);
       expect(responseJSON.status).toEqual('fail');
       expect(responseJSON.message).toBeDefined();
     });
@@ -215,20 +244,19 @@ describe("Threads", () => {
     });
   });
 
-  describe("POST /threads/{threadId}/comments, test user add comment(s) to a thread flow", () => {
-    afterAll(async () => {
-      // Cleanup
-      await PostgresTestHelper.truncate({
-          pool,
-          tableName: 'thread_comments'
-        });
-    });
+  describe("GET /threads/{threadId}, test get thread details", () => {
+    let threadId: string;
 
-    it('should response with status code 201 and return the AddedComment object', async () => {
-      // Arrange
+    beforeEach(async () => {
+      await PostgresTestHelper.truncate({
+        pool,
+        tableName: ['thread_comments', 'threads']
+      });
+
+      // create thread
       const addThreadResponse = await server.inject({
         method: 'POST',
-        url: '/threads',
+        url: `/threads`,
         headers: {
           authorization
         },
@@ -239,169 +267,143 @@ describe("Threads", () => {
       });
 
       const { data } = JSON.parse(addThreadResponse.payload);
-      const threadId = data.addedThread.id;
+      threadId = data.addedThread.id;
+    });
 
+    it("should response 200 and return thread with null comments", async () => {
       // Action
       const response = await server.inject({
-        method: 'POST',
-        url: `/threads/${threadId}/comments`,
-        headers: {
-          authorization
-        },
-        payload: {
-          content: "this is comment content",
-        }
+        method: 'GET',
+        url: `/threads/${threadId}`
       });
 
-      // Assert
       const responseJSON: {
         status: string,
         data: {
-          addedComment: AddedComment
+          thread: ThreadDetailsEntity
         }
       } = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(201);
-      expect(responseJSON.status).toEqual('success');
-      expect(responseJSON.data).toBeDefined();
-      expect(responseJSON.data.addedComment).toStrictEqual({
+
+      expect(response.statusCode).toBe(200);
+      expect(responseJSON.status).toBe('success');
+      expect(responseJSON.data.thread).toStrictEqual({
         id: expect.any(String),
-        content: "this is comment content",
-        owner: "riopermana",
+        title: expect.any(String),
+        body: expect.any(String),
+        date: expect.any(String),
+        username: expect.any(String),
+        comments: null
       });
+      expect(responseJSON.data.thread.comments).toBeDefined();
     });
 
-    it('should response with status code 400 if comment doesnt have required property', async () => {
-      // Arrange
-      const addThreadResponse = await server.inject({
+    it("should verify comments structure", async () => {
+      // add comment
+      await server.inject({
         method: 'POST',
-        url: '/threads',
         headers: {
           authorization
         },
-        payload: {
-          title: "this is title",
-          body: "this is body",
-        }
-      });
-
-      const { data } = JSON.parse(addThreadResponse.payload);
-      const threadId = data.addedThread.id;
-
-      // Action
-      const response = await server.inject({
-        method: 'POST',
-        url: `/threads/${threadId}/comments`,
-        headers: {
-          authorization
-        },
-        payload: {}
-      });
-
-      // Assert
-      const responseJSON: {
-        status: string,
-        message: string
-      } = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(400);
-      expect(responseJSON.status).toEqual('fail');
-      expect(responseJSON.message).toBeDefined();
-    });
-
-    it('should response with status code 400 if user not authorized', async () => {
-      // Arrange
-      const addThreadResponse = await server.inject({
-        method: 'POST',
-        url: '/threads',
-        headers: {
-          authorization
-        },
-        payload: {
-          title: "this is title",
-          body: "this is body",
-        }
-      });
-
-      const { data } = JSON.parse(addThreadResponse.payload);
-      const threadId = data.addedThread.id;
-
-      // Action
-      const response = await server.inject({
-        method: 'POST',
         url: `/threads/${threadId}/comments`,
         payload: {
-          content: "this is comment content",
+          content: "test comment"
         }
       });
-
-      // Assert
-      const responseJSON: {
-        status: string,
-        message: string
-      } = JSON.parse(response.payload);
-
-      expect(response.statusCode).toEqual(400);
-      expect(responseJSON.status).toEqual('fail');
-      expect(responseJSON.message).toBeDefined();
-    });
-
-    it('should response with status code 400 if no payload', async () => {
-      // Arrange
-      const addThreadResponse = await server.inject({
-        method: 'POST',
-        url: '/threads',
-        headers: {
-          authorization
-        },
-        payload: {
-          title: "this is title",
-          body: "this is body",
-        }
-      });
-
-      const { data } = JSON.parse(addThreadResponse.payload);
-      const threadId = data.addedThread.id;
 
       // Action
       const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`
+      });
+
+      const { status, data: { thread } }: {
+        status: string,
+        data: {
+          thread: ThreadDetailsEntity
+        }
+      } = JSON.parse(response.payload);
+
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+      expect(status).toBe('success');
+      expect(thread).toBeDefined();
+      expect(thread.comments).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            content: expect.any(String),
+            date: expect.any(String),
+            username: expect.any(String),
+            replies: expect.any(Array)
+          })
+        ])
+      );
+    });
+
+    it("should show **komentar telah dihapus** when is_delete comment is true", async () => {
+      // add comment
+      const commentResponse = await server.inject({
         method: 'POST',
+        headers: {
+          authorization
+        },
         url: `/threads/${threadId}/comments`,
-        headers: {
-          authorization
+        payload: {
+          content: "test comment"
         }
       });
 
-      // Assert
-      const responseJSON: {
-        status: string,
-        message: string
-      } = JSON.parse(response.payload);
+      const {data: { addedComment }} = JSON.parse(commentResponse.payload);
 
-      expect(response.statusCode).toEqual(400);
-      expect(responseJSON.status).toEqual('fail');
-      expect(responseJSON.message).toBeDefined();
-    });
-
-    it('should throw error with code 404 if trying to add comment on a non-existent thread', async () => {
-      // Action
-      const response = await server.inject({
-        method: 'POST',
-        url: `/threads/invalid_id/comments`,
+      // delete comment
+      const deleteResponse = await server.inject({
+        method: 'DELETE',
         headers: {
           authorization
         },
-        payload: {
-          content: "this is comment content",
-        }
+        url: `/threads/${threadId}/comments/${addedComment.id}`,
+      });
+      const deletedComment = JSON.parse(deleteResponse.payload);
+      expect(deletedComment.status).toBe('success');
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`
       });
 
+      const { status, data: { thread } }: {
+        status: string,
+        data: {
+          thread: ThreadDetailsEntity
+        }
+      } = JSON.parse(response.payload);
+
       // Assert
-      const responseJSON: {
+      expect(response.statusCode).toBe(200);
+      expect(status).toBe('success');
+      expect(thread).toBeDefined();
+      expect(thread.comments?.[0].content).toEqual('**komentar telah dihapus**');
+    });
+
+    it("should throw 404 when try to get ThreadDetails with invalid id", async () => {
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/invalid_id`
+      });
+
+      const { status, message }: {
         status: string,
         message: string
       } = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(404);
-      expect(responseJSON.status).toEqual('fail');
-      expect(responseJSON.message).toBeDefined();
+
+
+      // Assert
+      expect(response.statusCode).toBe(404);
+      expect(status).toBe('fail');
+      expect(message).toBeDefined();
     });
   });
 });

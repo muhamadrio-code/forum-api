@@ -11,7 +11,7 @@ describe("ThreadRepositoryPostgres", () => {
   beforeEach(async () => {
     await PostgresTestHelper.truncate({
       pool,
-      tableName: 'threads'
+      tableName: ['threads', 'thread_comments']
     });
   });
 
@@ -110,6 +110,37 @@ describe("ThreadRepositoryPostgres", () => {
 
     // Act & Assert
     await expect(threadRepository.verifyThreadAvaibility('999')).rejects.toThrow();
+    expect(querySpy).toHaveBeenCalled();
+  });
+
+  it('should return ThreadDetails with comments and replies when getThreadDetails is called', async () => {
+    // Arrange
+    const threadRepository = new ThreadRepositoryPostgres(pool);
+    await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
+    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', threadId: '1', username: 'user-2' });
+    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content 2', threadId: '1', username: 'user-3', replyTo: '1', isDelete: true });
+    const querySpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadRepository.getThreadDetails('1')).resolves.toStrictEqual({
+      id: '1',
+      title: 'title-1',
+      body: 'body-1',
+      date: expect.any(Date),
+      username: 'user-1',
+      comments: [{
+        id: '1',
+        content: 'content 1',
+        date: expect.any(String),
+        username: 'user-2',
+        replies: [{
+          id: '2',
+          content: '**balasan telah dihapus**',
+          date: expect.any(String),
+          username: 'user-3'
+        }]
+      }]
+    });
     expect(querySpy).toHaveBeenCalled();
   });
 });

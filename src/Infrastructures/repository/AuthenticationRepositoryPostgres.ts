@@ -2,7 +2,7 @@ import { Pool, QueryConfig } from "pg";
 import AuthenticationRepository from "../../Domains/authentications/AuthenticationRepository";
 import InvariantError from "../../Common/Errors/InvariantError";
 
-export default class PostgresAuthenticationRepository extends AuthenticationRepository {
+export default class AuthenticationRepositoryPostgres extends AuthenticationRepository {
   private readonly pool: Pool;
 
   constructor(pool: Pool) {

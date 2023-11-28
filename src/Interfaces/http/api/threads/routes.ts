@@ -1,8 +1,6 @@
-import Hapi from '@hapi/hapi';
-import UserHandler from './handler';
 import ThreadHandler from './handler';
 
-export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: ThreadHandler) => {
+export const routes = (handler: ThreadHandler) => {
   return [
     {
       method: 'POST',
@@ -13,13 +11,9 @@ export const routes: (handler: UserHandler) => Hapi.ServerRoute[] = (handler: Th
       handler: handler.postThreadhandler
     },
     {
-      method: 'POST',
-      path: '/threads/{threadId}/comments',
-      options: {
-        auth: "forumapi_jwt"
-      },
-      handler: handler.postThreadCommenthandler
+      method: 'GET',
+      path: '/threads/{threadId}',
+      handler: handler.getThreadDetailsHandler
     },
-
   ];
 };

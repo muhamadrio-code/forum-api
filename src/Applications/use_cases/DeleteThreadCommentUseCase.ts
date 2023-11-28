@@ -1,16 +1,12 @@
 import { inject, injectable } from "tsyringe";
 import ThreadCommentRepository from "../../Domains/comments/ThreadCommentsRepository";
-import Validator from "../security/Validator";
-import { Comment, CommentUseCasePayload } from "../../Domains/entities/Comment";
-import { nanoid } from "nanoid";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import UserRepository from "../../Domains/users/UserRepository";
-
+import ClientError from "../../Common/Errors/ClientError";
 
 @injectable()
-export default class AddThreadCommentUseCase {
+export default class DeleteThreadCommentUseCase {
   private readonly threadCommentsRepository: ThreadCommentRepository;
-  private readonly validator: Validator;
   private readonly usersRepository: UserRepository;
   private readonly threadRepository: ThreadRepository;
 
@@ -18,27 +14,17 @@ export default class AddThreadCommentUseCase {
     @inject("ThreadCommentsRepository") threadCommentsRepository: ThreadCommentRepository,
     @inject("UserRepository") userRepository: UserRepository,
     @inject("ThreadRepository") threadRepository: ThreadRepository,
-    @inject("CommentValidator") validator: Validator
   ){
     this.threadCommentsRepository = threadCommentsRepository;
     this.usersRepository = userRepository;
     this.threadRepository = threadRepository;
-    this.validator = validator;
   }
 
-  async execute({ content, username, threadId }: CommentUseCasePayload) {
-    await Promise.all([
-      Promise.resolve(this.validator.validatePayload({ content })),
-      this.usersRepository.getUserByUsername(username),
-      this.threadRepository.verifyThreadAvaibility(threadId)
-    ]);
+  async execute(payload: { commentId:string, username: string, threadId:string }) {
+    const user = await this.usersRepository.getUserByUsername(payload.username);
+    const thread = await this.threadRepository.getThreadById(payload.threadId);
+    if(user.username !== thread.username) throw new ClientError("Forbidden", 403);
 
-    const newComment: Comment = {
-      id: nanoid(16),
-      threadId: threadId,
-      content,
-      username
-    };
-    return await this.threadCommentsRepository.addComment(newComment);
+    return await this.threadCommentsRepository.deleteComment(payload.commentId);
   }
 }
