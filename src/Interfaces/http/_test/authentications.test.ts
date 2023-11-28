@@ -2,9 +2,9 @@ import { container } from "tsyringe";
 import { pool } from "../../../Infrastructures/database/postgres/Pool";
 import { PostgresTestHelper } from "../../../Infrastructures/repository/_test/helper/PostgresTestHelper";
 import { registerDependenciesToContainer } from "../../../Infrastructures/lib/di";
-import { authenticationsPlugin } from "../api/authentications";
+import { authentications } from "../api/authentications";
 import { createServer } from "../../../Infrastructures/http/createServer";
-import { usersPlugin } from "../api/users";
+import { users } from "../api/users";
 import Hapi from "@hapi/hapi";
 import { token } from "@hapi/jwt";
 import { randomUUID } from "crypto";
@@ -16,7 +16,7 @@ describe('/authentications endpoint', () => {
     beforeAll(async () => {
       registerDependenciesToContainer();
 
-      server = await createServer([usersPlugin, authenticationsPlugin]);
+      server = await createServer([users, authentications]);
       await server.start();
 
       // Register new user
@@ -253,7 +253,7 @@ describe('/authentications endpoint', () => {
   describe('DELETE /authentications, Test logout user flow', () => {
     it('should response 200 if refresh token valid', async () => {
       // Arrange
-      const server = await createServer([ authenticationsPlugin ]);
+      const server = await createServer([ authentications ]);
       const refreshToken = 'refresh_token';
       await PostgresTestHelper.addToken(pool, refreshToken);
 
@@ -274,7 +274,7 @@ describe('/authentications endpoint', () => {
 
     it('should response 400 if refresh token not registered in database', async () => {
       // Arrange
-      const server = await createServer([ authenticationsPlugin ]);
+      const server = await createServer([ authentications ]);
       const refreshToken = token.generate({ id: randomUUID(), username: "aquamarine" }, process.env.REFRESH_TOKEN_KEY!);
 
       // Action

@@ -1,7 +1,7 @@
 import { createServer } from "../../../Infrastructures/http/createServer";
 import { registerDependenciesToContainer } from "../../../Infrastructures/lib/di";
 import { PostgresTestHelper } from "../../../Infrastructures/repository/_test/helper/PostgresTestHelper";
-import { plugins } from "../api/plugins";
+import { plugins } from "../api";
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
 import { container } from "tsyringe";
 import { Server } from "@hapi/hapi";

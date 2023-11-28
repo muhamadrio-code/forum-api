@@ -2,7 +2,7 @@ import { container } from "tsyringe";
 import { pool } from "../../../Infrastructures/database/postgres/Pool";
 import { createServer } from "../../../Infrastructures/http/createServer";
 import { PostgresTestHelper } from "../../../Infrastructures/repository/_test/helper/PostgresTestHelper";
-import { usersPlugin } from "../api/users";
+import { users } from "../api/users";
 import { registerDependenciesToContainer } from "../../../Infrastructures/lib/di";
 
 describe('/users endpoint', () => {
@@ -30,7 +30,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: 'Lunatic Indonesia',
       };
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -54,7 +54,7 @@ describe('/users endpoint', () => {
         password: 'secret',
       };
 
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -78,7 +78,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: ['Dicoding Indonesia'],
       };
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -102,7 +102,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: 'Dicoding Indonesia',
       };
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -127,7 +127,7 @@ describe('/users endpoint', () => {
         password: 'secret',
         fullname: 'Dicoding Indonesia',
       };
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -156,7 +156,7 @@ describe('/users endpoint', () => {
         ...requestPayload
       });
 
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -182,7 +182,7 @@ describe('/users endpoint', () => {
         password: 's',
       };
 
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action
@@ -207,7 +207,7 @@ describe('/users endpoint', () => {
         password: 'super_secret',
       };
 
-      const sut = usersPlugin;
+      const sut = users;
       const server = await createServer([sut]);
 
       // Action

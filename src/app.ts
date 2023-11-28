@@ -2,7 +2,7 @@
 require('dotenv').config();
 import "reflect-metadata";
 import { createServer } from "./Infrastructures/http/createServer";
-import { plugins } from "./Interfaces/http/api/plugins";
+import { plugins } from "./Interfaces/http/api";
 import { registerDependenciesToContainer } from "./Infrastructures/lib/di";
 
 const startServer = async () => {
