@@ -118,8 +118,10 @@ export default class ThreadHandler {
 
   deleteCommentReplyHandler =async (req:Request, h: ResponseToolkit) => {
     const { username } = req.auth.credentials;
-    const { threadId, replyId } = req.params;
-    await this.deleteCommentReplyUseCase.execute({ threadId, username: username as string, replyId });
+    const { threadId, replyId, commentId } = req.params;
+    await this.deleteCommentReplyUseCase.execute({
+      threadId, username: username as string, replyId, commentId: commentId as string
+    });
 
     return h.response({
       status: "success"

@@ -1,5 +1,5 @@
 import NotFoundError from "../../../Common/Errors/NotFoundError";
-import { CommentEntity } from "../../../Domains/entities/Comment";
+import { Comment, CommentEntity } from "../../../Domains/entities/Comment";
 import { pool } from "../../database/postgres/Pool";
 import ThreadCommentRepositoryPostgres from "../ThreadCommentRepositoryPostgres";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres";
@@ -20,6 +20,39 @@ describe('ThreadCommentRepositoryPostgres', () => {
   afterAll(async () => {
     jest.clearAllMocks();
     await pool.end();
+  });
+
+  it('should successfully get comment reply', async () => {
+    // Arrange
+    const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+    const comment: Comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'user12'};
+    const commentReply: Comment = { id: '2', threadId: '1', content: 'Test Reply', username: 'user21', replyTo: '1' };
+
+    await expect(threadCommentRepository.addComment(comment)).resolves.not.toThrow();
+    await expect(threadCommentRepository.addCommentReply(commentReply)).resolves.not.toThrow();
+
+    // Act & Assert
+    await expect(threadCommentRepository.getCommentReplyById('2')).resolves.toStrictEqual({
+      content: "Test Reply",
+      date: expect.any(Date),
+      id: "2",
+      is_delete: false,
+      reply_to: "1",
+      thread_id: "1",
+      username: "user21"
+    });
+    expect(poolSpy).toHaveBeenCalled();
+  });
+
+  it('should throw error when get comment reply on non-existed reply', async () => {
+    // Arrange
+    const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadCommentRepository.getCommentReplyById('invalid')).rejects.toThrow('balasan tidak ditemukan');
+    expect(poolSpy).toHaveBeenCalled();
   });
 
   it('should throw NotFoundError when call getCommentById on non-existed comment', async () => {

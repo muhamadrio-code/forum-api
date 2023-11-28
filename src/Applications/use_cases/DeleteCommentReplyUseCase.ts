@@ -20,10 +20,11 @@ export default class DeleteThreadCommentReplyUseCase {
     this.threadRepository = threadRepository;
   }
 
-  async execute(payload: { replyId: string, username: string, threadId: string }) {
+  async execute(payload: { replyId: string, username: string, threadId: string, commentId:string }) {
     const user = await this.usersRepository.getUserByUsername(payload.username);
-    await this.threadRepository.getThreadById(payload.threadId);
-    const reply = await this.threadCommentsRepository.getCommentById(payload.replyId);
+    await this.threadRepository.verifyThreadAvaibility(payload.threadId);
+    await this.threadCommentsRepository.getCommentById(payload.commentId);
+    const reply = await this.threadCommentsRepository.getCommentReplyById(payload.replyId);
     if (user.username !== reply.username) throw new ClientError("Forbidden", 403);
 
     await this.threadCommentsRepository.deleteComment(payload.replyId);

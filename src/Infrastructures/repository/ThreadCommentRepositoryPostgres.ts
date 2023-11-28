@@ -23,6 +23,18 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
     return rows[0];
   }
 
+  async getCommentReplyById(id: string) {
+    const query: QueryConfig = {
+      text: `SELECT * FROM thread_comments WHERE id=$1 AND reply_to IS NOT NULL`,
+      values: [id]
+    };
+
+    const { rows }: QueryResult<CommentEntity> = await this.pool.query(query);
+    if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
+
+    return rows[0];
+  }
+
   async addComment(comment: Comment) {
     const { id, threadId: thread_id, content, username } = comment;
     const query: QueryConfig = {
