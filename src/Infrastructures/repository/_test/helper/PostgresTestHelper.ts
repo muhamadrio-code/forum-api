@@ -46,7 +46,15 @@ export const PostgresTestHelper = {
     const { rows }: QueryResult<CommentEntity> = await pool.query(query);
     return rows[0];
   },
+  async getCommentReplyById(pool: Pool, id:string) {
+    const query = {
+      text: "SELECT * FROM thread_comments WHERE id=$1 AND reply_to IS NOT NULL",
+      values: [id]
+    };
 
+    const { rows }: QueryResult<CommentEntity> = await pool.query(query);
+    return rows[0];
+  },
   async getThreadById(pool: Pool, id:string) {
     const query = {
       text: "SELECT * FROM threads WHERE id=$1",
