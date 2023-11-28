@@ -16,7 +16,7 @@ export type ThreadDetailsEntity = {
   readonly body: string,
   readonly date: string,
   readonly username: string,
-  readonly comments: CommentEntity[] | null
+  readonly comments: CommentEntity[]
 }
 
 export type ThreadPayload = Pick<Thread, 'title' | 'body'>

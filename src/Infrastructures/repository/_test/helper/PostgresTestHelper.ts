@@ -72,7 +72,7 @@ export const PostgresTestHelper = {
     pool: Pool,
     comment: Comment
   ) {
-    const { id, threadId, replyTo, content, username, is_delete } = comment;
+    const { id, threadId, replyTo, content, username, isDelete: is_delete } = comment;
     await pool.query(
       `INSERT INTO thread_comments(id, thread_id, reply_to, content, username, is_delete) 
       VALUES($1, $2, $3, $4, $5, $6)

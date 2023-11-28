@@ -13,8 +13,7 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
 
   async getCommentById(id: string) {
     const query: QueryConfig = {
-      text: `SELECT id, username, content, date, thread_id
-      FROM thread_comments WHERE id=$1`,
+      text: `SELECT * FROM thread_comments WHERE id=$1`,
       values: [id]
     };
 

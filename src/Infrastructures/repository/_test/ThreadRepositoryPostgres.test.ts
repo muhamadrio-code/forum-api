@@ -118,7 +118,7 @@ describe("ThreadRepositoryPostgres", () => {
     const threadRepository = new ThreadRepositoryPostgres(pool);
     await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
     await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', threadId: '1', username: 'user-2' });
-    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content 2', threadId: '1', username: 'user-3', replyTo: '1', is_delete: true });
+    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content 2', threadId: '1', username: 'user-3', replyTo: '1', isDelete: true });
     const querySpy = jest.spyOn(pool, 'query');
 
     // Act & Assert

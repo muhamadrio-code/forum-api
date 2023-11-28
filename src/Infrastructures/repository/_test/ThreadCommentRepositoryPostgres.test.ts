@@ -1,4 +1,5 @@
 import NotFoundError from "../../../Common/Errors/NotFoundError";
+import { CommentEntity } from "../../../Domains/entities/Comment";
 import { pool } from "../../database/postgres/Pool";
 import ThreadCommentRepositoryPostgres from "../ThreadCommentRepositoryPostgres";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres";
@@ -21,19 +22,38 @@ describe('ThreadCommentRepositoryPostgres', () => {
     await pool.end();
   });
 
+  it('should throw NotFoundError when call getCommentById on non-existed comment', async () => {
+    // Arrange
+    const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadCommentRepository.getCommentById('invalid')).rejects.toThrow(NotFoundError);
+    expect(poolSpy).toHaveBeenCalled();
+  });
+
   it('should successfully add comment to the database and return the added comment', async () => {
     // Arrange
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
-    const comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'Test User' };
+    const comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'user12' };
+    const commentEntity: CommentEntity = {
+      id: '1',
+      thread_id: '1',
+      username: 'user12',
+      content: 'Test Comment',
+      date: expect.any(Date),
+      is_delete: false,
+      reply_to: null
+    };
 
     // Act & Assert
     await expect(threadCommentRepository.addComment(comment))
       .resolves
-      .toStrictEqual({ id: '1', content: 'Test Comment', owner: 'Test User' });
+      .toStrictEqual({ id: '1', content: 'Test Comment', owner: 'user12' });
     expect(poolSpy).toHaveBeenCalled();
 
-    await expect(PostgresTestHelper.getCommentById(pool, '1')).resolves.toBeDefined();
+    await expect(threadCommentRepository.getCommentById('1')).resolves.toStrictEqual(commentEntity);
   });
 
   it('should soft-delete comment and return the DeletedComment object', async () => {

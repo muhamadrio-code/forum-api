@@ -3,8 +3,8 @@ export type Comment = {
   readonly threadId:string,
   readonly username: string,
   readonly content: string,
-  readonly is_delete?: boolean,
-  readonly replyTo?: string,
+  readonly isDelete?: boolean,
+  readonly replyTo?: string | null,
 }
 
 export type CommentEntity = {
@@ -13,6 +13,8 @@ export type CommentEntity = {
   readonly username: string,
   readonly content: string,
   readonly date: Date,
+  readonly is_delete?: boolean,
+  readonly reply_to?: string | null,
 }
 
 export type AddedComment = Pick<Comment, 'id' | 'content'> & { owner: string }
