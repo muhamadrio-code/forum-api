@@ -21,7 +21,7 @@
 </p>
 
 ## Quick Start
-To develop locally, you will need to clone this repository and set up all the env vars outlined in the [`.env.example` file](https://github.com/muhamadrio-code/forum-ap/.env.example).
+To develop locally, you will need to clone this repository and set up all the env vars outlined in the [`.env.example` file](https://github.com/muhamadrio-code/forum-api/blob/master/.env.example).
 
 Once that's done, you can use the following commands to run the app locally:
 
