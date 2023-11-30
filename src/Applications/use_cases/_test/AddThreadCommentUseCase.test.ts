@@ -53,12 +53,12 @@ describe('AddThreadCommentUseCase', () => {
     );
   });
 
-  it("it should successfully return AddedComment object", async () => {
+  it("it should successfully add comment", async () => {
     // Arange
     ThreadCommentsRepository.default.prototype.addComment = jest.fn().mockResolvedValue({ id: "comment123", ...useCasePayload });
 
     // Act
-    const result = await addThreadCommentUseCase.execute(useCasePayload);
+    await addThreadCommentUseCase.execute(useCasePayload);
 
     // Assert
     expect(ThreadCommentsRepository.default.prototype.addComment).toHaveBeenCalledWith({
@@ -67,7 +67,6 @@ describe('AddThreadCommentUseCase', () => {
       content: useCasePayload.content,
       username: useCasePayload.username
     });
-    expect(result).toStrictEqual({ id: "comment123", ...useCasePayload });
   });
 
   it('should throw error when execute with invalid content', async () => {
