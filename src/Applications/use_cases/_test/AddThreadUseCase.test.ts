@@ -1,3 +1,4 @@
+import { AddedThread } from "../../../Domains/entities/Thread";
 import ThreadRepository from "../../../Domains/threads/ThreadRepository";
 import ZodThreadValidator from "../../../Infrastructures/security/ZodThreadValidator";
 import AddThreadUseCase from "../AddThreadUseCase";
@@ -10,7 +11,12 @@ describe('AddThreadUseCase', () => {
   beforeEach(async () => {
     // Arrange
     threadRepositoryMock = {
-      addThread: jest.fn(),
+      addThread: jest.fn().mockResolvedValue({
+        id: 'id123',
+        title: "this is title",
+        body: "this is body",
+        username: "username1"
+      }),
       getThreadById: jest.fn(),
       verifyThreadAvaibility: jest.fn(),
       getThreadDetails: jest.fn()
@@ -44,11 +50,17 @@ describe('AddThreadUseCase', () => {
      const payload = { title: "this is title", body: "this is body" };
 
     // Act
-    await addThreadUseCase.execute({ ...payload, username: 'username1' });
+    const result: AddedThread = await addThreadUseCase.execute({ ...payload, username: 'username1' });
 
      // Assert
     expect(threadRepositoryMock.addThread).toHaveBeenCalledTimes(1);
     expect(threadRepositoryMock.addThread)
     .toHaveBeenCalledWith({ id: expect.any(String), title: "this is title", body: "this is body", username: 'username1' });
+    expect(result).toStrictEqual({
+      id: "id123",
+      title: "this is title",
+      body: "this is body",
+      username: "username1"
+    });
   });
 });
