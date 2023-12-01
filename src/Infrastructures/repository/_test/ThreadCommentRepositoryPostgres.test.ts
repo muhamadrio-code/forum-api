@@ -1,5 +1,5 @@
 import NotFoundError from "../../../Common/Errors/NotFoundError";
-import { Comment, CommentEntity } from "../../../Domains/entities/Comment";
+import { Comment } from "../../../Domains/entities/Comment";
 import { pool } from "../../database/postgres/Pool";
 import ThreadCommentRepositoryPostgres from "../ThreadCommentRepositoryPostgres";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres";
@@ -26,8 +26,8 @@ describe('ThreadCommentRepositoryPostgres', () => {
     // Arrange
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
-    const comment: Comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'user12'};
-    const commentReply: Comment = { id: '2', threadId: '1', content: 'Test Reply', username: 'user21', replyTo: '1' };
+    const comment: Comment = { id: '1', thread_id: '1', content: 'Test Comment', username: 'user12'};
+    const commentReply: Comment = { id: '2', thread_id: '1', content: 'Test Reply', username: 'user21', reply_to: '1' };
 
     await expect(threadCommentRepository.addComment(comment)).resolves.not.toThrow();
     await expect(threadCommentRepository.addCommentReply(commentReply)).resolves.not.toThrow();
@@ -69,16 +69,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
     // Arrange
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
-    const comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'user12' };
-    const commentEntity: CommentEntity = {
-      id: '1',
-      thread_id: '1',
-      username: 'user12',
-      content: 'Test Comment',
-      date: expect.any(Date),
-      is_delete: false,
-      reply_to: null
-    };
+    const comment = { id: '1', thread_id: '1', content: 'Test Comment', username: 'user12' };
 
     // Act & Assert
     await expect(threadCommentRepository.addComment(comment))
@@ -86,14 +77,22 @@ describe('ThreadCommentRepositoryPostgres', () => {
       .toStrictEqual({ id: '1', content: 'Test Comment', owner: 'user12' });
     expect(poolSpy).toHaveBeenCalled();
 
-    await expect(threadCommentRepository.getCommentById('1')).resolves.toStrictEqual(commentEntity);
+    await expect(threadCommentRepository.getCommentById('1')).resolves.toStrictEqual({
+      id: '1',
+      thread_id: '1',
+      username: 'user12',
+      content: 'Test Comment',
+      is_delete: false,
+      reply_to: null,
+      date: expect.any(Date),
+    });
   });
 
   it('should soft-delete comment and return the DeletedComment object', async () => {
     // Arrange
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
-    const comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'Test User' };
+    const comment = { id: '1', thread_id: '1', content: 'Test Comment', username: 'Test User' };
     await threadCommentRepository.addComment(comment);
 
     // Act & Assert
@@ -109,7 +108,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
     // Arrange
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
-    const comment = { id: '1', threadId: '1', content: 'Test Comment', username: 'Test User' };
+    const comment = { id: '1', thread_id: '1', content: 'Test Comment', username: 'Test User' };
     await threadCommentRepository.addComment(comment);
 
     // Act & Assert
@@ -121,12 +120,12 @@ describe('ThreadCommentRepositoryPostgres', () => {
     // Arrange
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'connect');
-    const comment = { id: 'c-1', threadId: '1', content: 'Test Comment', username: 'Test User' };
+    const comment = { id: 'c-1', thread_id: '1', content: 'Test Comment', username: 'Test User' };
     await threadCommentRepository.addComment(comment);
 
     // Action
     const reply = await threadCommentRepository.addCommentReply({
-      id: 'rep-1', threadId: '1', content: 'Test balasan', username: 'Test User', replyTo: 'c-1'
+      id: 'rep-1', thread_id: '1', content: 'Test balasan', username: 'Test User', reply_to: 'c-1'
     });
     const result = await PostgresTestHelper.getCommentById(pool, 'rep-1');
 
@@ -147,7 +146,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
 
     // Act & Assert
     await expect(threadCommentRepository.addCommentReply({
-      id: 'rep-1', threadId: '213', content: 'Test balasan', username: 'Test User', replyTo: 'c-1'
+      id: 'rep-1', thread_id: '213', content: 'Test balasan', username: 'Test User', reply_to: 'c-1'
     })).rejects.toThrow(NotFoundError);
   });
 });

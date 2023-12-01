@@ -58,7 +58,7 @@ describe("ThreadRepositoryPostgres", () => {
     expect(result).toBeDefined();
   });
 
-  it('should return ThreadEntity object', async () => {
+  it('should return ThreadEntity object when call getThreadById', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
@@ -84,7 +84,7 @@ describe("ThreadRepositoryPostgres", () => {
     });
   });
 
-  it('should not throw error when call verifyThreadAvaibility if thread is exist', async () => {
+  it('should not throw error when call getThreadById if thread is exist', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
@@ -103,13 +103,13 @@ describe("ThreadRepositoryPostgres", () => {
     expect(querySpy).toHaveBeenCalled();
   });
 
-  it('should throw error when call verifyThreadAvaibility if thread is not exist', async () => {
+  it('should throw error when call getThreadById if thread is not exist', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
 
     // Act & Assert
-    await expect(threadRepository.getThreadById('999')).rejects.toThrow();
+    await expect(threadRepository.getThreadById('999')).rejects.toThrow('thread tidak ditemukan');
     expect(querySpy).toHaveBeenCalled();
   });
 
@@ -123,12 +123,29 @@ describe("ThreadRepositoryPostgres", () => {
     expect(querySpy).toHaveBeenCalled();
   });
 
-  it('should return ThreadDetails with comments and replies when getThreadDetails is called', async () => {
+  it('should return ThreadDetails with null comments when getThreadDetails is called on thread with no comments', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
-    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', threadId: '1', username: 'user-2' });
-    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content 2', threadId: '1', username: 'user-3', replyTo: '1', isDelete: true });
+    const querySpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadRepository.getThreadDetails('1')).resolves.toStrictEqual({
+      id: '1',
+      title: 'title-1',
+      body: 'body-1',
+      date: expect.any(Date),
+      username: 'user-1',
+      comments: null
+    });
+    expect(querySpy).toHaveBeenCalled();
+  });
+
+  it('should return ThreadDetails with comments and empty replies when getThreadDetails', async () => {
+    // Arrange
+    const threadRepository = new ThreadRepositoryPostgres(pool);
+    await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
+    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', thread_id: '1', username: 'user-2' });
     const querySpy = jest.spyOn(pool, 'query');
 
     // Act & Assert
@@ -143,11 +160,40 @@ describe("ThreadRepositoryPostgres", () => {
         content: 'content 1',
         date: expect.any(String),
         username: 'user-2',
+        is_delete: false,
+        replies: []
+      }]
+    });
+    expect(querySpy).toHaveBeenCalled();
+  });
+
+  it('should return ThreadDetails with comments and replies when getThreadDetails is called', async () => {
+    // Arrange
+    const threadRepository = new ThreadRepositoryPostgres(pool);
+    await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
+    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', thread_id: '1', username: 'user-2' });
+    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content reply', thread_id: '1', username: 'user-3', reply_to: '1', is_delete: true });
+    const querySpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadRepository.getThreadDetails('1')).resolves.toStrictEqual({
+      id: '1',
+      title: 'title-1',
+      body: 'body-1',
+      date: expect.any(Date),
+      username: 'user-1',
+      comments: [{
+        id: '1',
+        content: 'content 1',
+        date: expect.any(String),
+        username: 'user-2',
+        is_delete: false,
         replies: [{
           id: '2',
-          content: '**balasan telah dihapus**',
+          content: 'content reply',
           date: expect.any(String),
-          username: 'user-3'
+          username: 'user-3',
+          is_delete: true
         }]
       }]
     });

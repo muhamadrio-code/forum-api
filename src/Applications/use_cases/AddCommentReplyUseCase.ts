@@ -25,19 +25,19 @@ export default class AddCommentReplyuseCase {
     this.validator = validator;
   }
 
-  async execute({ content, username, threadId, replyTo }: CommentUseCasePayload) {
+  async execute({ content, username, thread_id, reply_to }: CommentUseCasePayload) {
     await Promise.all([
       Promise.resolve(this.validator.validatePayload({ content })),
       this.usersRepository.getUserByUsername(username),
-      this.threadRepository.getThreadById(threadId)
+      this.threadRepository.getThreadById(thread_id)
     ]);
 
     const newComment: Comment = {
       id: nanoid(16),
-      threadId: threadId,
+      thread_id,
       content,
       username,
-      replyTo
+      reply_to
     };
     return await this.threadCommentsRepository.addCommentReply(newComment);
   }

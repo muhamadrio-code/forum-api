@@ -1,4 +1,4 @@
-import { CommentEntity } from "./Comment";
+import { CommentWithReplies } from "./Comment";
 
 export type Thread = {
   readonly id: string,
@@ -16,7 +16,7 @@ export type ThreadDetailsEntity = {
   readonly body: string,
   readonly date: string,
   readonly username: string,
-  readonly comments: CommentEntity[]
+  readonly comments: CommentWithReplies[] | null
 }
 
 export type ThreadPayload = Pick<Thread, 'title' | 'body'>

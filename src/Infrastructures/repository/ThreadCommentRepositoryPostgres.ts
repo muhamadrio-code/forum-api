@@ -36,7 +36,7 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
   }
 
   async addComment(comment: Comment) {
-    const { id, threadId: thread_id, content, username } = comment;
+    const { id, thread_id, content, username } = comment;
     const query: QueryConfig = {
       text: "INSERT INTO thread_comments VALUES($1, $2, $3, $4) RETURNING id, content, username AS owner",
       values: [id, thread_id, content, username]
@@ -47,7 +47,7 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
   }
 
   async addCommentReply(comment: Comment) {
-    const { id, threadId, replyTo, content, username } = comment;
+    const { id, thread_id, reply_to, content, username } = comment;
     const query : QueryConfig = {
       text: `
       WITH comments AS(
@@ -70,7 +70,7 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
       RETURNING 
         id, content, username AS owner
       `,
-      values: [id, threadId, content, username, replyTo]
+      values: [id, thread_id, content, username, reply_to]
     };
 
     const { rows }: QueryResult<AddedComment> = await this.pool.query(query);
