@@ -28,10 +28,7 @@ describe('UserLoginUseCase', () => {
       getUserPasswordByUsername: jest.fn().mockResolvedValue('encrypted password')
     };
     validator = {
-      validatePayload: jest.fn().mockReturnValue({
-        username: 'testuser',
-        password: 'testpassword'
-      })
+      validatePayload: jest.fn()
     };
     authenticationRepository = {
       addToken: jest.fn(),
@@ -40,7 +37,9 @@ describe('UserLoginUseCase', () => {
     };
     passwordHash = {
       hash:jest.fn(),
-      comparePassword: jest.fn().mockResolvedValue(true)
+      comparePassword: jest.fn().mockImplementation((password: string) => {
+        return password === 'testpassword';
+      })
     };
     authenticationTokenManager = {
       createAccessToken: jest.fn().mockResolvedValue('accessToken'),
@@ -106,5 +105,12 @@ describe('UserLoginUseCase', () => {
       accessToken: "accessToken",
       refreshToken: "refreshToken"
     } as AuthenticationTokens);
+  });
+
+  it('should throw error when password and encrypted password are failed to compare', async () => {
+    // Act & Assert
+    await expect(useCase.execute({ username: payload.username, password: 'invalidpassword' }))
+      .rejects
+      .toThrow("kredensial yang Anda masukkan salah");
   });
 });
