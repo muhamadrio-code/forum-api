@@ -36,10 +36,6 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
     return rows[0];
   }
 
-  async verifyThreadAvaibility(id: string) {
-    await this.getThreadById(id);
-  }
-
   async getThreadDetails(id: string) {
     const query: QueryConfig = {
       text: `

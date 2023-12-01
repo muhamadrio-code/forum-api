@@ -99,7 +99,7 @@ describe("ThreadRepositoryPostgres", () => {
     await threadRepository.addThread(thread);
 
     // Assert
-    await expect(threadRepository.verifyThreadAvaibility(thread.id)).resolves.not.toThrow();
+    await expect(threadRepository.getThreadById(thread.id)).resolves.not.toThrow();
     expect(querySpy).toHaveBeenCalled();
   });
 
@@ -109,7 +109,7 @@ describe("ThreadRepositoryPostgres", () => {
     const querySpy = jest.spyOn(pool, 'query');
 
     // Act & Assert
-    await expect(threadRepository.verifyThreadAvaibility('999')).rejects.toThrow();
+    await expect(threadRepository.getThreadById('999')).rejects.toThrow();
     expect(querySpy).toHaveBeenCalled();
   });
 

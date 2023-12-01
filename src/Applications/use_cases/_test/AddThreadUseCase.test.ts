@@ -18,7 +18,6 @@ describe('AddThreadUseCase', () => {
         username: "username1"
       }),
       getThreadById: jest.fn(),
-      verifyThreadAvaibility: jest.fn(),
       getThreadDetails: jest.fn()
     };
 

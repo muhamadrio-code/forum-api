@@ -14,7 +14,7 @@ describe('AddThreadCommentUseCase', () => {
     jest.resetAllMocks();
 
     UserRepository.default.prototype.getUserByUsername = jest.fn().mockResolvedValue({username: 'testuser'});
-    ThreadRepository.default.prototype.verifyThreadAvaibility = jest.fn();
+    ThreadRepository.default.prototype.getThreadById = jest.fn();
     ThreadCommentsRepository.default.prototype.getCommentById = jest.fn().mockResolvedValue({username: 'testuser'});
     ThreadCommentsRepository.default.prototype.getCommentReplyById = jest.fn().mockResolvedValue({username: 'testuser'});
     ThreadCommentsRepository.default.prototype.deleteComment = jest.fn();
@@ -69,7 +69,7 @@ describe('AddThreadCommentUseCase', () => {
     await useCase.execute({ username, threadId, replyId, commentId });
 
     // Assert
-    expect(ThreadRepository.default.prototype.verifyThreadAvaibility).toHaveBeenCalledWith(threadId);
+    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(threadId);
   });
 
   it("should validate that comment is exist before proceeding", async () => {

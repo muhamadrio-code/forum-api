@@ -16,7 +16,7 @@ describe('AddThreadCommentReplyUseCase', () => {
     jest.resetAllMocks();
 
     UserRepository.default.prototype.getUserByUsername = jest.fn();
-    ThreadRepository.default.prototype.verifyThreadAvaibility = jest.fn();
+    ThreadRepository.default.prototype.getThreadById = jest.fn();
     Validator.default.prototype.validatePayload = jest.fn();
     ThreadCommentsRepository.default.prototype.addCommentReply = jest.fn();
 
@@ -70,7 +70,7 @@ describe('AddThreadCommentReplyUseCase', () => {
     await useCase.execute({ content, username, threadId, replyTo });
 
     // Assert
-    expect(ThreadRepository.default.prototype.verifyThreadAvaibility).toHaveBeenCalledWith(threadId);
+    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(threadId);
   });
 
   it('should add a new comment reply to the thread comments repository when given valid input', async () => {
@@ -147,7 +147,7 @@ describe('AddThreadCommentReplyUseCase', () => {
   it('should throw error when execute with non existing thread', async () => {
     // Arrange
     const useCasePayload = { content: "valid content", threadId: "invalid-id", username: "user-1" };
-    ThreadRepository.default.prototype.verifyThreadAvaibility = jest.fn().mockImplementation(() => {
+    ThreadRepository.default.prototype.getThreadById = jest.fn().mockImplementation(() => {
       throw new Error("Thread not found");
     });
 

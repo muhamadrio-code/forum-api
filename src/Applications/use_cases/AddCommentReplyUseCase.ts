@@ -29,7 +29,7 @@ export default class AddCommentReplyuseCase {
     await Promise.all([
       Promise.resolve(this.validator.validatePayload({ content })),
       this.usersRepository.getUserByUsername(username),
-      this.threadRepository.verifyThreadAvaibility(threadId)
+      this.threadRepository.getThreadById(threadId)
     ]);
 
     const newComment: Comment = {
