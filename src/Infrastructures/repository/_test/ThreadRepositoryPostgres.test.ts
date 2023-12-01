@@ -127,8 +127,8 @@ describe("ThreadRepositoryPostgres", () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
-    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', threadId: '1', username: 'user-2' });
-    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content 2', threadId: '1', username: 'user-3', replyTo: '1', isDelete: true });
+    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', thread_id: '1', username: 'user-2' });
+    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content reply', thread_id: '1', username: 'user-3', reply_to: '1', is_delete: true });
     const querySpy = jest.spyOn(pool, 'query');
 
     // Act & Assert
@@ -143,11 +143,13 @@ describe("ThreadRepositoryPostgres", () => {
         content: 'content 1',
         date: expect.any(String),
         username: 'user-2',
+        is_delete: false,
         replies: [{
           id: '2',
-          content: '**balasan telah dihapus**',
+          content: 'content reply',
           date: expect.any(String),
-          username: 'user-3'
+          username: 'user-3',
+          is_delete: true
         }]
       }]
     });

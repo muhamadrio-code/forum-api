@@ -9,7 +9,7 @@ const Validator =
   jest.createMockFromModule<typeof import("../../security/Validator")>("../../security/Validator");
 
 describe('AddThreadCommentUseCase', () => {
-  const useCasePayload = { content: "content-1", threadId: "thread-1", username: "user-1" };
+  const useCasePayload = { content: "content-1", thread_id: "thread-1", username: "user-1" };
   let addThreadCommentUseCase: AddThreadCommentUseCase;
 
   beforeEach(() => {
@@ -49,7 +49,7 @@ describe('AddThreadCommentUseCase', () => {
   it("it should validate that thread is exist before proceeding", async () => {
     await addThreadCommentUseCase.execute(useCasePayload);
     expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(
-      useCasePayload.threadId
+      useCasePayload.thread_id
     );
   });
 
@@ -63,7 +63,7 @@ describe('AddThreadCommentUseCase', () => {
     // Assert
     expect(ThreadCommentsRepository.default.prototype.addComment).toHaveBeenCalledWith({
       id: expect.any(String),
-      threadId: useCasePayload.threadId,
+      thread_id: useCasePayload.thread_id,
       content: useCasePayload.content,
       username: useCasePayload.username
     });
@@ -71,7 +71,7 @@ describe('AddThreadCommentUseCase', () => {
 
   it('should throw error when execute with invalid content', async () => {
     // Arrange
-    const useCasePayload = { content: "", threadId: "thread-1", username: "user-1" };
+    const useCasePayload = { content: "", thread_id: "thread-1", username: "user-1" };
     Validator.default.prototype.validatePayload = jest.fn().mockImplementation(() => {
       throw new Error("Validation Error");
     });
@@ -82,7 +82,7 @@ describe('AddThreadCommentUseCase', () => {
 
   it('should throw error when execute with non existing user', async () => {
     // Arrange
-    const useCasePayload = { content: "valid content", threadId: "valid-id", username: "invalid-user-1" };
+    const useCasePayload = { content: "valid content", thread_id: "valid-id", username: "invalid-user-1" };
     UserRepository.default.prototype.getUserByUsername = jest.fn().mockImplementation(() => {
       throw new Error("User not found");
     });
@@ -93,7 +93,7 @@ describe('AddThreadCommentUseCase', () => {
 
   it('should throw error when execute with non existing thread', async () => {
     // Arrange
-    const useCasePayload = { content: "valid content", threadId: "invalid-id", username: "user-1" };
+    const useCasePayload = { content: "valid content", thread_id: "invalid-id", username: "user-1" };
     ThreadRepository.default.prototype.getThreadById = jest.fn().mockImplementation(() => {
       throw new Error("Thread not found");
     });
