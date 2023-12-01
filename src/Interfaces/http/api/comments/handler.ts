@@ -23,7 +23,7 @@ export default class ThreadCommentHandler {
     const { content }: CommentPayload = req.payload as any;
     const { threadId } = req.params;
     const { content: addedContent, id, owner }: AddedComment =
-      await this.addThreadCommentUseCase.execute({ content, username: username as string, threadId: threadId });
+      await this.addThreadCommentUseCase.execute({ content, username: username as string, thread_id: threadId });
 
     return h.response({
       status: "success",

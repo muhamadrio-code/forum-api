@@ -36,10 +36,6 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
     return rows[0];
   }
 
-  async verifyThreadAvaibility(id: string) {
-    await this.getThreadById(id);
-  }
-
   async getThreadDetails(id: string) {
     const query: QueryConfig = {
       text: `
@@ -54,12 +50,9 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
             a.username,
             a.date,
             a.thread_id,
-            COALESCE(JSONB_AGG(TO_JSONB (b.*) - '{"reply_to", "is_delete"}'::text[]) FILTER (WHERE b.id IS NOT NULL), '[]') AS replies,
-            CASE WHEN a.is_delete THEN
-              REPLACE(a.content, a.content, '**komentar telah dihapus**')
-            ELSE
-              a.content
-            END content
+            a.content,
+            a.is_delete,
+            COALESCE(JSONB_AGG(TO_JSONB (b.*) - 'reply_to') FILTER (WHERE b.id IS NOT NULL), '[]') AS replies
           FROM
             thread_comments a
             LEFT JOIN (
@@ -69,11 +62,7 @@ export default class ThreadRepositoryPostgres extends ThreadRepository {
                 is_delete,
                 date,
                 username,
-                CASE WHEN c.is_delete THEN
-                  REPLACE(c.content, c.content, '**balasan telah dihapus**')
-                ELSE
-                  c.content
-                END content
+                content
               FROM
                 thread_comments AS c
               WHERE

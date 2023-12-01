@@ -26,16 +26,16 @@ export default class AddThreadCommentUseCase {
     this.validator = validator;
   }
 
-  async execute({ content, username, threadId }: CommentUseCasePayload) {
+  async execute({ content, username, thread_id }: CommentUseCasePayload) {
     await Promise.all([
       Promise.resolve(this.validator.validatePayload({ content })),
       this.usersRepository.getUserByUsername(username),
-      this.threadRepository.verifyThreadAvaibility(threadId)
+      this.threadRepository.getThreadById(thread_id)
     ]);
 
     const newComment: Comment = {
       id: nanoid(16),
-      threadId: threadId,
+      thread_id: thread_id,
       content,
       username
     };
