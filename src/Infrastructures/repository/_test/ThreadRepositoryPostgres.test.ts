@@ -113,6 +113,16 @@ describe("ThreadRepositoryPostgres", () => {
     expect(querySpy).toHaveBeenCalled();
   });
 
+  it('should throw error when call getThreadDetails if thread is not exist', async () => {
+    // Arrange
+    const threadRepository = new ThreadRepositoryPostgres(pool);
+    const querySpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(threadRepository.getThreadDetails('999')).rejects.toThrow('thread tidak ditemukan');
+    expect(querySpy).toHaveBeenCalled();
+  });
+
   it('should return ThreadDetails with comments and replies when getThreadDetails is called', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);

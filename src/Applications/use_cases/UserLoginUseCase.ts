@@ -30,15 +30,18 @@ export default class UserLoginUseCase {
   }
 
   async execute(payload: UserLoginPayload): Promise<AuthenticationTokens> {
-    const { username, password } = this.validator.validatePayload(payload);
+    const { username, password } =  payload;
+    this.validator.validatePayload(payload);
     const encryptedPassword = await this.userRepository.getUserPasswordByUsername(username);
 
     const compareResult = await this.passwordHash.comparePassword(password, encryptedPassword);
     if(!compareResult) throw new AuthenticationError("kredensial yang Anda masukkan salah");
 
     const id = await this.userRepository.getIdByUsername(username);
-    const accessToken =  await this.authenticationTokenManager.createAccessToken({ id, username });
-    const refreshToken = await this.authenticationTokenManager.createRefreshToken({ id, username });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.authenticationTokenManager.createAccessToken({ id, username }),
+      this.authenticationTokenManager.createRefreshToken({ id, username }),
+    ]);
 
     await this.authenticationRepository.addToken(refreshToken);
     return {
