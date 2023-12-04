@@ -3,7 +3,7 @@ import { z } from 'zod';
 import ValidationError from "../../Common/Errors/ValidationError";
 
 export default class ZodAuthenticationValidator extends Validator {
-  validatePayload<AuthenticationPayload>(payload: AuthenticationPayload): Readonly<AuthenticationPayload> {
+  validatePayload<AuthenticationPayload>(payload: AuthenticationPayload) {
     const scheme = z.string({
       invalid_type_error: 'refresh token harus string',
       required_error: 'harus mengirimkan token refresh',
@@ -19,7 +19,5 @@ export default class ZodAuthenticationValidator extends Validator {
 
       throw new ValidationError(error[0]);
     }
-
-    return payload;
   }
 }

@@ -2,7 +2,7 @@ import Validator from "../../Applications/security/Validator";
 import ValidationError from "../../Common/Errors/ValidationError";
 import { CommentShceme } from "../../Domains/comments/schemes";
 export default class ZodThreadCommentValidator extends Validator {
-  validatePayload<CP>(payload: CP): Readonly<CP> {
+  validatePayload<ThreadCommentPayload>(payload: ThreadCommentPayload) {
     const result = CommentShceme.safeParse(payload);
 
     if (!result.success) {
@@ -10,7 +10,5 @@ export default class ZodThreadCommentValidator extends Validator {
         .map(({ message }) => message);
       throw new ValidationError(error[0]);
     }
-
-    return payload;
   }
 }

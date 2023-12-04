@@ -1,10 +1,9 @@
 import Validator from "../../Applications/security/Validator";
-import { ValidationResult } from "../../Domains/entities/definitions";
 import { UserScheme } from "../../Domains/users/schemes";
 import ValidationError from "../../Common/Errors/ValidationError";
 
 export default class ZodUserValidator extends Validator {
-  validatePayload<UserPayload>(payload: UserPayload): ValidationResult<UserPayload> {
+  validatePayload<UserPayload>(payload: UserPayload) {
     const result = UserScheme.safeParse(payload);
 
     if (!result.success) {
@@ -13,7 +12,5 @@ export default class ZodUserValidator extends Validator {
         .reduce((prev, curr) => prev + ';\n' + curr);
       throw new ValidationError(error);
     }
-
-    return payload;
   }
 }
