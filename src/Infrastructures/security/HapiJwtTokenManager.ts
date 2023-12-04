@@ -1,7 +1,7 @@
 import { HapiJwt } from "@hapi/jwt";
 import AuthenticationTokenManager from "../../Applications/security/AuthenticationTokenManager";
 import InvariantError from "../../Common/Errors/InvariantError";
-import { AuthenticationPayload } from "../../Domains/entities/definitions";
+import { AuthenticationPayload } from "../../Domains/authentications/entities";
 
 export default class HapiJwtTokenManager extends AuthenticationTokenManager {
   private readonly jwt: HapiJwt.Token;

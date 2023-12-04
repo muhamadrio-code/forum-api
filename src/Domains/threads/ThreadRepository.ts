@@ -1,4 +1,4 @@
-import { AddedThread, Thread, ThreadDetailsEntity, ThreadEntity } from "../entities/Thread";
+import { AddedThread, Thread, ThreadDetailsEntity, ThreadEntity } from "./entities";
 
 export default abstract class ThreadRepository {
   abstract addThread(thread: Thread): Promise<AddedThread>

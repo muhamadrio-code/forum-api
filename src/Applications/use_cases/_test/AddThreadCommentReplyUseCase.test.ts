@@ -1,4 +1,4 @@
-import { AddedComment } from "../../../Domains/entities/Comment";
+import { AddedComment } from "../../../Domains/comments/entities";
 import AddCommentReplyuseCase from "../AddCommentReplyUseCase";
 const UserRepository =
   jest.createMockFromModule<typeof import("../../../Domains/users/UserRepository")>("../../../Domains/users/UserRepository");

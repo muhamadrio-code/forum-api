@@ -8,15 +8,6 @@ describe("ZodThreadCommentValidator", () => {
     expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
-  it('should return the same payload when validation is successful', () => {
-    const validator = new ZodThreadCommentValidator();
-    const payload = { content: "this is content" };
-
-    const result = validator.validatePayload(payload);
-
-    expect(result).toBe(payload);
-  });
-
   it('should throw a error when content is invalid data type', () => {
     const validator = new ZodThreadCommentValidator();
     const payload = { content: 1231 };

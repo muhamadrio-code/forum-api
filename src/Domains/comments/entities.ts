@@ -11,7 +11,7 @@ export type CommentEntity = Omit<Comment, 'reply_to'> & { readonly date: string 
 
 export type CommentWithReplies = CommentEntity & { readonly replies: CommentEntity[] }
 
-export type AddedComment = Pick<Comment, 'id' | 'content'> & { owner: string }
+export type AddedComment = Pick<Comment, 'id' | 'content'> & { readonly owner: string }
 export type DeletedComment = Pick<Comment, 'content'>
 export type CommentPayload = Pick<Comment, 'content'>
 export type CommentUseCasePayload = Omit<Comment, 'id'>

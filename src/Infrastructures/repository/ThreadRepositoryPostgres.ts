@@ -1,5 +1,5 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
-import { Thread, ThreadEntity, AddedThread, ThreadDetailsEntity } from "../../Domains/entities/Thread";
+import { Thread, ThreadEntity, AddedThread, ThreadDetailsEntity } from "../../Domains/threads/entities";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import NotFoundError from "../../Common/Errors/NotFoundError";
 

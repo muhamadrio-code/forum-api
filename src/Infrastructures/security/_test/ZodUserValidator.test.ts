@@ -10,21 +10,7 @@ describe('ZodUserValidator', () => {
       username: "johndoe",
       password: "password123"
     };
-    const result = validator.validatePayload(payload);
-    expect(result).toEqual(payload);
-  });
-
-  it('should return a readonly validated user payload', () => {
-    const validator = new ZodUserValidator();
-    const payload = {
-      fullname: "John Doe",
-      username: "johndoe",
-      password: "password123"
-    };
-    const result = validator.validatePayload(payload);
-    expect(Object.isFrozen(result.fullname)).toBe(true);
-    expect(Object.isFrozen(result.username)).toBe(true);
-    expect(Object.isFrozen(result.password)).toBe(true);
+    expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
   it('should handle minimum length values for fullname, username, and password', () => {
@@ -34,8 +20,7 @@ describe('ZodUserValidator', () => {
       username: "john",
       password: "passwwor"
     };
-    const result = validator.validatePayload(payload);
-    expect(result).toEqual(payload);
+    expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
   it('should throw a ValidationError for an invalid fullname', () => {

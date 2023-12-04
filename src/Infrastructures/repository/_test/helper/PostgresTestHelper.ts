@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 
 import { Pool, QueryResult } from "pg";
-import { CommentEntity, Comment } from "../../../../Domains/entities/Comment";
-import { ThreadEntity } from "../../../../Domains/entities/Thread";
+import { CommentEntity, Comment } from "../../../../Domains/comments/entities";
+import { ThreadEntity } from "../../../../Domains/threads/entities";
 
 type TableName = string & ('users' | 'authentications' | 'threads' | 'thread_comments')
 

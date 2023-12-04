@@ -1,7 +1,7 @@
 import { createServer } from '../../../Infrastructures/http/createServer';
 import { registerDependenciesToContainer } from '../../../Infrastructures/lib/di';
 import { pool } from '../../../Infrastructures/database/postgres/Pool';
-import { AddedThread, ThreadDetailsEntity } from '../../../Domains/entities/Thread';
+import { AddedThread, ThreadDetailsEntity } from '../../../Domains/threads/entities';
 import { Server } from '@hapi/hapi';
 import { plugins } from '../api';
 import { PostgresTestHelper } from '../../../Infrastructures/repository/_test/helper/PostgresTestHelper';

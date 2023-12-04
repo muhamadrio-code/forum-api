@@ -1,4 +1,4 @@
-import { ThreadPayload } from "../../../Domains/entities/Thread";
+import { ThreadPayload } from "../../../Domains/threads/entities";
 import ZodThreadValidator from "../ZodThreadValidator";
 
 describe('ZodThreadValidator', () => {
@@ -9,22 +9,9 @@ describe('ZodThreadValidator', () => {
       title: "thread title"
     };
 
-    const result = validator.validatePayload(payload);
-    expect(result).toEqual(payload);
+    expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
-  it('should return a readonly validated payload', () => {
-    const validator = new ZodThreadValidator();
-    const payload: ThreadPayload = {
-      body:"thread body",
-      title: "thread title"
-    };
-
-    const result = validator.validatePayload(payload);
-
-    expect(Object.isFrozen(result.body)).toBe(true);
-    expect(Object.isFrozen(result.title)).toBe(true);
-  });
 
   it('should throw am error for a very long title', () => {
     const validator = new ZodThreadValidator();

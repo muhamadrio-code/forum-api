@@ -1,4 +1,4 @@
-import { CommentWithReplies } from "./Comment";
+import { CommentWithReplies } from "../comments/entities";
 
 export type Thread = {
   readonly id: string,
@@ -8,7 +8,7 @@ export type Thread = {
 }
 
 export type ThreadEntity = Thread & { readonly date: string }
-export type AddedThread = Omit<Thread, 'username' | 'body'> & { owner: string }
+export type AddedThread = Omit<Thread, 'username' | 'body'> & { readonly owner: string }
 
 export type ThreadDetailsEntity = {
   readonly id: string,

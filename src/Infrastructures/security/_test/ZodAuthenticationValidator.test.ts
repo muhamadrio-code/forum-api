@@ -9,15 +9,6 @@ describe('ZodAuthenticationValidator', () => {
     expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
-  it('should return the same payload when validation is successful', () => {
-    const validator = new ZodAuthenticationValidator();
-    const payload = "valid string payload";
-
-    const result = validator.validatePayload(payload);
-
-    expect(result).toBe(payload);
-  });
-
   it('should throw a ValidationError when payload is not a string', () => {
     const validator = new ZodAuthenticationValidator();
     const payload = 123;

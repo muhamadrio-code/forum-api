@@ -5,7 +5,7 @@ import { Server } from '@hapi/hapi';
 import { plugins } from '../api';
 import { PostgresTestHelper } from '../../../Infrastructures/repository/_test/helper/PostgresTestHelper';
 import { container } from 'tsyringe';
-import { AddedComment } from '../../../Domains/entities/Comment';
+import { AddedComment } from '../../../Domains/comments/entities';
 
 describe("Thread Comment", () => {
   let server: Server;

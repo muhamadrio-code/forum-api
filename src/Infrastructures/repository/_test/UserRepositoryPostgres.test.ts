@@ -1,5 +1,5 @@
 import InvariantError from "../../../Common/Errors/InvariantError";
-import { RegisteredUser, User } from "../../../Domains/entities/User";
+import { RegisteredUser, User } from "../../../Domains/users/entities";
 import UserRepository from "../../../Domains/users/UserRepository";
 import { pool } from "../../database/postgres/Pool";
 import UserRepositoryPostgres from "../UserRepositoryPostgres";

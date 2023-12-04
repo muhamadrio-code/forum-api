@@ -1,5 +1,5 @@
 import AuthenticationRepository from "../../../Domains/authentications/AuthenticationRepository";
-import { AuthenticationTokens } from "../../../Domains/entities/definitions";
+import { AuthenticationTokens } from "../../../Domains/authentications/entities";
 import UserRepository from "../../../Domains/users/UserRepository";
 import AuthenticationTokenManager from "../../security/AuthenticationTokenManager";
 import PasswordHash from "../../security/PasswordHash";

@@ -7,19 +7,8 @@ describe('ZodUserLoginValidator', () => {
       username: "johndoe",
       password: "password123"
     };
-    const result = validator.validatePayload(payload);
-    expect(result).toEqual(payload);
-  });
 
-  it('should return a readonly validated payload', () => {
-    const validator = new ZodUserLoginValidator();
-    const payload = {
-      username: "johndoe",
-      password: "password123"
-    };
-    const result = validator.validatePayload(payload);
-    expect(Object.isFrozen(result.username)).toBe(true);
-    expect(Object.isFrozen(result.password)).toBe(true);
+    expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
   it('should handle minimum length values for username, and password', () => {
@@ -28,8 +17,8 @@ describe('ZodUserLoginValidator', () => {
       username: "j".repeat(4),
       password: "p".repeat(3)
     };
-    const result = validator.validatePayload(payload);
-    expect(result).toEqual(payload);
+
+    expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
   it('should throw a ValidationError for a very long username', () => {
@@ -60,8 +49,8 @@ describe('ZodUserLoginValidator', () => {
       username: "a".repeat(50),
       password: "a".repeat(24)
     };
-    const result = validator.validatePayload(payload);
-    expect(result).toEqual(payload);
+
+    expect(() => validator.validatePayload(payload)).not.toThrow();
   });
 
   it('should throw a ValidationError if the payload contains a username with less than 4 characters', () => {

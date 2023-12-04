@@ -1,5 +1,5 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { AddedComment, CommentPayload } from "../../../../Domains/entities/Comment";
+import { AddedComment, CommentPayload } from "../../../../Domains/comments/entities";
 import InvariantError from "../../../../Common/Errors/InvariantError";
 import AddCommentReplyUseCase from "../../../../Applications/use_cases/AddCommentReplyUseCase";
 import DeleteThreadCommentReplyUseCase from "../../../../Applications/use_cases/DeleteCommentReplyUseCase";
