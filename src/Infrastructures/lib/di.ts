@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { container, instanceCachingFactory } from "tsyringe";
 import UserRepositoryPostgres from "../repository/UserRepositoryPostgres";
 import { pool } from "../database/postgres/Pool";
