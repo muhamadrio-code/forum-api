@@ -2,7 +2,7 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import UserLogoutUseCase from "../../../../Applications/use_cases/UserLogoutUseCase";
 import UserLoginUseCase from "../../../../Applications/use_cases/UserLoginUseCase";
 import RefreshAuthenticationUseCase from "../../../../Applications/use_cases/RefreshAuthenticationUseCase";
-import { UserLoginPayload } from "../../../../Domains/entities/definitions";
+import { UserLoginPayload } from "../../../../Domains/users/entities";
 import { injectable, inject } from "tsyringe";
 
 

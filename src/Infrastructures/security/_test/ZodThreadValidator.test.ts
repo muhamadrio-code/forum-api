@@ -1,4 +1,4 @@
-import { ThreadPayload } from "../../../Domains/entities/Thread";
+import { ThreadPayload } from "../../../Domains/threads/entities";
 import ZodThreadValidator from "../ZodThreadValidator";
 
 describe('ZodThreadValidator', () => {

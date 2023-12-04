@@ -1,4 +1,4 @@
-import { ThreadDetailsEntity } from "../../../Domains/entities/Thread";
+import { ThreadDetailsEntity } from "../../../Domains/threads/entities";
 import GetThreadDetailsUseCase from "../GetThreadDetailsUseCase";
 
 const ThreadRepository =

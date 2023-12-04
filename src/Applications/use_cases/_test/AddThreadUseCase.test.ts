@@ -1,4 +1,4 @@
-import { AddedThread } from "../../../Domains/entities/Thread";
+import { AddedThread } from "../../../Domains/threads/entities";
 import ThreadRepository from "../../../Domains/threads/ThreadRepository";
 import ZodThreadValidator from "../../../Infrastructures/security/ZodThreadValidator";
 import AddThreadUseCase from "../AddThreadUseCase";

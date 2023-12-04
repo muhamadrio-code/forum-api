@@ -1,4 +1,4 @@
-import { RegisteredUser, User } from "../../Domains/entities/User";
+import { RegisteredUser, User } from "./entities";
 
 export default abstract class UserRepository {
   abstract verifyUsernameAvailability(username: string): Promise<void>

@@ -1,4 +1,4 @@
-import { AuthenticationPayload } from "../../Domains/entities/definitions";
+import { AuthenticationPayload } from "../../Domains/authentications/entities";
 
 export default abstract class AuthenticationTokenManager {
   abstract createAccessToken(payload: AuthenticationPayload): Promise<string>

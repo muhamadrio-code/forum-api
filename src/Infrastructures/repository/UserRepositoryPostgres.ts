@@ -1,5 +1,5 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
-import { User,RegisteredUser } from "../../Domains/entities/User";
+import { User,RegisteredUser } from "../../Domains/users/entities";
 import UserRepository from "../../Domains/users/UserRepository";
 import InvariantError from "../../Common/Errors/InvariantError";
 

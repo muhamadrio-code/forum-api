@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import ThreadCommentRepository from "../../Domains/comments/ThreadCommentsRepository";
 import Validator from "../security/Validator";
-import { Comment, CommentUseCasePayload } from "../../Domains/entities/Comment";
+import { Comment, CommentUseCasePayload } from "../../Domains/comments/entities";
 import { nanoid } from "nanoid";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import UserRepository from "../../Domains/users/UserRepository";

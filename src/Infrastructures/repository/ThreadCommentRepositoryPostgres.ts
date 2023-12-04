@@ -1,6 +1,6 @@
 import { Pool, QueryConfig, QueryResult } from "pg";
 import ThreadCommentRepository from "../../Domains/comments/ThreadCommentsRepository";
-import { AddedComment, Comment, CommentEntity, DeletedComment } from "../../Domains/entities/Comment";
+import { AddedComment, Comment, CommentEntity, DeletedComment } from "../../Domains/comments/entities";
 import NotFoundError from "../../Common/Errors/NotFoundError";
 
 export default class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {

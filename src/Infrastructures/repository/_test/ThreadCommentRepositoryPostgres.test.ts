@@ -1,5 +1,5 @@
 import NotFoundError from "../../../Common/Errors/NotFoundError";
-import { Comment } from "../../../Domains/entities/Comment";
+import { Comment } from "../../../Domains/comments/entities";
 import { pool } from "../../database/postgres/Pool";
 import ThreadCommentRepositoryPostgres from "../ThreadCommentRepositoryPostgres";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres";

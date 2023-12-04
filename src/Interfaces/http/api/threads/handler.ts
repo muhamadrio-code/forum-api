@@ -1,6 +1,6 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import AddThreadUseCase from "../../../../Applications/use_cases/AddThreadUseCase";
-import { ThreadPayload } from "../../../../Domains/entities/Thread";
+import { ThreadPayload } from "../../../../Domains/threads/entities";
 import InvariantError from "../../../../Common/Errors/InvariantError";
 import GetThreadDetailsUseCase from "../../../../Applications/use_cases/GetThreadDetailsUseCase";
 

@@ -1,5 +1,5 @@
 import AddUserUseCase from "../AddUserUseCase";
-import { UserPayload } from "../../../Domains/entities/definitions";
+import { UserPayload } from "../../../Domains/users/entities";
 import ZodUserValidator from "../../../Infrastructures/security/ZodUserValidator";
 import UserRepository from "../../../Domains/users/UserRepository";
 import PasswordHash from "../../security/PasswordHash";

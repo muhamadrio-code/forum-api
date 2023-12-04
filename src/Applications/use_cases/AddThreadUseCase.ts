@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import Validator from "../security/Validator";
-import { AddThreadPayload, Thread } from "../../Domains/entities/Thread";
+import { AddThreadPayload, Thread } from "../../Domains/threads/entities";
 import { nanoid } from "nanoid";
 
 @injectable()

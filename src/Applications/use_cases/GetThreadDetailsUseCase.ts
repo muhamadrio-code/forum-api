@@ -1,6 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
-import { ThreadDetailsEntity } from "../../Domains/entities/Thread";
+import { ThreadDetailsEntity } from "../../Domains/threads/entities";
 
 @injectable()
 export default class GetThreadDetailsUseCase {
