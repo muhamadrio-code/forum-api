@@ -1,4 +1,4 @@
-import { AddedReply, CommentReply, CommentReplyEntity, DeletedReply } from "../entities";
+import { AddReplyUseCasePayload, AddedReply, CommentReply, CommentReplyEntity, DeletedReply } from "../entities";
 
 describe("comments entities", () => {
   it("should create CommentReply object with readonly properties", () => {
@@ -82,7 +82,7 @@ describe("comments entities", () => {
 
     // @ts-expect-error: addedReply id should readonly
     addedReply.id = 'changed';
-    // @ts-expect-error: addedReply username should readonly
+    // @ts-expect-error: addedReply owner should readonly
     addedReply.owner = 'changed';
     // @ts-expect-error: addedReply content should readonly
     addedReply.content = 'changed';
@@ -99,6 +99,31 @@ describe("comments entities", () => {
 
     // @ts-expect-error: commentWithReplies content should readonly
     deletedReply.content = 'changed';
+  });
+
+  it("should create AddReplyUseCasePayload object with readonly properties", () => {
+    const payload: AddReplyUseCasePayload = {
+      username: 'my username',
+      content: 'content',
+      thread_id: '1',
+      comment_id: '1',
+    };
+
+    expect(payload).toStrictEqual({
+      username: 'my username',
+      content: 'content',
+      thread_id: '1',
+      comment_id: '1',
+    });
+
+    // @ts-expect-error: payload username should readonly
+    payload.username = 'changed';
+    // @ts-expect-error: payload content should readonly
+    payload.content = 'changed';
+    // @ts-expect-error: payload thread_id should readonly
+    payload.thread_id = 'changed';
+    // @ts-expect-error: payload comment_id should readonly
+    payload.comment_id = 'changed';
   });
 
 });

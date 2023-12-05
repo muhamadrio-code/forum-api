@@ -13,3 +13,4 @@ export type CommentReplyEntity = CommentReply & {
 
 export type AddedReply = Pick<CommentReply, 'id' | 'content'> & { readonly owner: string }
 export type DeletedReply = Pick<CommentReply, 'content'>
+export type AddReplyUseCasePayload = Omit<CommentReply, 'id'>

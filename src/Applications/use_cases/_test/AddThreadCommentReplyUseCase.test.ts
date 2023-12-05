@@ -1,4 +1,4 @@
-import { AddedComment } from "../../../Domains/comments/entities";
+import { AddReplyUseCasePayload, AddedReply } from "../../../Domains/replies/entities";
 import AddCommentReplyuseCase from "../AddCommentReplyUseCase";
 const UserRepository =
   jest.createMockFromModule<typeof import("../../../Domains/users/UserRepository")>("../../../Domains/users/UserRepository");
@@ -8,8 +8,10 @@ const ThreadCommentsRepository =
   jest.createMockFromModule<typeof import("../../../Domains/comments/ThreadCommentsRepository")>("../../../Domains/comments/ThreadCommentsRepository");
 const Validator =
   jest.createMockFromModule<typeof import("../../security/Validator")>("../../security/Validator");
+const CommentReplyRepository =
+  jest.createMockFromModule<typeof import("../../../Domains/replies/CommentReplyRepository")>("../../../Domains/replies/CommentReplyRepository");
 
-describe('AddThreadCommentReplyUseCase', () => {
+describe('AddCommentReplyUseCase', () => {
   let useCase: AddCommentReplyuseCase;
 
   beforeEach(() => {
@@ -18,13 +20,15 @@ describe('AddThreadCommentReplyUseCase', () => {
     UserRepository.default.prototype.getUserByUsername = jest.fn();
     ThreadRepository.default.prototype.getThreadById = jest.fn();
     Validator.default.prototype.validatePayload = jest.fn();
-    ThreadCommentsRepository.default.prototype.addCommentReply = jest.fn();
+    CommentReplyRepository.default.prototype.addReply = jest.fn();
+    ThreadCommentsRepository.default.prototype.getCommentById = jest.fn();
 
     useCase = new AddCommentReplyuseCase(
       ThreadCommentsRepository.default.prototype,
       UserRepository.default.prototype,
       ThreadRepository.default.prototype,
-      Validator.default.prototype
+      Validator.default.prototype,
+      CommentReplyRepository.default.prototype
     );
   });
 
@@ -32,102 +36,128 @@ describe('AddThreadCommentReplyUseCase', () => {
     jest.clearAllMocks();
   });
 
-  it("it should validate the content is valid before proceeding", async () => {
+  it("should validate the content is valid before proceeding", async () => {
     // Arrange
-    const content = 'Test comment';
+    const content = 'test reply';
     const username = 'testuser';
     const thread_id = '123';
-    const reply_to = '456';
+    const comment_id = '456';
     // Act
-    await useCase.execute({ content, username, thread_id, reply_to });
+    await useCase.execute({ content, username, thread_id, comment_id });
 
     // Assert
     expect(Validator.default.prototype.validatePayload).toHaveBeenCalledWith({content});
   });
 
-  it("it should validate the username is valid before proceeding", async () => {
+  it("should validate the username is valid before proceeding", async () => {
     // Arrange
-    const content = 'Test comment';
+    const content = 'test reply';
     const username = 'testuser';
     const thread_id = '123';
-    const reply_to = '456';
+    const comment_id = '456';
 
     // Act
-    await useCase.execute({ content, username, thread_id, reply_to });
+    await useCase.execute({ content, username, thread_id, comment_id });
 
     // Assert
     expect(UserRepository.default.prototype.getUserByUsername).toHaveBeenCalledWith(username);
   });
 
-  it("it should validate that thread is exist before proceeding", async () => {
+  it("should validate that thread is exist before proceeding", async () => {
     // Arrange
-    const content = 'Test comment';
+    const content = 'test reply';
     const username = 'testuser';
     const thread_id = '123';
-    const reply_to = '456';
+    const comment_id = '456';
 
     // Act
-    await useCase.execute({ content, username, thread_id, reply_to });
+    await useCase.execute({ content, username, thread_id, comment_id });
 
     // Assert
     expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(thread_id);
   });
 
-  it('should add a new comment reply to the thread comments repository when given valid input', async () => {
+  it("should validate that comment is exist before proceeding", async () => {
     // Arrange
-    const content = 'Test comment';
+    const content = 'test reply';
     const username = 'testuser';
     const thread_id = '123';
-    const reply_to = '456';
+    const comment_id = '456';
 
     // Act
-    await useCase.execute({ content, username, thread_id, reply_to });
+    await useCase.execute({ content, username, thread_id, comment_id });
 
     // Assert
-    expect(ThreadCommentsRepository.default.prototype.addCommentReply).toHaveBeenCalledWith({
+    expect(ThreadCommentsRepository.default.prototype.getCommentById).toHaveBeenCalledWith(comment_id);
+  });
+
+  it('should not throw any error when add new reply to the comment when given a valid input', async () => {
+    // Arrange
+    const content = 'test reply';
+    const username = 'testuser';
+    const thread_id = '1';
+    const comment_id = '1';
+
+    // Act
+    await useCase.execute({ content, username, thread_id, comment_id });
+
+    // Assert
+    expect(Validator.default.prototype.validatePayload).toHaveBeenCalledWith({content});
+    expect(UserRepository.default.prototype.getUserByUsername).toHaveBeenCalledWith(username);
+    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(thread_id);
+    expect(ThreadCommentsRepository.default.prototype.getCommentById).toHaveBeenCalledWith(comment_id);
+
+    expect(CommentReplyRepository.default.prototype.addReply).toHaveBeenCalledWith({
       id: expect.any(String),
       thread_id,
       content,
       username,
-      reply_to,
+      comment_id,
     });
   });
 
-  it("it should successfully return AddedComment object", async () => {
+  it("should successfully return AddedReply object", async () => {
     // Arange
-    const content = 'Test comment';
+    const content = 'test reply';
     const username = 'testuser';
     const thread_id = '123';
-    const reply_to = '456';
-    const addedComment : AddedComment = {
+    const comment_id = '456';
+    const addedReply : AddedReply = {
       content, owner: username, id:'comment123'
     };
 
-    ThreadCommentsRepository.default.prototype.addCommentReply =
+    CommentReplyRepository.default.prototype.addReply =
       jest.fn().mockResolvedValue({
-        content: 'Test comment', owner: 'testuser', id:'comment123'
+        content: 'test reply', owner: 'testuser', id:'comment123'
       });
 
     // Act
-    const result = await useCase.execute({ content, username, thread_id, reply_to });
+    const result = await useCase.execute({ content, username, thread_id, comment_id });
 
     // Assert
     expect(Validator.default.prototype.validatePayload).toHaveBeenCalledWith({content});
-    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(thread_id);
     expect(UserRepository.default.prototype.getUserByUsername).toHaveBeenCalledWith(username);
-    expect(ThreadCommentsRepository.default.prototype.addCommentReply).toHaveBeenCalledWith({
+    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(thread_id);
+    expect(ThreadCommentsRepository.default.prototype.getCommentById).toHaveBeenCalledWith(comment_id);
+    expect(CommentReplyRepository.default.prototype.addReply).toHaveBeenCalledWith({
       id: expect.any(String),
       thread_id,
       content,
       username,
-      reply_to
+      comment_id
     });
-    expect(result).toStrictEqual(addedComment);
+
+    expect(result).toStrictEqual(addedReply);
   });
 
   it('should throw error when execute with invalid content', async () => {
     // Arrange
-    const useCasePayload = { content: "", thread_id: "thread-1", username: "user-1" };
+    const useCasePayload: AddReplyUseCasePayload = {
+      content: "",
+      thread_id: "thread-1",
+      username: "user-1",
+      comment_id: "1"
+    };
     Validator.default.prototype.validatePayload = jest.fn().mockImplementation(() => {
       throw new Error("Validation Error");
     });
@@ -136,9 +166,14 @@ describe('AddThreadCommentReplyUseCase', () => {
     await expect(useCase.execute(useCasePayload)).rejects.toThrow();
   });
 
-  it('should throw error when execute with non existing user', async () => {
+  it('should throw error when execute with non-existed user', async () => {
     // Arrange
-    const useCasePayload = { content: "valid content", thread_id: "valid-id", username: "invalid-user-1" };
+    const useCasePayload: AddReplyUseCasePayload = {
+      content: "content 1",
+      thread_id: "thread-1",
+      username: "",
+      comment_id: "1"
+    };
     UserRepository.default.prototype.getUserByUsername = jest.fn().mockImplementation(() => {
       throw new Error("User not found");
     });
@@ -147,14 +182,35 @@ describe('AddThreadCommentReplyUseCase', () => {
     await expect(useCase.execute(useCasePayload)).rejects.toThrow("User not found");
   });
 
-  it('should throw error when execute with non existing thread', async () => {
+  it('should throw error when execute with non-existed thread', async () => {
     // Arrange
-    const useCasePayload = { content: "valid content", thread_id: "invalid-id", username: "user-1" };
+    const useCasePayload: AddReplyUseCasePayload = {
+      content: "content 1",
+      thread_id: "",
+      username: "user-1",
+      comment_id: "1"
+    };
     ThreadRepository.default.prototype.getThreadById = jest.fn().mockImplementation(() => {
       throw new Error("Thread not found");
     });
 
     // Act & Assert
     await expect(useCase.execute(useCasePayload)).rejects.toThrow("Thread not found");
+  });
+
+  it('should throw error when execute with non-existed comment', async () => {
+    // Arrange
+    const useCasePayload: AddReplyUseCasePayload = {
+      content: "content 1",
+      thread_id: "th-1",
+      username: "user-1",
+      comment_id: ""
+    };
+    ThreadCommentsRepository.default.prototype.getCommentById = jest.fn().mockImplementation(() => {
+      throw new Error("Comment not found");
+    });
+
+    // Act & Assert
+    await expect(useCase.execute(useCasePayload)).rejects.toThrow("Comment not found");
   });
 });
