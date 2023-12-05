@@ -8,7 +8,7 @@ import CommentReplyRepository from "../../Domains/replies/CommentReplyRepository
 import { AddReplyUseCasePayload, CommentReply } from "../../Domains/replies/entities";
 
 @injectable()
-export default class AddCommentReplyuseCase {
+export default class AddCommentReplyUseCase {
   private readonly threadCommentsRepository: ThreadCommentRepository;
   private readonly validator: Validator;
   private readonly usersRepository: UserRepository;

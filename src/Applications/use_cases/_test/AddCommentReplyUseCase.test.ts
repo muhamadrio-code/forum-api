@@ -1,5 +1,5 @@
 import { AddReplyUseCasePayload, AddedReply } from "../../../Domains/replies/entities";
-import AddCommentReplyuseCase from "../AddCommentReplyUseCase";
+import AddCommentReplyUseCase from "../AddCommentReplyUseCase";
 const UserRepository =
   jest.createMockFromModule<typeof import("../../../Domains/users/UserRepository")>("../../../Domains/users/UserRepository");
 const ThreadRepository =
@@ -12,7 +12,7 @@ const CommentReplyRepository =
   jest.createMockFromModule<typeof import("../../../Domains/replies/CommentReplyRepository")>("../../../Domains/replies/CommentReplyRepository");
 
 describe('AddCommentReplyuseCase', () => {
-  let useCase: AddCommentReplyuseCase;
+  let useCase: AddCommentReplyUseCase;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -23,7 +23,7 @@ describe('AddCommentReplyuseCase', () => {
     CommentReplyRepository.default.prototype.addReply = jest.fn();
     ThreadCommentsRepository.default.prototype.getCommentById = jest.fn();
 
-    useCase = new AddCommentReplyuseCase(
+    useCase = new AddCommentReplyUseCase(
       ThreadCommentsRepository.default.prototype,
       UserRepository.default.prototype,
       ThreadRepository.default.prototype,
