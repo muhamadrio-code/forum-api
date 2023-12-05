@@ -11,7 +11,7 @@ const Validator =
 const CommentReplyRepository =
   jest.createMockFromModule<typeof import("../../../Domains/replies/CommentReplyRepository")>("../../../Domains/replies/CommentReplyRepository");
 
-describe('AddCommentReplyUseCase', () => {
+describe('AddCommentReplyuseCase', () => {
   let useCase: AddCommentReplyuseCase;
 
   beforeEach(() => {
