@@ -1,6 +1,6 @@
 import { Pool, QueryConfig, QueryResult } from 'pg';
 import CommentReplyRepository from '../../Domains/replies/CommentReplyRepository';
-import { CommentReply, AddedReply, DeletedReply, CommentReplyEntity } from '../../Domains/replies/entities';
+import { CommentReply, AddedReply, CommentReplyEntity } from '../../Domains/replies/entities';
 import NotFoundError from '../../Common/Errors/NotFoundError';
 
 export default class CommentReplyRepositoryPostgres extends CommentReplyRepository {
@@ -31,17 +31,15 @@ export default class CommentReplyRepositoryPostgres extends CommentReplyReposito
     return rows[0];
   }
 
-  async deleteReplyById(replyId: string): Promise<DeletedReply> {
+  async deleteReplyById(replyId: string): Promise<void> {
     const query: QueryConfig = {
-      text: "UPDATE replies SET is_delete=$2 WHERE id=$1 RETURNING content",
+      text: "UPDATE replies SET is_delete=$2 WHERE id=$1 RETURNING id",
       values: [replyId, true]
     };
 
-    const { rows }: QueryResult<DeletedReply> = await this.pool.query(query);
+    const { rows } = await this.pool.query(query);
 
     if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
-
-    return rows[0];
   }
 
   async getRepliesByCommentId(commentId: string): Promise<CommentReplyEntity[]> {
@@ -54,5 +52,17 @@ export default class CommentReplyRepositoryPostgres extends CommentReplyReposito
     if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
 
     return rows;
+  }
+
+  async getReplyById(replyId: string): Promise<CommentReplyEntity> {
+    const query: QueryConfig = {
+      text: `SELECT * FROM replies WHERE id=$1`,
+      values: [replyId]
+    };
+
+    const { rows }: QueryResult<CommentReplyEntity> = await this.pool.query(query);
+    if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
+
+    return rows[0];
   }
 }

@@ -67,17 +67,15 @@ describe('CommentReplyRepositoryPostgres', () => {
     });
   });
 
-  it('should soft-delete reply and return the DeletedReply object', async () => {
+  it('should successfully soft-delete reply', async () => {
     // Arrange
     const replyRepository = new CommentReplyRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
     const reply: CommentReply = { id: '2', thread_id: '1', content: 'Test Reply', username: 'user21', comment_id: '1' };
-    await replyRepository.addReply(reply);
+    await expect(replyRepository.addReply(reply)).resolves.not.toThrow();
 
     // Act & Assert
-    await expect(replyRepository.deleteReplyById(reply.id)).resolves.toStrictEqual({
-      content: "Test Reply"
-    });
+    await expect(replyRepository.deleteReplyById(reply.id)).resolves.not.toThrow();
 
     expect(poolSpy).toHaveBeenCalled();
     await expect(PostgresTestHelper.getCommentReplyById(pool, reply.id)).resolves.toHaveProperty('is_delete', true);
@@ -88,7 +86,7 @@ describe('CommentReplyRepositoryPostgres', () => {
     const replyRepository = new CommentReplyRepositoryPostgres(pool);
     const poolSpy = jest.spyOn(pool, 'query');
     const reply: CommentReply = { id: '2', thread_id: '1', content: 'Test Reply', username: 'user21', comment_id: '1' };
-    await replyRepository.addReply(reply);
+    await expect(replyRepository.addReply(reply)).resolves.not.toThrow();
 
     // Act & Assert
     await expect(replyRepository.deleteReplyById('99128')).rejects.toThrow('balasan tidak ditemukan');
@@ -141,6 +139,39 @@ describe('CommentReplyRepositoryPostgres', () => {
 
     // Act & Assert
     await expect(replyRepository.getRepliesByCommentId('1')).rejects.toThrow('balasan tidak ditemukan');
+    expect(poolSpy).toHaveBeenCalled();
+  });
+
+  it('should successfully getReplyById and return CommentReplyEntity object', async () => {
+    // Arrange
+    const replyRepository = new CommentReplyRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+    const reply: CommentReply = { id: '1', thread_id: '1', content: 'Test Reply1', username: 'user21', comment_id: '1' };
+    await replyRepository.addReply(reply);
+
+    // Act
+    const result = await replyRepository.getReplyById('1');
+
+    // Assert
+    expect(result).toStrictEqual({
+      id: '1',
+      thread_id: '1',
+      content: 'Test Reply1',
+      username: 'user21',
+      comment_id: '1',
+      date: expect.any(Date),
+      is_delete: expect.any(Boolean)
+    });
+    expect(poolSpy).toHaveBeenCalled();
+  });
+
+  it('should throw "balasan tidak ditemukan" when getReplyById on non-existed reply', async () => {
+    // Arrange
+    const replyRepository = new CommentReplyRepositoryPostgres(pool);
+    const poolSpy = jest.spyOn(pool, 'query');
+
+    // Act & Assert
+    await expect(replyRepository.getReplyById('1')).rejects.toThrow('balasan tidak ditemukan');
     expect(poolSpy).toHaveBeenCalled();
   });
 });

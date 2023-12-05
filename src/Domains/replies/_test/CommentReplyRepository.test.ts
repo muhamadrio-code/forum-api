@@ -11,5 +11,6 @@ describe('ThreadCommentsRepository', () => {
     await expect(sut.addReply({})).rejects.toThrow('UNINPLEMENTED.ERROR');
     await expect(sut.deleteReplyById('')).rejects.toThrow('UNINPLEMENTED.ERROR');
     await expect(sut.getRepliesByCommentId('')).rejects.toThrow('UNINPLEMENTED.ERROR');
+    await expect(sut.getReplyById('')).rejects.toThrow('UNINPLEMENTED.ERROR');
   });
 });

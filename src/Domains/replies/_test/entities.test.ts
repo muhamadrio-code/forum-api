@@ -1,4 +1,4 @@
-import { AddReplyUseCasePayload, AddedReply, CommentReply, CommentReplyEntity, DeletedReply } from "../entities";
+import { AddReplyUseCasePayload, AddedReply, CommentReply, CommentReplyEntity } from "../entities";
 
 describe("comments entities", () => {
   it("should create CommentReply object with readonly properties", () => {
@@ -86,19 +86,6 @@ describe("comments entities", () => {
     addedReply.owner = 'changed';
     // @ts-expect-error: addedReply content should readonly
     addedReply.content = 'changed';
-  });
-
-  it("should create DeletedReply object with readonly properties", () => {
-    const deletedReply: DeletedReply = {
-      content: 'content',
-    };
-
-    expect(deletedReply).toStrictEqual({
-      content: 'content',
-    });
-
-    // @ts-expect-error: commentWithReplies content should readonly
-    deletedReply.content = 'changed';
   });
 
   it("should create AddReplyUseCasePayload object with readonly properties", () => {
