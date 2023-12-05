@@ -7,10 +7,6 @@ export default class ThreadCommentsRepositoryTest extends ThreadCommentsReposito
     throw new Error('UNINPLEMENTED.ERROR');
   }
 
-  async addCommentReply(comment: Comment): Promise<AddedComment> {
-    throw new Error('UNINPLEMENTED.ERROR');
-  }
-
   async deleteComment(commentId: string): Promise<DeletedComment> {
     throw new Error('UNINPLEMENTED.ERROR');
   }
@@ -19,7 +15,7 @@ export default class ThreadCommentsRepositoryTest extends ThreadCommentsReposito
     throw new Error('UNINPLEMENTED.ERROR');
   }
 
-  async getCommentReplyById(id: string): Promise<CommentEntity> {
+  async getCommentsByThreadId(threadId: string): Promise<CommentEntity[]> {
     throw new Error('UNINPLEMENTED.ERROR');
   }
 }

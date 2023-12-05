@@ -23,16 +23,14 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
     return rows[0];
   }
 
-  async getCommentReplyById(id: string) {
+  async getCommentsByThreadId(threadId: string): Promise<CommentEntity[]> {
     const query: QueryConfig = {
-      text: `SELECT * FROM thread_comments WHERE id=$1 AND reply_to IS NOT NULL`,
-      values: [id]
+      text: `SELECT * FROM thread_comments WHERE thread_id=$1`,
+      values: [threadId]
     };
 
     const { rows }: QueryResult<CommentEntity> = await this.pool.query(query);
-    if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
-
-    return rows[0];
+    return rows;
   }
 
   async addComment(comment: Comment) {
@@ -43,40 +41,6 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
     };
 
     const { rows }: QueryResult<AddedComment> = await this.pool.query(query);
-    return rows[0];
-  }
-
-  async addCommentReply(comment: Comment) {
-    const { id, thread_id, reply_to, content, username } = comment;
-    const query : QueryConfig = {
-      text: `
-      WITH comments AS(
-        SELECT 
-          tc.id AS reply_to,
-          f.id, 
-          f.thread_id, 
-          f.content, 
-          f.username
-        FROM 
-          thread_comments tc (id), 
-          (VALUES($1, $2, $3, $4, $5)) 
-        AS f (id, thread_id, content, username, reply_id)
-        WHERE tc.id=f.reply_id
-      )
-      INSERT INTO 
-        thread_comments(reply_to, id, thread_id, content, username)
-      SELECT * FROM 
-        comments
-      RETURNING 
-        id, content, username AS owner
-      `,
-      values: [id, thread_id, content, username, reply_to]
-    };
-
-    const { rows }: QueryResult<AddedComment> = await this.pool.query(query);
-
-    if(!rows[0]) throw new NotFoundError("comment tidak ditemukan");
-
     return rows[0];
   }
 
