@@ -67,6 +67,9 @@ describe('AddThreadCommentUseCase', () => {
     const result = await addThreadCommentUseCase.execute(useCasePayload);
 
     // Assert
+    expect(Validator.default.prototype.validatePayload).toHaveBeenCalled();
+    expect(UserRepository.default.prototype.getUserByUsername).toHaveBeenCalled();
+    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalled();
     expect(ThreadCommentsRepository.default.prototype.addComment).toHaveBeenCalledWith({
       id: expect.any(String),
       thread_id: useCasePayload.thread_id,
