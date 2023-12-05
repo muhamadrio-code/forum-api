@@ -3,8 +3,9 @@
 import { Pool, QueryResult } from "pg";
 import { CommentEntity, Comment } from "../../../../Domains/comments/entities";
 import { ThreadEntity } from "../../../../Domains/threads/entities";
+import { CommentReplyEntity } from "../../../../Domains/replies/entities";
 
-type TableName = string & ('users' | 'authentications' | 'threads' | 'thread_comments')
+type TableName = string & ('users' | 'authentications' | 'threads' | 'thread_comments' | 'replies')
 
 type Config = {
   pool: Pool,
@@ -48,11 +49,11 @@ export const PostgresTestHelper = {
   },
   async getCommentReplyById(pool: Pool, id:string) {
     const query = {
-      text: "SELECT * FROM thread_comments WHERE id=$1 AND reply_to IS NOT NULL",
+      text: "SELECT * FROM replies WHERE id=$1",
       values: [id]
     };
 
-    const { rows }: QueryResult<CommentEntity> = await pool.query(query);
+    const { rows }: QueryResult<CommentReplyEntity> = await pool.query(query);
     return rows[0];
   },
   async getThreadById(pool: Pool, id:string) {
