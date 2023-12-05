@@ -104,12 +104,17 @@ describe('AddThreadCommentReplyUseCase', () => {
     };
 
     ThreadCommentsRepository.default.prototype.addCommentReply =
-      jest.fn().mockResolvedValue(addedComment);
+      jest.fn().mockResolvedValue({
+        content: 'Test comment', owner: 'testuser', id:'comment123'
+      });
 
     // Act
     const result = await useCase.execute({ content, username, thread_id, reply_to });
 
     // Assert
+    expect(Validator.default.prototype.validatePayload).toHaveBeenCalledWith({content});
+    expect(ThreadRepository.default.prototype.getThreadById).toHaveBeenCalledWith(thread_id);
+    expect(UserRepository.default.prototype.getUserByUsername).toHaveBeenCalledWith(username);
     expect(ThreadCommentsRepository.default.prototype.addCommentReply).toHaveBeenCalledWith({
       id: expect.any(String),
       thread_id,
@@ -117,9 +122,7 @@ describe('AddThreadCommentReplyUseCase', () => {
       username,
       reply_to
     });
-    expect(result).toStrictEqual({
-      content: 'Test comment', owner: 'testuser', id:'comment123'
-    });
+    expect(result).toStrictEqual(addedComment);
   });
 
   it('should throw error when execute with invalid content', async () => {
