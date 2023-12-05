@@ -1,4 +1,12 @@
-import { AddedComment, Comment, CommentEntity, CommentPayload, CommentUseCasePayload, DeletedComment } from "../entities";
+import {
+  AddedComment,
+  Comment,
+  CommentEntity,
+  CommentPayload,
+  CommentUseCasePayload,
+  CommentWithReplies,
+  DeletedComment
+} from "../entities";
 
 describe("comments entities", () => {
   it("should create Comment object with readonly properties", () => {
@@ -24,6 +32,59 @@ describe("comments entities", () => {
     comment.content = 'changed';
     // @ts-expect-error: comment thread_id should readonly
     comment.thread_id = 'changed';
+  });
+
+  it("should create CommentWithReplies object with readonly properties", () => {
+    const commentWithReplies: CommentWithReplies = {
+      id: '1',
+      username: 'my username',
+      content: 'content',
+      thread_id: '1',
+      is_delete: false,
+      date: 'date',
+      replies: [{
+        id: 'id-123',
+        username: 'my username',
+        content: 'content',
+        thread_id: '1',
+        is_delete: false,
+        date: 'date',
+        comment_id:'1'
+      }]
+    };
+
+    expect(commentWithReplies).toStrictEqual({
+      id: '1',
+      username: 'my username',
+      content: 'content',
+      thread_id: '1',
+      is_delete: false,
+      date: 'date',
+      replies: [{
+        id: 'id-123',
+        username: 'my username',
+        content: 'content',
+        thread_id: '1',
+        is_delete: false,
+        date: 'date',
+        comment_id:'1'
+      }]
+    });
+
+    // @ts-expect-error: commentWithReplies id should readonly
+    commentWithReplies.id = 'changed';
+    // @ts-expect-error: commentWithReplies username should readonly
+    commentWithReplies.username = 'changed';
+    // @ts-expect-error: commentWithReplies content should readonly
+    commentWithReplies.content = 'changed';
+    // @ts-expect-error: commentWithReplies thread_id should readonly
+    commentWithReplies.thread_id = 'changed';
+    // @ts-expect-error: commentWithReplies is_delete should readonly
+    commentWithReplies.is_delete = true;
+    // @ts-expect-error: commentWithReplies date should readonly
+    commentWithReplies.date = 'changed';
+    // @ts-expect-error: commentWithReplies replies should readonly
+    commentWithReplies.replies = [];
   });
 
   it("should create CommentEntity object with readonly properties", () => {

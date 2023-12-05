@@ -130,6 +130,7 @@ describe("threads entities", () => {
           username: 'user-3',
           is_delete: true,
           thread_id: '1',
+          comment_id: '1'
         }]
       }]
     };
@@ -154,6 +155,7 @@ describe("threads entities", () => {
           username: 'user-3',
           is_delete: true,
           thread_id: '1',
+          comment_id: '1'
         }]
       }]
     });

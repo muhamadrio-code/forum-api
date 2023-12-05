@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { Pool, QueryResult } from "pg";
-import { CommentEntity, Comment } from "../../../../Domains/comments/entities";
+import { CommentEntity } from "../../../../Domains/comments/entities";
 import { ThreadEntity } from "../../../../Domains/threads/entities";
 import { CommentReplyEntity } from "../../../../Domains/replies/entities";
 
@@ -65,32 +65,6 @@ export const PostgresTestHelper = {
     const { rows }: QueryResult<ThreadEntity> = await pool.query(query);
     return rows[0];
   },
-  async addComment(
-    pool: Pool,
-    comment: Comment
-  ) {
-    const { id, thread_id, content, username } = comment;
-    const query = {
-      text: "INSERT INTO thread_comments VALUES($1, $2, $3, $4) RETURNING id, content, username AS owner",
-      values: [id, thread_id, content, username]
-    };
-
-    await pool.query(query);
-  },
-  async addCommentReply(
-    pool: Pool,
-    comment: Comment
-  ) {
-    const { id, thread_id, reply_to, content, username, is_delete } = comment;
-    await pool.query(
-      `INSERT INTO thread_comments(id, thread_id, reply_to, content, username, is_delete) 
-      VALUES($1, $2, $3, $4, $5, $6)
-      RETURNING id, content, username AS owner
-      `,
-      [id, thread_id, reply_to, content, username, is_delete]
-    );
-  },
-
   async truncate(config: Config) {
     const { pool, tableName } = config;
     if(Array.isArray(tableName)) {

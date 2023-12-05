@@ -11,6 +11,5 @@ describe('ThreadRepository', () => {
     await expect(sut.addThread({})).rejects.toThrow('UNINPLEMENTED.ERROR');
     // @ts-expect-error: no-check
     await expect(sut.getThreadById({})).rejects.toThrow('UNINPLEMENTED.ERROR');
-    await expect(sut.getThreadDetails('')).rejects.toThrow('UNINPLEMENTED.ERROR');
   });
 });
