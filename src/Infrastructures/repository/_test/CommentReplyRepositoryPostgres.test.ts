@@ -1,4 +1,4 @@
-import { AddedReply, CommentReply } from "../../../Domains/replies/entities";
+import { AddedReply, CommentReply, CommentReplyEntity } from "../../../Domains/replies/entities";
 import { pool } from "../../database/postgres/Pool";
 import CommentReplyRepositoryPostgres from "../CommentReplyRepositoryPostgres";
 import ThreadCommentRepositoryPostgres from "../ThreadCommentRepositoryPostgres";
@@ -17,6 +17,7 @@ describe('CommentReplyRepositoryPostgres', () => {
     const threadCommentRepository = new ThreadCommentRepositoryPostgres(pool);
     await threadRepository.addThread({ id: '1', body: "body", title: 'tile', username: 'username' });
     await threadCommentRepository.addComment({ id: '1', thread_id: '1', content: 'Test Comment', username: 'user12'});
+    await threadCommentRepository.addComment({ id: '2', thread_id: '1', content: 'Test Comment', username: 'user12'});
   });
 
   beforeEach(async () => {
@@ -94,51 +95,55 @@ describe('CommentReplyRepositoryPostgres', () => {
     await expect(PostgresTestHelper.getCommentReplyById(pool, reply.id)).resolves.toHaveProperty('is_delete', false);
   });
 
-  it('should successfully getRepliesByCommentId and return list of CommentReplyEntity object', async () => {
+  it('should successfully getRepliesByCommentIds and return the resultObj object', async () => {
      // Arrange
      const replyRepository = new CommentReplyRepositoryPostgres(pool);
      const poolSpy = jest.spyOn(pool, 'query');
      const reply1: CommentReply = { id: '1', thread_id: '1', content: 'Test Reply1', username: 'user21', comment_id: '1' };
-     const reply2: CommentReply = { id: '2', thread_id: '1', content: 'Test Reply2', username: 'user22', comment_id: '1' };
+     const reply2: CommentReply = { id: '2', thread_id: '1', content: 'Test Reply2', username: 'user22', comment_id: '2' };
      await replyRepository.addReply(reply1);
      await replyRepository.addReply(reply2);
 
+     const resultObj: { [comment_id:string] : CommentReplyEntity[] } = {
+        '1': [
+          {
+            id: '1',
+            thread_id: '1',
+            content: 'Test Reply1',
+            username: 'user21',
+            comment_id: '1',
+            date: expect.any(String),
+            is_delete: false
+          }
+        ],
+        '2': [
+          {
+            id: '2',
+            thread_id: '1',
+            content: 'Test Reply2',
+            username: 'user22',
+            comment_id: '2',
+            date: expect.any(String),
+            is_delete: false
+          }
+        ]
+     };
+
     // Act
-    const result = await replyRepository.getRepliesByCommentId('1');
+    const result = await replyRepository.getRepliesByCommentIds([reply1.comment_id, reply2.comment_id]);
 
     // Assert
-    expect(result).toStrictEqual(expect.any(Array));
-    expect(result.length).toEqual(2);
-    expect(result).toStrictEqual([
-      {
-        id: '1',
-        thread_id: '1',
-        content: 'Test Reply1',
-        username: 'user21',
-        comment_id: '1',
-        date: expect.any(Date),
-        is_delete: expect.any(Boolean)
-      },
-      {
-        id: '2',
-        thread_id: '1',
-        content: 'Test Reply2',
-        username: 'user22',
-        comment_id: '1',
-        date: expect.any(Date),
-        is_delete: expect.any(Boolean)
-      }
-    ]);
+    expect(result).toStrictEqual(resultObj);
     expect(poolSpy).toHaveBeenCalled();
   });
 
-  it('should throw "balasan tidak ditemukan" when call getRepliesByCommentId on comment with no reply', async () => {
+  it('should return empty object when call getRepliesByCommentIds on comment with no reply', async () => {
      // Arrange
      const replyRepository = new CommentReplyRepositoryPostgres(pool);
      const poolSpy = jest.spyOn(pool, 'query');
 
     // Act & Assert
-    await expect(replyRepository.getRepliesByCommentId('1')).rejects.toThrow('balasan tidak ditemukan');
+    await expect(replyRepository.getRepliesByCommentIds(['1'])).resolves.toStrictEqual({});
     expect(poolSpy).toHaveBeenCalled();
   });
 

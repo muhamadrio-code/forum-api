@@ -11,7 +11,7 @@ export default class CommentsReplyRepositoryTest extends CommentReplyRepository 
     throw new Error('UNINPLEMENTED.ERROR');
   }
 
-  async getRepliesByCommentId(commentId: string): Promise<CommentReplyEntity[]> {
+  async getRepliesByCommentIds(commentIds: string[]): Promise<{ [id: string]: CommentReplyEntity[]; }> {
     throw new Error('UNINPLEMENTED.ERROR');
   }
 

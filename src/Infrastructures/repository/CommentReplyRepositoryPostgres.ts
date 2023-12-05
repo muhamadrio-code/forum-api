@@ -42,16 +42,31 @@ export default class CommentReplyRepositoryPostgres extends CommentReplyReposito
     if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
   }
 
-  async getRepliesByCommentId(commentId: string): Promise<CommentReplyEntity[]> {
+  async getRepliesByCommentIds(commentIds: string[]): Promise<{ [id:string] : CommentReplyEntity[] }> {
     const query: QueryConfig = {
-      text: `SELECT * FROM replies WHERE comment_id=$1`,
-      values: [commentId]
+      text: `
+      SELECT 
+        r.comment_id, JSONB_AGG(TO_JSONB(r.*)) as replies
+      FROM 
+        (SELECT * FROM replies ORDER BY date) r
+      WHERE 
+        comment_id = ANY($1::text[]) 
+      GROUP BY r.comment_id
+      `,
+      values: [commentIds]
     };
 
-    const { rows }: QueryResult<CommentReplyEntity> = await this.pool.query(query);
-    if(!rows[0]) throw new NotFoundError("balasan tidak ditemukan");
+    const { rows }: QueryResult<{
+      comment_id: string,
+      replies: CommentReplyEntity[]
+     }> = await this.pool.query(query);
 
-    return rows;
+    const result: { [id:string]: CommentReplyEntity[] } = {};
+    rows.forEach(({ comment_id, replies }) => {
+      result[comment_id] = replies;
+    });
+
+    return result;
   }
 
   async getReplyById(replyId: string): Promise<CommentReplyEntity> {

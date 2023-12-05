@@ -1,62 +1,92 @@
 import { inject, injectable } from "tsyringe";
 import ThreadRepository from "../../Domains/threads/ThreadRepository";
 import { ThreadDetailsEntity } from "../../Domains/threads/entities";
+import ThreadCommentRepository from "../../Domains/comments/ThreadCommentsRepository";
+import CommentReplyRepository from "../../Domains/replies/CommentReplyRepository";
+import { CommentReplyEntity } from "../../Domains/replies/entities";
 
 @injectable()
 export default class GetThreadDetailsUseCase {
   private readonly threadRepository: ThreadRepository;
+  private readonly commentRepository: ThreadCommentRepository;
+  private readonly replyRepository: CommentReplyRepository;
+
 
   constructor(
-    @inject("ThreadRepository") threadRepository: ThreadRepository
+    @inject("ThreadRepository") threadRepository: ThreadRepository,
+    @inject("CommentReplyRepository") replyRepository: CommentReplyRepository,
+    @inject("ThreadCommentsRepository") commentRepository: ThreadCommentRepository,
   ) {
     this.threadRepository = threadRepository;
+    this.commentRepository = commentRepository;
+    this.replyRepository = replyRepository;
   }
 
   async execute(threadId: string) {
-    const threadDetails = await this.threadRepository.getThreadDetails(threadId);
-    const [newComments, newReplies] = await Promise.all([
-      threadDetails.comments?.map((comment) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { is_delete, content, ...rest } = comment;
-        if (comment.is_delete === true) {
-          return {
-            content: "**komentar telah dihapus**",
-            ...rest
-          };
-        }
+    const [thread, comments] = await Promise.all([
+      this.threadRepository.getThreadById(threadId),
+      this.commentRepository.getCommentsByThreadId(threadId)
+    ]);
 
-        return { content: comment.content, ...rest };
-      }),
-      threadDetails.comments
-        ?.map((comment) => comment.replies)
-        .map((replies) => replies.map((reply) => {
+    const commentIds = comments.map((comment) => (comment.id));
+    const replies: { [comment_id: string]: CommentReplyEntity[] } =
+      await this.replyRepository.getRepliesByCommentIds(commentIds);
+
+    const [newReplies, newComments] = await Promise.all([
+      getNewReplies(),
+      getNewComments()
+    ]);
+
+    function getNewReplies() {
+      const newReplies: {
+        [comment_id: string]: Omit<CommentReplyEntity, 'is_delete' | 'thread_id' | 'comment_id'>[]
+      } = {};
+
+      for (const key in replies) {
+        newReplies[key] = replies[key].map((reply) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { is_delete, content, ...rest } = reply;
+          const { is_delete, content, thread_id, comment_id, ...replyRest } = reply;
           if (reply.is_delete === true) {
             return {
               content: "**balasan telah dihapus**",
-              ...rest
+              ...replyRest
             };
           }
 
-          return { content: reply.content, ...rest };
-        })) ?? []
-    ]);
+          return { content: reply.content, ...replyRest };
+        });
+      }
+      return newReplies;
+    }
 
-    const commentWithReplies = newComments?.map((comment, index) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { replies, ...rest } = comment;
+    function getNewComments() {
+      return comments.map((comment) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { is_delete, content, thread_id, ...rest } = comment;
+        if (comment.is_delete === true) {
+          return {
+            content: "**komentar telah dihapus**",
+            ...rest,
+          };
+        }
+
+        return {
+          content: comment.content,
+          ...rest,
+        };
+      });
+    }
+
+    const commentWithReplies = newComments.map((comment) => {
       return {
-        ...rest,
-        replies: newReplies[index]
+        ...comment,
+        replies: newReplies[comment.id] ?? []
       };
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { comments, ...rest } = threadDetails;
     return {
-      ...rest,
-      comments: commentWithReplies ?? null
+      ...thread,
+      comments: commentWithReplies
     } as ThreadDetailsEntity;
   }
 }

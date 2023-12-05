@@ -25,7 +25,15 @@ export default class ThreadCommentRepositoryPostgres extends ThreadCommentReposi
 
   async getCommentsByThreadId(threadId: string): Promise<CommentEntity[]> {
     const query: QueryConfig = {
-      text: `SELECT * FROM thread_comments WHERE thread_id=$1`,
+      text: `
+      SELECT 
+        * 
+      FROM 
+        thread_comments 
+      WHERE 
+        thread_id=$1
+      ORDER BY date ASC  
+      `,
       values: [threadId]
     };
 
