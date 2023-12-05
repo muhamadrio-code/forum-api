@@ -9,10 +9,8 @@ describe('ThreadCommentsRepository', () => {
     // Act & Assert
     // @ts-expect-error: no-check
     await expect(sut.addComment({})).rejects.toThrow('UNINPLEMENTED.ERROR');
-    // @ts-expect-error: no-check
-    await expect(sut.addCommentReply({})).rejects.toThrow('UNINPLEMENTED.ERROR');
     await expect(sut.deleteComment('')).rejects.toThrow('UNINPLEMENTED.ERROR');
     await expect(sut.getCommentById('')).rejects.toThrow('UNINPLEMENTED.ERROR');
-    await expect(sut.getCommentReplyById('')).rejects.toThrow('UNINPLEMENTED.ERROR');
+    await expect(sut.getCommentsByThreadId('')).rejects.toThrow('UNINPLEMENTED.ERROR');
   });
 });

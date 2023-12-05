@@ -15,9 +15,12 @@ exports.up = (pgm) => {
     password: {
       type: 'text', notNull: true
     }
+  },
+  {
+    ifNotExists : true
   });
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('users');
+  pgm.dropTable('users', { ifExists : true });
 };

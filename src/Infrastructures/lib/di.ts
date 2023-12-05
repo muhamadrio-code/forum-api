@@ -14,6 +14,7 @@ import ZodThreadValidator from "../security/ZodThreadValidator";
 import ThreadRepositoryPostgres from "../repository/ThreadRepositoryPostgres";
 import ZodThreadCommentValidator from "../security/ZodThreadCommentValidator";
 import ThreadCommentRepositoryPostgres from "../repository/ThreadCommentRepositoryPostgres";
+import CommentReplyRepositoryPostgres from "../repository/CommentReplyRepositoryPostgres";
 
 export function registerDependenciesToContainer() {
   // Repository
@@ -32,6 +33,10 @@ export function registerDependenciesToContainer() {
   container.register(
     "ThreadCommentsRepository",
     { useFactory: instanceCachingFactory(() => new ThreadCommentRepositoryPostgres(pool)) }
+  );
+  container.register(
+    "CommentReplyRepository",
+    { useFactory: instanceCachingFactory(() => new CommentReplyRepositoryPostgres(pool)) }
   );
 
   // Validator

@@ -1,3 +1,4 @@
+import { Thread, ThreadEntity } from "../../../Domains/threads/entities";
 import { pool } from "../../database/postgres/Pool";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres";
 import { PostgresTestHelper } from "./helper/PostgresTestHelper";
@@ -15,7 +16,7 @@ describe("ThreadRepositoryPostgres", () => {
     });
   });
 
-  it('should return AddedThread object after calling addThread', async () => {
+  it('should persist the thread and return AddedThread object when calling addThread', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
@@ -24,6 +25,13 @@ describe("ThreadRepositoryPostgres", () => {
       title: 'Test Thread',
       body: 'This is a test thread',
       username: 'testuser'
+    };
+    const threadEntity: ThreadEntity = {
+      id: '1',
+      title: 'Test Thread',
+      body: 'This is a test thread',
+      username: 'testuser',
+      date: expect.any(Date)
     };
 
     // Act
@@ -36,38 +44,28 @@ describe("ThreadRepositoryPostgres", () => {
       title: 'Test Thread',
       owner: 'testuser'
     });
-  });
 
-  it('should successfully add new thread to the database', async () => {
-    // Arrange
-    const threadRepository = new ThreadRepositoryPostgres(pool);
-    const querySpy = jest.spyOn(pool, 'query');
-    const thread = {
-      id: '1',
-      title: 'Test Thread',
-      body: 'This is a test thread',
-      username: 'testuser'
-    };
-
-    // Act
-    await threadRepository.addThread(thread);
-    const result = await threadRepository.getThreadById(thread.id);
-
-    // Assert
-    expect(querySpy).toHaveBeenCalled();
-    expect(result).toBeDefined();
+    await expect(threadRepository.getThreadById(thread.id)).resolves.toStrictEqual(threadEntity);
   });
 
   it('should return ThreadEntity object when call getThreadById', async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
-    const thread = {
+    const thread: Thread = {
       id: '1',
       title: 'Test Thread',
       body: 'This is a test thread',
       username: 'testuser'
     };
+    const threadEntity: ThreadEntity = {
+      id: '1',
+      title: 'Test Thread',
+      body: 'This is a test thread',
+      username: 'testuser',
+      date: expect.any(Date)
+    };
+
 
     // Act
     await threadRepository.addThread(thread);
@@ -75,128 +73,16 @@ describe("ThreadRepositoryPostgres", () => {
 
     // Assert
     expect(querySpy).toHaveBeenCalled();
-    expect(result).toStrictEqual({
-      id: '1',
-      title: 'Test Thread',
-      body: 'This is a test thread',
-      username: 'testuser',
-      date: expect.any(Date)
-    });
+    expect(result).toStrictEqual(threadEntity);
   });
 
-  it('should not throw error when call getThreadById if thread is exist', async () => {
-    // Arrange
-    const threadRepository = new ThreadRepositoryPostgres(pool);
-    const querySpy = jest.spyOn(pool, 'query');
-    const thread = {
-      id: '1',
-      title: 'Test Thread',
-      body: 'This is a test thread',
-      username: 'testuser'
-    };
-
-    // Act
-    await threadRepository.addThread(thread);
-
-    // Assert
-    await expect(threadRepository.getThreadById(thread.id)).resolves.not.toThrow();
-    expect(querySpy).toHaveBeenCalled();
-  });
-
-  it('should throw error when call getThreadById if thread is not exist', async () => {
+  it("should throw 'thread tidak ditemukan' when call getThreadById if thread is not exist", async () => {
     // Arrange
     const threadRepository = new ThreadRepositoryPostgres(pool);
     const querySpy = jest.spyOn(pool, 'query');
 
     // Act & Assert
-    await expect(threadRepository.getThreadById('999')).rejects.toThrow('thread tidak ditemukan');
-    expect(querySpy).toHaveBeenCalled();
-  });
-
-  it('should throw error when call getThreadDetails if thread is not exist', async () => {
-    // Arrange
-    const threadRepository = new ThreadRepositoryPostgres(pool);
-    const querySpy = jest.spyOn(pool, 'query');
-
-    // Act & Assert
-    await expect(threadRepository.getThreadDetails('999')).rejects.toThrow('thread tidak ditemukan');
-    expect(querySpy).toHaveBeenCalled();
-  });
-
-  it('should return ThreadDetails with null comments when getThreadDetails is called on thread with no comments', async () => {
-    // Arrange
-    const threadRepository = new ThreadRepositoryPostgres(pool);
-    await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
-    const querySpy = jest.spyOn(pool, 'query');
-
-    // Act & Assert
-    await expect(threadRepository.getThreadDetails('1')).resolves.toStrictEqual({
-      id: '1',
-      title: 'title-1',
-      body: 'body-1',
-      date: expect.any(Date),
-      username: 'user-1',
-      comments: null
-    });
-    expect(querySpy).toHaveBeenCalled();
-  });
-
-  it('should return ThreadDetails with comments and empty replies when getThreadDetails', async () => {
-    // Arrange
-    const threadRepository = new ThreadRepositoryPostgres(pool);
-    await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
-    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', thread_id: '1', username: 'user-2' });
-    const querySpy = jest.spyOn(pool, 'query');
-
-    // Act & Assert
-    await expect(threadRepository.getThreadDetails('1')).resolves.toStrictEqual({
-      id: '1',
-      title: 'title-1',
-      body: 'body-1',
-      date: expect.any(Date),
-      username: 'user-1',
-      comments: [{
-        id: '1',
-        content: 'content 1',
-        date: expect.any(String),
-        username: 'user-2',
-        is_delete: false,
-        replies: []
-      }]
-    });
-    expect(querySpy).toHaveBeenCalled();
-  });
-
-  it('should return ThreadDetails with comments and replies when getThreadDetails is called', async () => {
-    // Arrange
-    const threadRepository = new ThreadRepositoryPostgres(pool);
-    await threadRepository.addThread({ id: '1', body: 'body-1', title: 'title-1', username: 'user-1' });
-    await PostgresTestHelper.addComment(pool, { id: '1', content: 'content 1', thread_id: '1', username: 'user-2' });
-    await PostgresTestHelper.addCommentReply(pool, { id: '2', content: 'content reply', thread_id: '1', username: 'user-3', reply_to: '1', is_delete: true });
-    const querySpy = jest.spyOn(pool, 'query');
-
-    // Act & Assert
-    await expect(threadRepository.getThreadDetails('1')).resolves.toStrictEqual({
-      id: '1',
-      title: 'title-1',
-      body: 'body-1',
-      date: expect.any(Date),
-      username: 'user-1',
-      comments: [{
-        id: '1',
-        content: 'content 1',
-        date: expect.any(String),
-        username: 'user-2',
-        is_delete: false,
-        replies: [{
-          id: '2',
-          content: 'content reply',
-          date: expect.any(String),
-          username: 'user-3',
-          is_delete: true
-        }]
-      }]
-    });
+    await expect(threadRepository.getThreadById('id-123')).rejects.toThrow('thread tidak ditemukan');
     expect(querySpy).toHaveBeenCalled();
   });
 });

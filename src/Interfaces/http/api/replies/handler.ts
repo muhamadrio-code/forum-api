@@ -2,15 +2,15 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { AddedComment, CommentPayload } from "../../../../Domains/comments/entities";
 import InvariantError from "../../../../Common/Errors/InvariantError";
 import AddCommentReplyUseCase from "../../../../Applications/use_cases/AddCommentReplyUseCase";
-import DeleteThreadCommentReplyUseCase from "../../../../Applications/use_cases/DeleteCommentReplyUseCase";
+import DeleteCommentReplyUseCase from "../../../../Applications/use_cases/DeleteCommentReplyUseCase";
 
 export default class ThreadCommentReplyHandler {
   private readonly addCommentReplyUseCase: AddCommentReplyUseCase;
-  private readonly deleteCommentReplyUseCase: DeleteThreadCommentReplyUseCase;
+  private readonly deleteCommentReplyUseCase: DeleteCommentReplyUseCase;
 
   constructor(
     addCommentReplyUseCase: AddCommentReplyUseCase,
-    deleteCommentReplyUseCase: DeleteThreadCommentReplyUseCase,
+    deleteCommentReplyUseCase: DeleteCommentReplyUseCase,
   ) {
     this.addCommentReplyUseCase = addCommentReplyUseCase;
     this.deleteCommentReplyUseCase = deleteCommentReplyUseCase;
@@ -23,7 +23,7 @@ export default class ThreadCommentReplyHandler {
 
     const { content }: CommentPayload = req.payload as any;
     const { content: addedContent, id, owner }: AddedComment =
-      await this.addCommentReplyUseCase.execute({ content, username:username as string, thread_id: threadId, reply_to: commentId });
+      await this.addCommentReplyUseCase.execute({ content, username:username as string, thread_id: threadId, comment_id: commentId });
     return h.response({
       status: "success",
       data: {

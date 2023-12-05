@@ -10,8 +10,4 @@ export default class ThreadCommentsRepositoryTest extends ThreadRepository {
   async getThreadById(id: string): Promise<ThreadEntity> {
     throw new Error('UNINPLEMENTED.ERROR');
   }
-
-  async getThreadDetails(id: string): Promise<ThreadDetailsEntity> {
-    throw new Error('UNINPLEMENTED.ERROR');
-  }
 }

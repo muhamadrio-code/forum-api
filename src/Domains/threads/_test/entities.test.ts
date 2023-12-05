@@ -76,39 +76,6 @@ describe("threads entities", () => {
     addedThread.owner = 'changed';
   });
 
-  it("should create ThreadDetailsEntity object with readonly properties and null comments", () => {
-    const threadDetailsEntity: ThreadDetailsEntity = {
-      id: 'id-123',
-      title: 'my fullname',
-      body: 'secret',
-      username: 'my username',
-      date: 'date',
-      comments: null
-    };
-
-    expect(threadDetailsEntity).toStrictEqual({
-      id: 'id-123',
-      title: 'my fullname',
-      body: 'secret',
-      username: 'my username',
-      date: 'date',
-      comments: null
-    });
-
-    // @ts-expect-error: threadDetailsEntity id should readonly
-    threadDetailsEntity.id = 'changed';
-    // @ts-expect-error: threadDetailsEntity title should readonly
-    threadDetailsEntity.title = 'changed';
-    // @ts-expect-error: threadDetailsEntity body should readonly
-    threadDetailsEntity.body = 'changed';
-    // @ts-expect-error: threadDetailsEntity username should readonly
-    threadDetailsEntity.username = 'changed';
-    // @ts-expect-error: threadDetailsEntity date should readonly
-    threadDetailsEntity.date = 'changed';
-    // @ts-expect-error: threadDetailsEntity comments should readonly
-    threadDetailsEntity.comments = [];
-  });
-
   it("should create ThreadDetailsEntity object with readonly properties", () => {
     const threadDetailsEntity: ThreadDetailsEntity = {
       id: 'id-123',
@@ -130,6 +97,7 @@ describe("threads entities", () => {
           username: 'user-3',
           is_delete: true,
           thread_id: '1',
+          comment_id: '1'
         }]
       }]
     };
@@ -154,6 +122,7 @@ describe("threads entities", () => {
           username: 'user-3',
           is_delete: true,
           thread_id: '1',
+          comment_id: '1'
         }]
       }]
     });

@@ -270,7 +270,7 @@ describe("Threads", () => {
       threadId = data.addedThread.id;
     });
 
-    it("should response 200 and return thread with null comments", async () => {
+    it("should response 200 and return thread with empty comments", async () => {
       // Action
       const response = await server.inject({
         method: 'GET',
@@ -292,7 +292,7 @@ describe("Threads", () => {
         body: expect.any(String),
         date: expect.any(String),
         username: expect.any(String),
-        comments: null
+        comments: []
       });
       expect(responseJSON.data.thread.comments).toBeDefined();
     });
@@ -328,7 +328,7 @@ describe("Threads", () => {
       expect(response.statusCode).toBe(200);
       expect(status).toBe('success');
       expect(thread).toBeDefined();
-      expect(thread.comments).toEqual(
+      expect(thread.comments).toStrictEqual(
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(String),
