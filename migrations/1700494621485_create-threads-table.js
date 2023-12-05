@@ -1,8 +1,6 @@
 /* eslint-disable camelcase */
 /* istanbul ignore file */
 
-exports.shorthands = undefined;
-
 exports.up = (pgm) => {
   pgm.createTable('threads', {
     id: {
@@ -27,7 +25,7 @@ exports.up = (pgm) => {
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
-  });
+  }, { ifNotExists : true });
 };
 
 exports.down = (pgm) => {
