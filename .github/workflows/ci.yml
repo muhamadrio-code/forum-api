@@ -15,10 +15,10 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: ${{ secrets.PGDATABASE_TEST }}
-          POSTGRES_PASSWORD: ${{ secrets.PGPASSWORD_TEST }}
-          POSTGRES_PORT: ${{ secrets.PGPORT_TEST }}
-          POSTGRES_USER: ${{ secrets.PGUSER_TEST }}
+          POSTGRES_DB: ${{ secrets.PGDATABASE }}
+          POSTGRES_PASSWORD: ${{ secrets.PGPASSWORD }}
+          POSTGRES_PORT: ${{ secrets.PGPORT }}
+          POSTGRES_USER: ${{ secrets.PGUSER }}
         ports:
           - 5432:5432
         options: >-
