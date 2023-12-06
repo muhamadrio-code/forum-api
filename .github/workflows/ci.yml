@@ -13,6 +13,7 @@ jobs:
     container: node:18
     services:
       postgres:
+        container-name: "psql"
         image: postgres:latest
         env:
           POSTGRES_DB: ${{ secrets.PGDATABASE }}
@@ -37,13 +38,8 @@ jobs:
         ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
         REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
         ACCCESS_TOKEN_AGE: ${{ secrets.ACCCESS_TOKEN_AGE }}
-        PGHOST_TEST: ${{ secrets.PGHOST_TEST }}
-        PGUSER_TEST: ${{ secrets.PGUSER_TEST }}
-        PGDATABASE_TEST: ${{ secrets.PGDATABASE_TEST }}
-        PGPASSWORD_TEST: ${{ secrets.PGPASSWORD_TEST }}
-        PGPORT_TEST: ${{ secrets.PGPORT_TEST }}
-        PGHOST: ${{ secrets.PGHOST_TEST }}
-        PGUSER: ${{ secrets.PGUSER_TEST }}
-        PGDATABASE: ${{ secrets.PGDATABASE_TEST }}
-        PGPASSWORD: ${{ secrets.PGPASSWORD_TEST }}
-        PGPORT: ${{ secrets.PGPORT_TEST }}
+        PGHOST: ${{ secrets.PGHOST }}
+        PGUSER: ${{ secrets.PGUSER }}
+        PGDATABASE: ${{ secrets.PGDATABASE }}
+        PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        PGPORT: ${{ secrets.PGPORT }}
