@@ -29,10 +29,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: npm install migrate and test
-        run: |
-          npm ci
-          npm migrate:test up
-          npm run test
+      run: |
+        npm ci
+        npm migrate:test up
+        npm run test
       env:
         ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
         REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
