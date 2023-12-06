@@ -31,7 +31,7 @@ jobs:
     - name: npm install migrate and test
       run: |
         npm ci
-        npm migrate:test up
+        npm run migrate:test up
         npm run test
       env:
         ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
