@@ -8,8 +8,9 @@
 </p>
 
 <p align="center">
+  <img src="https://github.com/muhamadrio-code/forum-api/actions/workflows/ci.yml/badge.svg"/>
   <a href="https://twitter.com/RyoPermana33">
-    <img src="https://img.shields.io/twitter/follow/dubdotco?style=flat&label=muhammad-rio&logo=x&color=0bf&logoColor=fff" alt="Twitter" />
+    <img src="https://img.shields.io/twitter/follow/dubdotco?style=flat&label=muhammad-rio&logo=x&logoColor=fff" alt="X" />
   </a>
   <img src="https://img.shields.io/badge/Coverage-100%25-brightgreen.svg"/>
 </p>
