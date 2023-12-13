@@ -1,0 +1,16 @@
+.github
+node_modules
+Dockerfile
+.env
+.eslintrc
+.gitignore
+.dockerignore
+CRITERIA.md
+README.md
+jest.config.js
+coverage
+dist
+config
+*.test
+**/.git
+**/_test

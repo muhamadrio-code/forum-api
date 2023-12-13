@@ -2,9 +2,10 @@
   "name": "forum-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "ts-node src/app.ts",
+    "production": "node dist/app.js",
     "dev": "nodemon src/app.ts",
     "build": "tsc",
     "test": "jest --collect-coverage --setupFiles dotenv/config reflect-metadata -i",
