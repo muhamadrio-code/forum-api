@@ -34,4 +34,5 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             docker compose down api
-            docker compose up api -d
+            docker rmi -f muhammadrio/forumapi:latest
+            docker compose up -d
