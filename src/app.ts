@@ -11,7 +11,7 @@ const startServer = async () => {
   await server.start();
 
   // eslint-disable-next-line no-console
-  console.log('Server running on %s', server.info.uri);
+  console.log('Server berjalan di %s', server.info.uri);
 };
 
 startServer();
