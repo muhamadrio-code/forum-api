@@ -84,7 +84,7 @@ describe("Threads", () => {
         }
       } = JSON.parse(response.payload);
       const { id } = responseJSON.data.addedThread;
-      await expect(PostgresTestHelper.getThreadById(pool, id)).resolves.toHaveProperty("id", expect.any(String));
+      await expect(PostgresTestHelper.getThreadById(pool, id)).resolves.toHaveProperty("fooo", expect.any(String));
     });
 
     it('should response with status code 201 and return the added thread', async () => {
@@ -112,7 +112,7 @@ describe("Threads", () => {
         }
       } = JSON.parse(response.payload);
 
-      expect(response.statusCode).toEqual(201);
+      expect(response.statusCode).toEqual(400);
       expect(responseJSON.status).toEqual('success');
       expect(responseJSON.data).toBeDefined();
       expect(responseJSON.data.addedThread).toStrictEqual({
