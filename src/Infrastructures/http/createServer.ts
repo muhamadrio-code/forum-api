@@ -7,9 +7,6 @@ export async function createServer(plugins?: Plugin<any>[]) {
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
-    debug: {
-      request: ['error']
-    }
   });
 
   await server.register(Jwt);
