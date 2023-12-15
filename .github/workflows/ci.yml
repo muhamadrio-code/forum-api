@@ -7,10 +7,10 @@ on:
 jobs:
   run-test:
     runs-on: ubuntu-latest
-    container: node:18
+    container: node:18.19-alpine
     services:
-      psql:
-        image: postgres:latest
+      postgres:
+        image: postgres:15.5-alpine
         env:
           POSTGRES_DB: ${{ secrets.PGDATABASE }}
           POSTGRES_PASSWORD: ${{ secrets.PGPASSWORD }}
@@ -25,19 +25,27 @@ jobs:
           --health-retries 5
     steps:
     - uses: actions/checkout@v4
+
     - name: Install dependencies
       run: npm ci
+
     - name: Run Migrations
       run: npm run migrate up
       env:  
-        PGHOST: ${{ secrets.PGHOST }}
+        PGHOST: postgres
         PGUSER: ${{ secrets.PGUSER }}
         PGDATABASE: ${{ secrets.PGDATABASE }}
         PGPASSWORD: ${{ secrets.PGPASSWORD }}
         PGPORT: ${{ secrets.PGPORT }}
+        
     - name: Run Tests
       run: npm run test
       env:
         ACCESS_TOKEN_KEY: ${{ secrets.ACCESS_TOKEN_KEY }}
         REFRESH_TOKEN_KEY: ${{ secrets.REFRESH_TOKEN_KEY }}
         ACCCESS_TOKEN_AGE: ${{ secrets.ACCCESS_TOKEN_AGE }}
+        PGHOST: postgres
+        PGUSER: ${{ secrets.PGUSER }}
+        PGDATABASE: ${{ secrets.PGDATABASE }}
+        PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        PGPORT: ${{ secrets.PGPORT }}
