@@ -7,7 +7,7 @@ import { registerDependenciesToContainer } from "./Infrastructures/lib/di";
 
 const startServer = async () => {
   registerDependenciesToContainer();
-  const server = await createServer(plugins);
+  const server = await createServer();
   await server.start();
 
   // eslint-disable-next-line no-console
